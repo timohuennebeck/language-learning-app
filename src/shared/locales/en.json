@@ -43,9 +43,16 @@
       "A2": "Basics",
       "B1": "Independent",
       "B2": "Advanced"
-    }
+    },
+    "back": "Back",
+    "close": "Close",
+    "weekdayLetters": ["M", "T", "W", "T", "F", "S", "S"],
+    "languagePill": "French · A2",
+    "reset": "Reset"
   },
-  "splash": { "brand": "Yori" },
+  "splash": {
+    "brand": "Yori"
+  },
   "welcome": {
     "headline1": "Your conversations",
     "headline2": "become ",
@@ -142,8 +149,16 @@
       "title": "How good is your French?",
       "sub": "Roughly is fine. Yori adjusts after your first conversation.",
       "options": {
-        "new": { "name": "Completely new", "sub": "Never learned French · ", "ex": "bonjour" },
-        "bits": { "name": "A few bits", "sub": "Say hello and thanks · ", "ex": "merci beaucoup" },
+        "new": {
+          "name": "Completely new",
+          "sub": "Never learned French · ",
+          "ex": "bonjour"
+        },
+        "bits": {
+          "name": "A few bits",
+          "sub": "Say hello and thanks · ",
+          "ex": "merci beaucoup"
+        },
         "simple": {
           "name": "Simple sentences",
           "sub": "Ordering, introducing yourself, daily life",
@@ -232,7 +247,10 @@
           "sub": "Argue your opinion, shows without subtitles",
           "tag": "Fits “Shows and music”"
         },
-        "C1": { "name": "Confident at work", "sub": "Negotiate, present, hit the nuances" }
+        "C1": {
+          "name": "Confident at work",
+          "sub": "Negotiate, present, hit the nuances"
+        }
       },
       "cta": "Set goal {{level}}"
     },
@@ -287,7 +305,9 @@
       "password": "Password",
       "emailValue": "maya.k@mail.de",
       "hint": "At least 8 characters",
-      "cta": "Create account"
+      "cta": "Create account",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     },
     "plusActive": {
       "title": "Pip is ready, {{name}}.",
@@ -308,7 +328,6 @@
     "greeting": "Salut, {{name}}.\nUp for a conversation?",
     "today": "French · {{done}} of {{goal}} min today",
     "due": "flashcards due",
-    "languagePill": "French · A2",
     "hero": {
       "talk": {
         "preview": "Ça te dit ?",
@@ -375,7 +394,6 @@
     }
   },
   "chapter": {
-    "languagePill": "French · A2",
     "chapters": ["Chapter 1", "Chapter 2 · At the café", "Chapter 3"],
     "title": "At the café",
     "station": "Station {{n}} of 5 · from your conversation on Tuesday",
@@ -522,9 +540,21 @@
     "resetIn1": "Your limit resets in ",
     "resetTime": "7 h 12 min",
     "resetIn2": ".",
-    "cards": { "kicker": "12 CARDS DUE", "title": "Review flashcards", "cta": "Continue" },
-    "exercise": { "kicker": "5 TASKS", "title": "Repeat exercise", "cta": "Start exercise" },
-    "read": { "kicker": "1 TOPIC · 4 MIN", "title": "Read the text", "cta": "Open text" },
+    "cards": {
+      "kicker": "12 CARDS DUE",
+      "title": "Review flashcards",
+      "cta": "Continue"
+    },
+    "exercise": {
+      "kicker": "5 TASKS",
+      "title": "Repeat exercise",
+      "cta": "Start exercise"
+    },
+    "read": {
+      "kicker": "1 TOPIC · 4 MIN",
+      "title": "Read the text",
+      "cta": "Open text"
+    },
     "bye": "See you tomorrow"
   },
   "streak": {
@@ -601,8 +631,18 @@
         "15": "B1 in about 8 months",
         "30": "B1 in about 5 months"
       },
-      "ex": { "5": "1 exercise", "10": "2 exercises", "15": "2–3 exercises", "30": "5 exercises" },
-      "week": { "5": "35 min", "10": "1 h 10", "15": "1 h 45", "30": "3 h 30" },
+      "ex": {
+        "5": "1 exercise",
+        "10": "2 exercises",
+        "15": "2–3 exercises",
+        "30": "5 exercises"
+      },
+      "week": {
+        "5": "35 min",
+        "10": "1 h 10",
+        "15": "1 h 45",
+        "30": "3 h 30"
+      },
       "perWeek": "{{t}} per week",
       "a2today": "A2 today",
       "b1": "B1",

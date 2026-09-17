@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
-import { useRouter } from 'expo-router';
 import type { StyleProp, ViewStyle } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
+import { useBack } from '@/shared/hooks/useBack';
 import { cn } from '@/shared/lib/cn';
 import { Tap, type TapProps } from '@/shared/ui/Tap';
 import { BackIcon, CloseIcon } from '@/shared/ui/icons';
@@ -13,7 +14,7 @@ type Props = Omit<TapProps, 'children' | 'style'> & {
   className?: string;
   /** Icon color. */
   color?: string;
-  /** When true, a missing onPress falls back to router.back(). */
+  /** When true, a missing onPress falls back to going back (or home). */
   autoBack?: boolean;
 };
 
@@ -26,17 +27,19 @@ export function NavCircle({
   autoBack = true,
   onPress,
   style,
+  accessibilityLabel,
   ...props
 }: Props) {
-  const router = useRouter();
-  const handle =
-    onPress ??
-    (autoBack ? () => (router.canGoBack() ? router.back() : router.replace('/')) : undefined);
+  const { t } = useTranslation();
+  const back = useBack();
+  const label =
+    accessibilityLabel ??
+    (icon === 'back' ? t('common.back') : icon === 'close' ? t('common.close') : undefined);
   return (
     <Tap
       haptic="light"
-      accessibilityRole="button"
-      onPress={handle}
+      accessibilityLabel={label}
+      onPress={onPress ?? (autoBack ? back : undefined)}
       className={cn(
         'items-center justify-center rounded-full bg-surface active:opacity-80',
         className,

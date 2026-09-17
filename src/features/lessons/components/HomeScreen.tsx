@@ -3,18 +3,17 @@ import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/useSession';
-import { HeroCarousel } from '@/features/lessons/components/HeroCarousel';
+import { HeroCarousel } from '@/shared/components/HeroCarousel';
 import { IllustrationSlot } from '@/features/lessons/components/IllustrationSlot';
 import {
   CardsPreview,
   ExercisePreview,
   ReadPreview,
   TalkPreview,
-} from '@/features/lessons/components/Previews';
+} from '@/shared/components/Previews';
 import { useHomeFeed } from '@/features/lessons/hooks/useLessons';
+import { HomeHeader } from '@/shared/components/HomeHeader';
 import { cn } from '@/shared/lib/cn';
-import { Avatar } from '@/shared/ui/Illustration';
-import { ChevronDown } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
 import { Text } from '@/shared/ui/Text';
@@ -35,22 +34,7 @@ export function HomeScreen() {
   return (
     <Screen top={0} bottom={-34} className="overflow-hidden">
       <View className="flex-1 overflow-hidden px-[22px]" style={{ minHeight: 0 }}>
-        <View className="h-[40px] flex-row items-center justify-between">
-          <Tap haptic="light" onPress={() => router.push('/(app)/profile')}>
-            <Avatar size={34} />
-          </Tap>
-          <Tap
-            haptic="light"
-            onPress={() => router.push('/(app)/languages')}
-            className="flex-row items-center rounded-pill bg-surface px-[12px] py-[6px]"
-            style={{ columnGap: 6 }}
-          >
-            <Text className="text-accent-900" style={{ fontSize: 15 }}>
-              {t('home.languagePill')}
-            </Text>
-            <ChevronDown size={14} strokeWidth={2.4} />
-          </Tap>
-        </View>
+        <HomeHeader />
         <Text
           className="mb-[4px] mt-[20px] font-medium text-accent-900"
           style={{ fontSize: 32, lineHeight: 32, letterSpacing: -0.96 }}
@@ -79,7 +63,6 @@ export function HomeScreen() {
         </View>
         <HeroCarousel
           className="mt-[16px]"
-          screenWidth={width}
           cards={[
             {
               key: 'talk',

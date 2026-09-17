@@ -1,4 +1,4 @@
-export type GrammarForm = { name: string; ko: string; score: [number, number]; ok: boolean };
+type GrammarForm = { name: string; ko: string; score: [number, number]; ok: boolean };
 
 export const forms: GrammarForm[] = [
   { name: 'Vouvoiement', ko: 'vous · -ez', score: [9, 10], ok: true },

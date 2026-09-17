@@ -7,7 +7,7 @@ import { useSession } from '@/features/auth/hooks/useSession';
 import { OnboardingFrame } from '@/features/onboarding/components/OnboardingFrame';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/Button';
-import { Gradient } from '@/shared/ui/Gradient';
+import { CardGradient } from '@/shared/ui/Gradient';
 import { Illustration } from '@/shared/ui/Illustration';
 
 /** 04 · Name (4 von 13). */
@@ -33,11 +33,8 @@ export function NameStep() {
         />
       }
     >
-      <Gradient
-        colors={['#eeedfe', '#e7e5fe']}
-        start={{ x: 0.12, y: 0 }}
-        end={{ x: 0.88, y: 1 }}
-        className="mt-[18px] items-center justify-between overflow-hidden rounded-[26px] p-[20px]"
+      <CardGradient
+        className="mt-[18px] items-center justify-between p-[20px]"
         style={{ height: 290 }}
       >
         <Illustration name="pip-book-pencil" size={176} />
@@ -55,7 +52,7 @@ export function NameStep() {
             style={{ fontSize: 19, padding: 0, lineHeight: 22 }}
           />
         </View>
-      </Gradient>
+      </CardGradient>
     </OnboardingFrame>
   );
 }

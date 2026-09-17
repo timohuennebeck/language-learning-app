@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +7,7 @@ import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/Button';
 import { NavCircle } from '@/shared/ui/NavCircle';
 import { Screen } from '@/shared/ui/Screen';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 
 const w = colors.widget;
@@ -15,12 +15,9 @@ const w = colors.widget;
 /** 13b · Widget (optional last onboarding step). Finishing it completes onboarding. */
 export function WidgetStep() {
   const { t } = useTranslation();
-  const router = useRouter();
   const { completeOnboarding } = useSession();
-  const finish = () => {
-    completeOnboarding();
-    router.replace('/(app)');
-  };
+  // Completing onboarding flips the protected-route guard, which swaps in the app stack.
+  const finish = () => completeOnboarding();
   return (
     <Screen top={-4} bottom={0} className="px-[20px]">
       <View className="h-[34px] justify-center">
@@ -36,9 +33,9 @@ export function WidgetStep() {
             className="rounded-[22px] bg-white p-[14px]"
             style={{ width: 156, height: 156, borderWidth: 1.5, borderColor: colors.line2 }}
           >
-            <Text className="uppercase text-muted" style={{ fontSize: 11, letterSpacing: 1.1 }}>
+            <Kicker tracking={0.1} className="text-muted">
               {t('onboarding.widget.kicker')}
-            </Text>
+            </Kicker>
             <View className="mt-[10px] flex-row items-end">
               <Text className="text-ink" style={{ fontSize: 19, lineHeight: 24.7 }}>
                 {t('onboarding.widget.sentence')}

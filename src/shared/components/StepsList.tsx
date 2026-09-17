@@ -6,7 +6,7 @@ import { CheckCircle } from '@/shared/ui/Marks';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Text } from '@/shared/ui/Text';
 
-export type StepState = 'done' | 'active' | 'pending';
+type StepState = 'done' | 'active' | 'pending';
 
 /** Vertical checklist used by the "Pip is working" screens. */
 export function StepsList({
@@ -27,7 +27,7 @@ export function StepsList({
           ) : (
             <View
               className="h-[26px] w-[26px] rounded-full"
-              style={{ borderWidth: 1.5, borderColor: '#dcdcea' }}
+              style={{ borderWidth: 1.5, borderColor: colors.ring6 }}
             />
           )}
           <Text

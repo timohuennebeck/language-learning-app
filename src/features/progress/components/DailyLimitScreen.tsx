@@ -1,14 +1,15 @@
 import { useRouter } from 'expo-router';
-import { useWindowDimensions, View } from 'react-native';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/useSession';
-import { HeroCarousel } from '@/features/lessons/components/HeroCarousel';
-import { CardsPreview, ExercisePreview, ReadPreview } from '@/features/lessons/components/Previews';
+import { HeroCarousel } from '@/shared/components/HeroCarousel';
+import { CardsPreview, ExercisePreview, ReadPreview } from '@/shared/components/Previews';
 import { GradientHeader } from '@/shared/components/GradientHeader';
 import { TextButton } from '@/shared/ui/Button';
 import { Illustration } from '@/shared/ui/Illustration';
 import { Clock } from '@/shared/ui/icons';
+import { useGoHome } from '@/shared/hooks/useBack';
 import { Screen } from '@/shared/ui/Screen';
 import { Text } from '@/shared/ui/Text';
 
@@ -16,16 +17,12 @@ import { Text } from '@/shared/ui/Text';
 export function DailyLimitScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { width } = useWindowDimensions();
+  const goHome = useGoHome();
   const { session } = useSession();
   const goal = session.dailyGoalMinutes;
   return (
     <Screen edgeToEdgeTop bottom={6} className="relative px-[22px]">
-      <GradientHeader
-        left="close"
-        className="-mx-[22px]"
-        onLeftPress={() => router.replace('/(app)')}
-      >
+      <GradientHeader left="close" className="-mx-[22px]" onLeftPress={goHome}>
         <Illustration name="pip-wave" size={156} style={{ marginTop: -20, marginBottom: 12 }} />
         <View
           className="flex-row items-center rounded-pill bg-bg px-[16px] py-[8px]"
@@ -53,7 +50,6 @@ export function DailyLimitScreen() {
       <HeroCarousel
         className="-mx-[22px] mt-[24px]"
         dotsClassName="mt-[14px]"
-        screenWidth={width}
         cards={[
           {
             key: 'cards',
@@ -91,7 +87,7 @@ export function DailyLimitScreen() {
         label={t('dailyLimit.bye')}
         color="text-sub"
         labelClassName="font-medium"
-        onPress={() => router.replace('/(app)')}
+        onPress={goHome}
       />
     </Screen>
   );

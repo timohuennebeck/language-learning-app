@@ -3,20 +3,22 @@ import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
-import { Gradient } from '@/shared/ui/Gradient';
+import { CardGradient } from '@/shared/ui/Gradient';
 import { Illustration } from '@/shared/ui/Illustration';
 import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
+import { RecommendedBadge } from '@/shared/ui/RecommendedBadge';
 import { Text } from '@/shared/ui/Text';
 
-export const DAILY_GOAL_OPTIONS = [
+const DAILY_GOAL_OPTIONS = [
   { min: 5, filled: 2 },
   { min: 10, filled: 4 },
   { min: 15, filled: 5 },
   { min: 30, filled: 7 },
 ] as const;
 
-export type DailyGoalMinutes = (typeof DAILY_GOAL_OPTIONS)[number]['min'];
+type DailyGoalMinutes = (typeof DAILY_GOAL_OPTIONS)[number]['min'];
 
 type OptionsProps = {
   value: number;
@@ -47,16 +49,7 @@ export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
               zIndex: min === 15 ? 2 : 1,
             }}
           >
-            {min === 15 ? (
-              <View
-                className="absolute right-[18px] rounded-pill bg-accent-800 px-[12px] py-[4px]"
-                style={{ top: -11 }}
-              >
-                <Text className="font-semibold text-accent-100" style={{ fontSize: 12 }}>
-                  {t('common.recommended')}
-                </Text>
-              </View>
-            ) : null}
+            {min === 15 ? <RecommendedBadge style={{ right: 18, top: -11 }} /> : null}
             <View
               className="h-[46px] w-[46px] items-center justify-center rounded-full"
               style={{ backgroundColor: on ? colors.surface : colors.surface2 }}
@@ -111,16 +104,9 @@ export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
 export function EtaCard({ minutes, className }: { minutes: number; className?: string }) {
   const { t } = useTranslation();
   return (
-    <Gradient
-      colors={['#eeedfe', '#e7e5fe']}
-      start={{ x: 0.12, y: 0 }}
-      end={{ x: 0.88, y: 1 }}
-      className={cn('relative overflow-hidden rounded-[26px] px-[20px] py-[18px]', className)}
-    >
+    <CardGradient className={cn('relative px-[20px] py-[18px]', className)}>
       <View style={{ maxWidth: 196 }}>
-        <Text className="uppercase text-accent-800" style={{ fontSize: 11, letterSpacing: 1.32 }}>
-          {t('profile.goalScreen.pace', { min: minutes })}
-        </Text>
+        <Kicker>{t('profile.goalScreen.pace', { min: minutes })}</Kicker>
         <Text
           className="mt-[8px] font-semibold text-ink"
           style={{ fontSize: 23, lineHeight: 26.2, letterSpacing: -0.575 }}
@@ -147,6 +133,6 @@ export function EtaCard({ minutes, className }: { minutes: number; className?: s
         size={124}
         style={{ position: 'absolute', right: 2, bottom: 8 }}
       />
-    </Gradient>
+    </CardGradient>
   );
 }

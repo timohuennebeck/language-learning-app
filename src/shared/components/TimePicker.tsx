@@ -2,6 +2,8 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared/lib/cn';
+import { pad } from '@/shared/lib/time';
+import { colors } from '@/shared/theme/tokens';
 import { Gradient } from '@/shared/ui/Gradient';
 import { Tap } from '@/shared/ui/Tap';
 import { Text } from '@/shared/ui/Text';
@@ -14,7 +16,6 @@ type Props = {
   className?: string;
 };
 
-const pad = (n: number) => String(n).padStart(2, '0');
 const dim = (offset: number) => (offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.4 : 0.16);
 
 /** Wheel-style time picker (5 visible rows, selected row highlighted). Tap a value to pick it. */
@@ -89,21 +90,21 @@ export function TimePicker({ hour, minute, minuteStep = 5, onChange, className }
             ),
           )}
         </View>
-        <View className="flex-1 items-center" style={{ rowGap: 12 }}>
-          <Text style={{ fontSize: 19, lineHeight: 34, opacity: 0 }}>—</Text>
+        <View
+          className="flex-1 items-center"
+          style={{ rowGap: 12, paddingTop: 46, paddingBottom: 92 }}
+        >
           {periods.map((p) => cell(p.label, p.label, p.active ? 1 : 0.4, p.active, p.pick, 19))}
-          <Text style={{ fontSize: 19, lineHeight: 34, opacity: 0 }}>—</Text>
-          <Text style={{ fontSize: 19, lineHeight: 34, opacity: 0 }}>—</Text>
         </View>
       </View>
       <Gradient
-        colors={['#f3f5fe', 'rgba(243,245,254,0)']}
+        colors={[colors.bg, 'rgba(243,245,254,0)']}
         locations={[0.2, 1]}
         pointerEvents="none"
         style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 64 }}
       />
       <Gradient
-        colors={['rgba(243,245,254,0)', '#f3f5fe']}
+        colors={['rgba(243,245,254,0)', colors.bg]}
         locations={[0, 0.8]}
         pointerEvents="none"
         style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 64 }}

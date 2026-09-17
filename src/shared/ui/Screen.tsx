@@ -1,9 +1,9 @@
-import { ScrollView, View, type ViewProps } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
 
-export type ScreenProps = ViewProps & {
+type ScreenProps = ViewProps & {
   className?: string;
   /** Extra top padding added to the safe-area inset (design screens use 56–60px on a 60px inset). */
   top?: number;
@@ -13,6 +13,8 @@ export type ScreenProps = ViewProps & {
   scroll?: boolean;
   /** Skip the safe-area top padding (screens that paint their own header area). */
   edgeToEdgeTop?: boolean;
+  /** Keep the footer above the keyboard (screens with text inputs). */
+  keyboard?: boolean;
 };
 
 /** Full-height screen container with the app background and safe-area aware padding. */
@@ -23,6 +25,7 @@ export function Screen({
   bottom = 0,
   scroll = false,
   edgeToEdgeTop = false,
+  keyboard = false,
   children,
   ...props
 }: ScreenProps) {
@@ -31,21 +34,18 @@ export function Screen({
     paddingTop: edgeToEdgeTop ? 0 : insets.top + top,
     paddingBottom: insets.bottom + bottom,
   };
-  if (scroll) {
-    return (
-      <ScrollView
-        className="flex-1 bg-bg"
-        contentContainerStyle={[{ flexGrow: 1 }, padding]}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-      >
-        <View className={cn('flex-1', className)} style={style} {...props}>
-          {children}
-        </View>
-      </ScrollView>
-    );
-  }
-  return (
+  const body = scroll ? (
+    <ScrollView
+      className="flex-1 bg-bg"
+      contentContainerStyle={[{ flexGrow: 1 }, padding]}
+      showsVerticalScrollIndicator={false}
+      bounces={false}
+    >
+      <View className={cn('flex-1', className)} style={style} {...props}>
+        {children}
+      </View>
+    </ScrollView>
+  ) : (
     <View
       className={cn('flex-1 overflow-hidden bg-bg', className)}
       style={[padding, style]}
@@ -54,9 +54,13 @@ export function Screen({
       {children}
     </View>
   );
-}
-
-/** Safe-area top inset for screens that paint a header region edge-to-edge. */
-export function useTopInset(extra = 0) {
-  return useSafeAreaInsets().top + extra;
+  if (!keyboard) return body;
+  return (
+    <KeyboardAvoidingView
+      className="flex-1"
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      {body}
+    </KeyboardAvoidingView>
+  );
 }

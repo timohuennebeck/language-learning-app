@@ -1,9 +1,10 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useBack } from '@/shared/hooks/useBack';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/Button';
 import { Gradient } from '@/shared/ui/Gradient';
@@ -15,7 +16,7 @@ import { Text } from '@/shared/ui/Text';
 /** 02c · Nutzungsbedingungen (+ 02c-ii with the document picker open). */
 export function TermsScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const back = useBack();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ open?: string; doc?: string }>();
   const [open, setOpen] = useState(params.open === '1');
@@ -76,7 +77,7 @@ export function TermsScreen() {
         className="px-[22px] pt-[14px]"
         style={{ paddingBottom: insets.bottom - 4 }}
       >
-        <Button height={56} label={t('common.understood')} onPress={() => router.back()} />
+        <Button height={56} label={t('common.understood')} onPress={back} />
       </Gradient>
       {open ? (
         <>

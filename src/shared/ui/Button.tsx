@@ -2,17 +2,27 @@ import type { ReactNode } from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
+import { colors } from '@/shared/theme/tokens';
 import { Tap, type TapProps } from '@/shared/ui/Tap';
 import { Text } from '@/shared/ui/Text';
 
 type Variant =
-  'primary' | 'light' | 'surface' | 'outline' | 'muted' | 'ghost' | 'ghost-accent' | 'disabled';
+  | 'primary'
+  | 'strong'
+  | 'light'
+  | 'surface'
+  | 'white'
+  | 'muted'
+  | 'ghost'
+  | 'ghost-accent'
+  | 'disabled';
 
 const containerByVariant: Record<Variant, string> = {
   primary: 'bg-accent-800',
+  strong: 'bg-accent-700',
   light: 'bg-accent-100',
   surface: 'bg-surface',
-  outline: 'bg-transparent border-[1.5px] border-line2',
+  white: 'bg-white',
   muted: 'bg-surface2',
   ghost: 'bg-transparent',
   'ghost-accent': 'bg-transparent',
@@ -21,16 +31,17 @@ const containerByVariant: Record<Variant, string> = {
 
 const labelByVariant: Record<Variant, string> = {
   primary: 'text-accent-100 font-semibold',
+  strong: 'text-[#f7f6ff] font-semibold',
   light: 'text-accent-800 font-medium',
   surface: 'text-accent-900 font-medium',
-  outline: 'text-accent-900 font-semibold',
+  white: 'text-ink font-semibold',
   muted: 'text-muted font-semibold',
   ghost: 'text-ink2 font-semibold',
   'ghost-accent': 'text-accent-800 font-semibold',
   disabled: 'text-faint font-semibold',
 };
 
-export type ButtonProps = Omit<TapProps, 'children' | 'style'> & {
+type ButtonProps = Omit<TapProps, 'children' | 'style'> & {
   style?: StyleProp<ViewStyle>;
   label?: string;
   variant?: Variant;
@@ -70,7 +81,11 @@ export function Button({
         containerByVariant[v],
         className,
       )}
-      style={[{ height }, style]}
+      style={[
+        { height },
+        v === 'white' ? { boxShadow: `0 0 0 1.5px ${colors.line2}` } : null,
+        style,
+      ]}
       {...props}
     >
       {left ? <View className="mr-[10px]">{left}</View> : null}

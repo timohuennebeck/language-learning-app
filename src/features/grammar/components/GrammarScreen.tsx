@@ -10,6 +10,7 @@ import { Play } from '@/shared/ui/icons';
 import { Ring } from '@/shared/ui/Ring';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 import { TopBar } from '@/shared/ui/TopBar';
 
@@ -26,16 +27,9 @@ export function GrammarScreen() {
       >
         <View className="flex-row items-center" style={{ columnGap: 8 }}>
           <View className="rounded-pill bg-bg px-[9px] py-[4px]">
-            <Text
-              className="uppercase text-accent-800"
-              style={{ fontSize: 11, letterSpacing: 0.66 }}
-            >
-              {t('grammar.weakest')}
-            </Text>
+            <Kicker tracking={0.06}>{t('grammar.weakest')}</Kicker>
           </View>
-          <Text className="uppercase text-accent-800" style={{ fontSize: 11, letterSpacing: 1.32 }}>
-            {t('grammar.weakestSub')}
-          </Text>
+          <Kicker>{t('grammar.weakestSub')}</Kicker>
         </View>
         <Text
           className="mt-[16px] font-medium text-accent-900"

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Animated, {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -21,6 +22,7 @@ export function Spinner({
   const rot = useSharedValue(0);
   useEffect(() => {
     rot.value = withRepeat(withTiming(360, { duration: 800, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(rot);
   }, [rot]);
   const anim = useAnimatedStyle(() => ({ transform: [{ rotate: `${rot.value}deg` }] }));
   return (

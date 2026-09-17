@@ -1,12 +1,19 @@
 import { useRef, useState, type ReactNode } from 'react';
-import { ScrollView, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import {
+  ScrollView,
+  useWindowDimensions,
+  View,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
 import { Dots } from '@/shared/ui/Marks';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 
-export type HeroCardData = {
+type HeroCardData = {
   key: string;
   preview: ReactNode;
   kicker: string;
@@ -22,16 +29,11 @@ type Props = {
   cards: HeroCardData[];
   className?: string;
   dotsClassName?: string;
-  screenWidth: number;
 };
 
 /** Horizontally paged 248px cards (width = screen − 44) with pagination dots. */
-export function HeroCarousel({
-  cards,
-  className,
-  dotsClassName = 'mt-[12px]',
-  screenWidth,
-}: Props) {
+export function HeroCarousel({ cards, className, dotsClassName = 'mt-[12px]' }: Props) {
+  const { width: screenWidth } = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const ref = useRef<ScrollView>(null);
   const cardWidth = screenWidth - 44;
@@ -60,12 +62,9 @@ export function HeroCarousel({
             <View className="items-center justify-center" style={{ width: 200, height: 100 }}>
               {c.preview}
             </View>
-            <Text
-              className="mt-[10px] uppercase text-accent-800"
-              style={{ fontSize: 11, letterSpacing: 1.54 }}
-            >
+            <Kicker tracking={0.14} className="mt-[10px]">
               {c.kicker}
-            </Text>
+            </Kicker>
             <Text
               className="mb-[14px] mt-[4px] text-center font-medium text-accent-900"
               style={{ fontSize: 20, lineHeight: 24, letterSpacing: -0.4 }}

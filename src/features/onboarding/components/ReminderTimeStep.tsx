@@ -6,11 +6,10 @@ import { useSession } from '@/features/auth/hooks/useSession';
 import { OnboardingFrame } from '@/features/onboarding/components/OnboardingFrame';
 import { RepeatSegments, TimePicker } from '@/shared/components/TimePicker';
 import { Button } from '@/shared/ui/Button';
-import { Gradient } from '@/shared/ui/Gradient';
+import { CardGradient } from '@/shared/ui/Gradient';
 import { Illustration } from '@/shared/ui/Illustration';
-import { Text } from '@/shared/ui/Text';
-
-const pad = (n: number) => String(n).padStart(2, '0');
+import { formatTime } from '@/shared/lib/time';
+import { Kicker } from '@/shared/ui/Kicker';
 
 /** 05a · Erinnerungszeit (6 von 13). */
 export function ReminderTimeStep() {
@@ -22,7 +21,7 @@ export function ReminderTimeStep() {
     minute: session.reminder?.minute ?? 30,
   });
   const [repeat, setRepeat] = useState(session.reminder?.repeat ?? 0);
-  const label = `${pad(time.hour)}:${pad(time.minute)}`;
+  const label = formatTime(time.hour, time.minute);
   return (
     <OnboardingFrame
       step={6}
@@ -40,15 +39,9 @@ export function ReminderTimeStep() {
         />
       }
     >
-      <Gradient
-        colors={['#eeedfe', '#e7e5fe']}
-        start={{ x: 0.12, y: 0 }}
-        end={{ x: 0.88, y: 1 }}
-        className="mt-[18px] items-center justify-center overflow-hidden rounded-[26px]"
-        style={{ height: 186 }}
-      >
+      <CardGradient className="mt-[18px] items-center justify-center" style={{ height: 186 }}>
         <Illustration name="pip-clock-2" size={158} />
-      </Gradient>
+      </CardGradient>
       <TimePicker
         className="mt-[18px]"
         hour={time.hour}
@@ -56,9 +49,7 @@ export function ReminderTimeStep() {
         minuteStep={15}
         onChange={setTime}
       />
-      <Text className="mt-[2px] uppercase text-muted" style={{ fontSize: 11, letterSpacing: 1.32 }}>
-        {t('onboarding.reminder.repeat')}
-      </Text>
+      <Kicker className="mt-[2px] text-muted">{t('onboarding.reminder.repeat')}</Kicker>
       <RepeatSegments className="mt-[8px]" value={repeat} onChange={setRepeat} />
     </OnboardingFrame>
   );

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/useSession';
@@ -24,6 +24,7 @@ const GOALS: { id: string; pip: IllustrationName }[] = [
 /** 03b · Warum Französisch (3 von 13). */
 export function GoalStep() {
   const { t } = useTranslation();
+  const { width } = useWindowDimensions();
   const router = useRouter();
   const { session, update } = useSession();
   const next = () => router.push('/(onboarding)/name');
@@ -57,8 +58,7 @@ export function GoalStep() {
               onPress={() => update({ goal: g.id })}
               className="relative items-center justify-center rounded-[22px] bg-white"
               style={{
-                width: '48%',
-                flexGrow: 1,
+                width: (width - 2 * 20 - 12) / 2,
                 height: 154,
                 paddingTop: 14,
                 paddingBottom: 15,

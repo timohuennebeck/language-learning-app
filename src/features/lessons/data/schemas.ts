@@ -6,7 +6,6 @@ export const LessonSchema = z.object({
   meta: z.string(),
   /** Illustration placeholder caption until artwork is provided. */
   placeholder: z.string(),
-  badge: z.string().optional(),
 });
 export type Lesson = z.infer<typeof LessonSchema>;
 

@@ -27,27 +27,36 @@ app/                     Expo Router routes (thin re-exports of feature screens)
   (app)/                 the product (only reachable after onboarding / later: a session)
   dev/                   index of every design screen (development only)
 src/
-  features/<feature>/    components · data (schemas, repository, query keys) · hooks · lib
+  features/<feature>/    components · data (schemas, repository, query keys) · hooks
     auth                 mock session store (stand-in for Supabase auth)
-    onboarding           welcome → … → widget
-    lessons              home, languages, lesson start, chapter stations
-    exercises            exercise flow (4 task types × task/correct/wrong), preparing, error
+    onboarding           welcome → … → widget (OnboardingFrame, OptionCard)
+    lessons              home, languages, lesson start, chapter + stations/ (card, row, chips)
+    exercises            exercise flow: steps/ (FillOptions, FillFree, Build, TranslateFree),
+                         useExerciseSession, FeedbackCard, preparing, error
     reading              reading sections, tappable segments, word explanation
-    flashcards           swipe deck
-    grammar, review, live, profile, progress, paywall
+    flashcards           swipe deck: useSwipeDeck, SwipeCard, DoneCard
+    profile              profile (StreakCard, LevelCard, StatTiles, ProfileRow) + settings screens
+    grammar, review, live, progress, paywall, dev
   shared/
-    ui/                  primitives: Text, Tap, Button, Screen, TopBar, Ring, Illustration, icons…
-    components/          composed pieces shared by several features
-    lib/                 cn, haptics, i18n, storage, query client
+    ui/                  primitives: Text, Tap, Button, Screen, TopBar, Kicker, Marks, Ring,
+                         Gradient (CardGradient), RecommendedBadge, Illustration, icons…
+    components/          composed pieces used by several features: HomeHeader, HeroCarousel,
+                         Previews, DailyGoal, TimePicker, Hint, PipTip, SelectRow, LearningLanguageList…
+    hooks/               useAppFonts, useBack / useGoHome
+    lib/                 cn, haptics, i18n, storage, time, query client
     data/                query key registry
     locales/             de.json, en.json
     theme/               tokens.ts (source of truth), generated tokens.cjs, global.css
 assets/illustrations/    Pip artwork and avatar (webp)   assets/flags/  flag svgs
 design/reference/        one PNG per design screen, captured from the Claude Design export
-design/screens.json      route + reference mapping used by the verification scripts
+design/screens.json      route + reference mapping used by the verification scripts and dev index
 ```
 
-`scripts/gen-tokens.js` regenerates `tokens.cjs` after editing `tokens.ts`.
+Conventions: every tappable element is a `Tap` (haptics + button role); uppercase micro-labels are
+`Kicker`; pill CTAs are `Button` variants; screens never import from another feature's
+`components` folder, shared pieces live in `src/shared`.
+
+`npm run tokens` regenerates `tokens.cjs` after editing `tokens.ts`.
 
 ## Run
 

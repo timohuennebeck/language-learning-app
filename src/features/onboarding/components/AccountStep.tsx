@@ -3,9 +3,8 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { OnboardingFrame } from '@/features/onboarding/components/OnboardingFrame';
-import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/Button';
-import { Gradient } from '@/shared/ui/Gradient';
+import { CardGradient } from '@/shared/ui/Gradient';
 import { Illustration } from '@/shared/ui/Illustration';
 import { GoogleLogo, PhoneDevice } from '@/shared/ui/icons';
 import { Text } from '@/shared/ui/Text';
@@ -38,15 +37,9 @@ export function AccountStep() {
         </Text>
       }
     >
-      <Gradient
-        colors={['#eeedfe', '#e7e5fe']}
-        start={{ x: 0.12, y: 0 }}
-        end={{ x: 0.88, y: 1 }}
-        className="mt-[18px] items-center justify-center overflow-hidden rounded-[26px]"
-        style={{ height: 280 }}
-      >
+      <CardGradient className="mt-[18px] items-center justify-center" style={{ height: 280 }}>
         <Illustration name="pip-key" size={213} />
-      </Gradient>
+      </CardGradient>
       <View className="mt-[22px]" style={{ rowGap: 12 }}>
         <Button
           height={60}
@@ -59,16 +52,9 @@ export function AccountStep() {
         <Button
           height={60}
           size={17}
-          variant="outline"
+          variant="white"
           label={t('onboarding.account.google')}
-          labelClassName="text-ink"
           left={<GoogleLogo />}
-          style={{
-            height: 60,
-            borderWidth: 0,
-            backgroundColor: '#fff',
-            boxShadow: `0 0 0 1.5px ${colors.line2}`,
-          }}
           onPress={() => router.push('/(onboarding)/plus-active')}
         />
       </View>

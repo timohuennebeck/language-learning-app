@@ -10,6 +10,7 @@ import { Illustration } from '@/shared/ui/Illustration';
 import { Star } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 
 /** 10a · Bewertung · Sterne plus Textfeld. */
@@ -49,11 +50,11 @@ export function RatingScreen() {
       </View>
       <View
         className="mt-[20px] rounded-[24px] bg-paper px-[18px] py-[16px]"
-        style={{ rowGap: 10, boxShadow: `0 0 0 1.5px ${colors.line3}` }}
+        style={{ rowGap: 10, boxShadow: `0 0 0 1.5px ${colors.lilac2}` }}
       >
-        <Text className="uppercase text-muted" style={{ fontSize: 13, letterSpacing: 0.78 }}>
+        <Kicker size={13} tracking={0.06} className="text-muted">
           {t('rating.label')}
-        </Text>
+        </Kicker>
         <TextInput
           value={note}
           onChangeText={(v) => setNote(v.slice(0, 240))}

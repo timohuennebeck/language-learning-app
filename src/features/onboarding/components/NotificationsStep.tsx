@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/features/auth/hooks/useSession';
 import { OnboardingFrame } from '@/features/onboarding/components/OnboardingFrame';
 import { Button, TextButton } from '@/shared/ui/Button';
-import { Gradient } from '@/shared/ui/Gradient';
+import { CardGradient } from '@/shared/ui/Gradient';
 import { Illustration } from '@/shared/ui/Illustration';
 import { Text } from '@/shared/ui/Text';
 
@@ -38,13 +38,7 @@ export function NotificationsStep() {
         </>
       }
     >
-      <Gradient
-        colors={['#eeedfe', '#e7e5fe']}
-        start={{ x: 0.12, y: 0 }}
-        end={{ x: 0.88, y: 1 }}
-        className="mt-[18px] overflow-hidden rounded-[26px] p-[18px]"
-        style={{ rowGap: 16 }}
-      >
+      <CardGradient className="mt-[18px] p-[18px]" style={{ rowGap: 16 }}>
         <View
           className="flex-row items-start rounded-[20px] px-[14px] py-[13px]"
           style={{
@@ -80,7 +74,7 @@ export function NotificationsStep() {
         <View className="items-center">
           <Illustration name="pip-wave-2" size={156} />
         </View>
-      </Gradient>
+      </CardGradient>
     </OnboardingFrame>
   );
 }

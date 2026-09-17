@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { SUPPORTED_APP_LANGUAGES } from '@/shared/lib/i18n';
+
 export const LearningLanguageSchema = z.enum(['fr', 'en', 'es']);
 export type LearningLanguage = z.infer<typeof LearningLanguageSchema>;
 
@@ -13,7 +15,7 @@ export type Level = z.infer<typeof LevelSchema>;
 export const SessionSchema = z.object({
   onboardingComplete: z.boolean().default(false),
   name: z.string().default('Maja'),
-  appLanguage: z.enum(['de', 'en']).default('de'),
+  appLanguage: z.enum(SUPPORTED_APP_LANGUAGES).default('de'),
   learningLanguage: LearningLanguageSchema.default('fr'),
   level: LevelSchema.default('A2'),
   targetLevel: LevelSchema.default('B2'),

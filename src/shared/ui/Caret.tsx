@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Animated, {
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -20,6 +21,7 @@ export function Caret({ height = 22, color = colors.accent[700], width = 2, styl
       -1,
       false,
     );
+    return () => cancelAnimation(on);
   }, [on]);
   const anim = useAnimatedStyle(() => ({ opacity: on.value > 0.5 ? 1 : 0 }));
   return (

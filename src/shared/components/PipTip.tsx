@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
+import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/Illustration';
 import { Text } from '@/shared/ui/Text';
 
@@ -25,7 +26,7 @@ export function PipTip({ children, className }: { children: ReactNode; className
 
 export function Strong({ children }: { children: ReactNode }) {
   return (
-    <Text className="font-semibold" style={{ fontSize: 14.5, color: '#3a3d4b' }}>
+    <Text className="font-semibold" style={{ fontSize: 14.5, color: colors.ink3 }}>
       {children}
     </Text>
   );

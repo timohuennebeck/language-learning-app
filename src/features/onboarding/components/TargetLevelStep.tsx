@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/useSession';
 import { OnboardingFrame } from '@/features/onboarding/components/OnboardingFrame';
-import { OptionCard } from '@/shared/components/OptionCard';
+import { OptionCard } from '@/features/onboarding/components/OptionCard';
 import { Button, TextButton } from '@/shared/ui/Button';
 import { Text } from '@/shared/ui/Text';
 

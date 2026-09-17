@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/useSession';
 import { Headline } from '@/shared/components/Headline';
+import { isAppLanguage, type AppLanguage } from '@/shared/lib/i18n';
 import { SelectRow } from '@/shared/components/SelectRow';
 import { Button } from '@/shared/ui/Button';
 import { Screen } from '@/shared/ui/Screen';
@@ -17,7 +18,7 @@ export function AppLanguageScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session, update } = useSession();
-  const [value, setValue] = useState<string>(session.appLanguage);
+  const [value, setValue] = useState<AppLanguage>(session.appLanguage);
   return (
     <Screen top={0} bottom={6} className="px-[22px]">
       <TopBar left="back" title={t('profile.appLanguageScreen.title')} />
@@ -34,7 +35,10 @@ export function AppLanguageScreen() {
             flag={code}
             label={t(`common.languageNative.${code}`)}
             selected={value === code}
-            onPress={() => setValue(code)}
+            disabled={!isAppLanguage(code)}
+            onPress={() => {
+              if (isAppLanguage(code)) setValue(code);
+            }}
           />
         ))}
       </View>
@@ -44,7 +48,7 @@ export function AppLanguageScreen() {
         size={17.5}
         label={t('common.save')}
         onPress={() => {
-          if (value === 'de' || value === 'en') update({ appLanguage: value });
+          update({ appLanguage: value });
           router.back();
         }}
       />

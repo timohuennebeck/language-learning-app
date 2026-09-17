@@ -9,6 +9,7 @@ import { Caret } from '@/shared/ui/Caret';
 import { Illustration } from '@/shared/ui/Illustration';
 import { NavCircle } from '@/shared/ui/NavCircle';
 import { Screen } from '@/shared/ui/Screen';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 
 /** 07 · Einstufung · Konversation läuft. */
@@ -43,20 +44,13 @@ export function AssessmentCallStep() {
       >
         <View className="flex-row items-center" style={{ columnGap: 10 }}>
           <MiniWaveform />
-          <Text className="uppercase text-accent-800" style={{ fontSize: 11, letterSpacing: 1.54 }}>
-            {t('onboarding.assessmentCall.partner')}
-          </Text>
+          <Kicker tracking={0.14}>{t('onboarding.assessmentCall.partner')}</Kicker>
           <View
             className="flex-row items-center rounded-pill bg-bg px-[8px] py-[3px]"
             style={{ columnGap: 5 }}
           >
             <View className="h-[6px] w-[6px] rounded-full bg-accent-700" />
-            <Text
-              className="uppercase text-accent-800"
-              style={{ fontSize: 11, letterSpacing: 0.66 }}
-            >
-              {t('onboarding.assessmentCall.live')}
-            </Text>
+            <Kicker tracking={0.06}>{t('onboarding.assessmentCall.live')}</Kicker>
           </View>
         </View>
         <Text
@@ -77,12 +71,9 @@ export function AssessmentCallStep() {
           <Waveform />
         </View>
       </View>
-      <Text
-        className="mt-[26px] uppercase text-muted"
-        style={{ fontSize: 11, letterSpacing: 1.54 }}
-      >
+      <Kicker tracking={0.14} className="mt-[26px] text-muted">
         {t('onboarding.assessmentCall.you')}
-      </Text>
+      </Kicker>
       <View className="mt-[6px] flex-row items-center">
         <Text className="text-text" style={{ fontSize: 22, lineHeight: 27.5 }}>
           {t('onboarding.assessmentCall.answer')}

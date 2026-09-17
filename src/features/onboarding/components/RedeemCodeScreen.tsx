@@ -1,5 +1,4 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -7,14 +6,17 @@ import { CodeBoxes } from '@/shared/components/CodeBoxes';
 import { Headline } from '@/shared/components/Headline';
 import { PipTip, Strong } from '@/shared/components/PipTip';
 import { Button, TextButton } from '@/shared/ui/Button';
+import { useBack } from '@/shared/hooks/useBack';
 import { Screen } from '@/shared/ui/Screen';
+import { Tap } from '@/shared/ui/Tap';
 import { TopBar } from '@/shared/ui/TopBar';
 
 /** 11b · Code einlösen. */
 export function RedeemCodeScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const back = useBack();
   const [code, setCode] = useState('MAJA7');
+  const inputRef = useRef<TextInput>(null);
   return (
     <Screen top={0} bottom={6} className="px-[22px]">
       <TopBar left="back" title={t('onboarding.redeem.title')} />
@@ -25,8 +27,13 @@ export function RedeemCodeScreen() {
         sub={t('onboarding.redeem.sub')}
       />
       <View className="mt-[22px]">
-        <CodeBoxes value={code} activeIndex={Math.min(code.length, 5)} variant="input" />
+        <Tap haptic="light" onPress={() => inputRef.current?.focus()}>
+          <CodeBoxes value={code} activeIndex={Math.min(code.length, 5)} variant="input" />
+        </Tap>
         <TextInput
+          ref={inputRef}
+          autoFocus
+          maxLength={6}
           value={code}
           onChangeText={(v) =>
             setCode(
@@ -49,18 +56,13 @@ export function RedeemCodeScreen() {
       </PipTip>
       <View className="flex-1" />
       <View style={{ rowGap: 10 }}>
-        <Button
-          height={60}
-          size={17.5}
-          label={t('onboarding.redeem.cta')}
-          onPress={() => router.back()}
-        />
+        <Button height={60} size={17.5} label={t('onboarding.redeem.cta')} onPress={back} />
         <TextButton
           className="h-[52px]"
           label={t('onboarding.redeem.noCode')}
           color="text-muted"
           labelClassName="font-regular"
-          onPress={() => router.back()}
+          onPress={back}
         />
       </View>
     </Screen>

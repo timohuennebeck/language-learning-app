@@ -84,7 +84,6 @@ type CheckboxProps = {
   size?: number;
   radius?: number;
   bg?: string;
-  border?: string;
   className?: string;
 };
 
@@ -94,7 +93,6 @@ export function Checkbox({
   size = 26,
   radius = 7,
   bg = colors.accent[800],
-  border = colors.faint,
   className,
 }: CheckboxProps) {
   return (
@@ -105,7 +103,7 @@ export function Checkbox({
         height: size,
         borderRadius: radius,
         borderWidth: 1.5,
-        borderColor: checked ? bg : border,
+        borderColor: checked ? bg : colors.faint,
         backgroundColor: checked ? bg : 'transparent',
       }}
     >
@@ -120,13 +118,11 @@ export function Dots({
   index,
   onPress,
   className,
-  inactiveWidth = 8,
 }: {
   count: number;
   index: number;
   onPress?: (i: number) => void;
   className?: string;
-  inactiveWidth?: number;
 }) {
   return (
     <View
@@ -139,9 +135,10 @@ export function Dots({
           haptic="selection"
           onPress={() => onPress?.(i)}
           hitSlop={6}
+          accessibilityLabel={`${i + 1} / ${count}`}
           style={{
             height: 6,
-            width: i === index ? 16 : inactiveWidth,
+            width: i === index ? 16 : 8,
             borderRadius: 999,
             backgroundColor: i === index ? colors.accent[800] : colors.neutral[300],
           }}

@@ -4,7 +4,7 @@ import { extendTailwindMerge } from 'tailwind-merge';
  * Class merger aware of the project's custom utilities:
  * - `font-regular|medium|semibold|bold` are font *families* (Inter faces), not weights.
  */
-export const twMerge = extendTailwindMerge({
+const twMerge = extendTailwindMerge({
   override: {
     classGroups: {
       'font-weight': [],
@@ -13,7 +13,7 @@ export const twMerge = extendTailwindMerge({
   },
 });
 
-export type ClassValue = string | number | null | undefined | false | ClassValue[];
+type ClassValue = string | number | null | undefined | false | ClassValue[];
 
 function flatten(values: ClassValue[]): string[] {
   const out: string[] = [];

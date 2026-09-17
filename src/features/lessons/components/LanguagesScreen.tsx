@@ -10,6 +10,7 @@ import { Button } from '@/shared/ui/Button';
 import { Flag } from '@/shared/ui/Illustration';
 import { CheckCircle } from '@/shared/ui/Marks';
 import { PlusIconSm } from '@/shared/ui/icons';
+import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
 import { Text } from '@/shared/ui/Text';
@@ -86,15 +87,12 @@ export function LanguagesScreen() {
                   {t(`languages.${c.to}`)}
                 </Text>
               </View>
-              <View className="h-[8px] overflow-hidden rounded-pill bg-surface2">
-                <View
-                  className="h-full rounded-pill"
-                  style={{
-                    width: `${c.pct * 100}%`,
-                    backgroundColor: active ? colors.accent[800] : colors.dim8,
-                  }}
-                />
-              </View>
+              <ProgressBar
+                progress={c.pct}
+                height={8}
+                trackColor={colors.surface2}
+                fillColor={active ? colors.accent[800] : colors.dim8}
+              />
             </View>
           </Tap>
         );

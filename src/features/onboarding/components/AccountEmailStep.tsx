@@ -9,13 +9,14 @@ import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/Button';
 import { CheckIcon, Eye } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 
 /** 12b · E-Mail und Passwort (10 von 13). Also used as the "Einloggen" entry from Welcome. */
 export function AccountEmailStep() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { session, completeOnboarding } = useSession();
+  const { completeOnboarding } = useSession();
   const [email, setEmail] = useState(t('onboarding.accountEmail.emailValue'));
   const [password, setPassword] = useState('12345678');
   const [show, setShow] = useState(false);
@@ -38,9 +39,7 @@ export function AccountEmailStep() {
             height={60}
             size={17}
             label={t('onboarding.accountEmail.cta')}
-            onPress={() =>
-              session.onboardingComplete ? router.back() : router.push('/(onboarding)/plus-active')
-            }
+            onPress={() => router.push('/(onboarding)/plus-active')}
           />
           <View className="mt-[14px] flex-row items-center justify-center">
             <Text className="text-ink2" style={{ fontSize: 15 }}>
@@ -57,9 +56,9 @@ export function AccountEmailStep() {
     >
       <View className="mt-[24px]" style={{ rowGap: 14 }}>
         <View>
-          <Text className="uppercase text-muted" style={{ fontSize: 13, letterSpacing: 1.3 }}>
+          <Kicker size={13} tracking={0.1} className="text-muted">
             {t('onboarding.accountEmail.email')}
-          </Text>
+          </Kicker>
           <View className="mt-[7px] flex-row items-center" style={field(focus === 'email')}>
             <TextInput
               value={email}
@@ -73,9 +72,9 @@ export function AccountEmailStep() {
           </View>
         </View>
         <View>
-          <Text className="uppercase text-muted" style={{ fontSize: 13, letterSpacing: 1.3 }}>
+          <Kicker size={13} tracking={0.1} className="text-muted">
             {t('onboarding.accountEmail.password')}
-          </Text>
+          </Kicker>
           <View
             className="mt-[7px] flex-row items-center justify-between"
             style={field(focus === 'password')}
@@ -88,7 +87,15 @@ export function AccountEmailStep() {
               className="flex-1 font-regular text-ink"
               style={{ fontSize: 17, padding: 0, letterSpacing: show ? 0 : 3.74 }}
             />
-            <Tap haptic="light" onPress={() => setShow((s) => !s)}>
+            <Tap
+              haptic="light"
+              onPress={() => setShow((s) => !s)}
+              accessibilityLabel={t(
+                show
+                  ? 'onboarding.accountEmail.hidePassword'
+                  : 'onboarding.accountEmail.showPassword',
+              )}
+            >
               <Eye />
             </Tap>
           </View>

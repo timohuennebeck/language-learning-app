@@ -3,15 +3,12 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  ChipsPreview,
-  DotMatrix,
-  ReadingCardPreview,
-} from '@/features/lessons/components/Previews';
+import { ChipsPreview, DotMatrix, ReadingCardPreview } from '@/shared/components/Previews';
 import { cn } from '@/shared/lib/cn';
 import { NavCircle } from '@/shared/ui/NavCircle';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 
 type CardProps = {
@@ -37,12 +34,9 @@ function LessonCard({ dark, preview, kicker, badge, title, sub, cta, onPress }: 
         className="mt-[14px] flex-row items-center"
         style={{ columnGap: 8, marginTop: dark ? 12 : 14 }}
       >
-        <Text
-          className={cn('uppercase', dark ? 'text-lilac' : 'text-accent-800')}
-          style={{ fontSize: 11, letterSpacing: 1.54 }}
-        >
+        <Kicker tracking={0.14} className={cn(dark ? 'text-lilac' : 'text-accent-800')}>
           {kicker}
-        </Text>
+        </Kicker>
         {badge ? (
           <View className="rounded-pill bg-accent-100 px-[11px] py-[4px]">
             <Text className="font-medium text-accent-800" style={{ fontSize: 12 }}>
@@ -91,9 +85,7 @@ export function LessonStartScreen() {
       <View className="relative overflow-hidden" style={{ height: 212 }}>
         <NavCircle icon="close" style={{ position: 'absolute', left: 20, top: insets.top - 2 }} />
         <View className="absolute" style={{ left: 24, right: 24, bottom: 18 }}>
-          <Text className="uppercase text-accent-800" style={{ fontSize: 11, letterSpacing: 1.54 }}>
-            {t('lesson.kicker')}
-          </Text>
+          <Kicker tracking={0.14}>{t('lesson.kicker')}</Kicker>
           <Text
             className="mt-[6px] font-medium text-accent-900"
             style={{ fontSize: 42, lineHeight: 41.2, letterSpacing: -1.26 }}

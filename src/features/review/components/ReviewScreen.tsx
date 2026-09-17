@@ -7,6 +7,7 @@ import { nextTime, recapWords } from '@/features/review/data/content';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Checkbox } from '@/shared/ui/Marks';
+import { Button } from '@/shared/ui/Button';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
 import { Text } from '@/shared/ui/Text';
@@ -130,15 +131,15 @@ export function ReviewScreen() {
               </Tap>
             ))}
           </View>
-          <Tap
+          <Button
+            className="mt-[14px]"
+            height={63.9}
+            size={18}
             haptic="success"
+            labelClassName="font-medium"
+            label={t('review.cta', { n: selectedWords })}
             onPress={() => router.replace('/(app)/chapter/cafe?station=1')}
-            className="mt-[14px] items-center rounded-pill bg-accent-800 p-[18px] active:opacity-90"
-          >
-            <Text className="font-medium text-accent-100" style={{ fontSize: 18 }}>
-              {t('review.cta', { n: selectedWords })}
-            </Text>
-          </Tap>
+          />
         </>
       ) : (
         <>
@@ -176,15 +177,15 @@ export function ReviewScreen() {
               );
             })}
           </ScrollView>
-          <Tap
+          <Button
+            className="mt-[14px]"
+            height={63.9}
+            size={18}
             haptic="success"
+            labelClassName="font-medium"
+            label={t('review.cta', { n: picked.length })}
             onPress={() => router.replace('/(app)/chapter/cafe?station=1')}
-            className="mt-[14px] items-center rounded-pill bg-accent-800 p-[18px] active:opacity-90"
-          >
-            <Text className="font-medium text-accent-100" style={{ fontSize: 18 }}>
-              {t('review.cta', { n: picked.length })}
-            </Text>
-          </Tap>
+          />
         </>
       )}
     </Screen>

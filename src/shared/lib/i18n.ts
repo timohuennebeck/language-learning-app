@@ -9,16 +9,19 @@ import en from '@/shared/locales/en.json';
 export const SUPPORTED_APP_LANGUAGES = ['de', 'en'] as const;
 export type AppLanguage = (typeof SUPPORTED_APP_LANGUAGES)[number];
 
-export const resources = {
+const resources = {
   de: { translation: de },
   en: { translation: en },
 } as const;
 
-function detectLanguage(): AppLanguage {
-  const code = getLocales()[0]?.languageCode ?? 'de';
-  return (SUPPORTED_APP_LANGUAGES as readonly string[]).includes(code)
-    ? (code as AppLanguage)
-    : 'de';
+export function isAppLanguage(code: string | null | undefined): code is AppLanguage {
+  return (SUPPORTED_APP_LANGUAGES as readonly string[]).includes(code ?? '');
+}
+
+/** Device locale when supported, otherwise German (the product's default). */
+export function detectLanguage(): AppLanguage {
+  const code = getLocales()[0]?.languageCode;
+  return isAppLanguage(code) ? code : 'de';
 }
 
 if (!i18n.isInitialized) {

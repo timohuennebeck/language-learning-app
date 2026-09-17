@@ -1,9 +1,9 @@
-import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Headline } from '@/shared/components/Headline';
+import { useBack } from '@/shared/hooks/useBack';
 import { Screen } from '@/shared/ui/Screen';
 import { ProgressTopBar } from '@/shared/ui/TopBar';
 
@@ -38,16 +38,13 @@ export function OnboardingFrame({
   titleMarginTop = 22,
 }: Props) {
   const { t } = useTranslation();
-  const router = useRouter();
+  const back = useBack('/(onboarding)/welcome');
   return (
     <Screen top={-4} bottom={0} scroll={scroll} style={{ paddingHorizontal: px }}>
       <ProgressTopBar
         progress={step / ONBOARDING_STEPS}
         label={t('common.stepOf', { step, total: ONBOARDING_STEPS })}
-        onBack={
-          onBack ??
-          (() => (router.canGoBack() ? router.back() : router.replace('/(onboarding)/welcome')))
-        }
+        onBack={onBack ?? back}
       />
       {kicker}
       <Headline title={title} sub={sub} titleMarginTop={kicker ? 6 : titleMarginTop} />

@@ -3,6 +3,7 @@ import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
+import { colors } from '@/shared/theme/tokens';
 import { Gradient, HEADER_GRADIENT } from '@/shared/ui/Gradient';
 import { NavCircle } from '@/shared/ui/NavCircle';
 import { Text } from '@/shared/ui/Text';
@@ -19,7 +20,6 @@ type Props = {
   className?: string;
   /** Bottom padding of the gradient block. */
   paddingBottom?: number;
-  align?: 'center' | 'stretch';
   style?: StyleProp<ViewStyle>;
 };
 
@@ -35,15 +35,14 @@ export function GradientHeader({
   children,
   className,
   paddingBottom = 22,
-  align = 'center',
   style,
 }: Props) {
   const insets = useSafeAreaInsets();
-  const circleBg = circle === 'paper' ? '#fbfbff' : 'rgba(255,255,255,.7)';
+  const circleBg = circle === 'paper' ? colors.paper : 'rgba(255,255,255,.7)';
   return (
     <Gradient
       {...HEADER_GRADIENT}
-      className={cn('overflow-hidden px-[22px]', align === 'center' && 'items-center', className)}
+      className={cn('items-center overflow-hidden px-[22px]', className)}
       style={[{ paddingTop: insets.top - 4, paddingBottom }, style]}
     >
       {title ? (

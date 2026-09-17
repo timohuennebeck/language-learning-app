@@ -46,6 +46,7 @@ export function CallControls({
         <Tap
           haptic="light"
           onPress={onMute}
+          accessibilityLabel={t('live.mute')}
           className="items-center justify-center rounded-full bg-surface"
           style={{ width: sideSize, height: sideSize }}
         >
@@ -57,6 +58,7 @@ export function CallControls({
         <Tap
           haptic="heavy"
           onPress={onEnd}
+          accessibilityLabel={t('live.end')}
           className="items-center justify-center rounded-full"
           style={{
             width: endSize,
@@ -73,6 +75,7 @@ export function CallControls({
         <Tap
           haptic="light"
           onPress={onSubtitles}
+          accessibilityLabel={t('live.subtitles')}
           className="items-center justify-center rounded-full"
           style={{ width: sideSize, height: sideSize, backgroundColor: subtitlesBg }}
         >

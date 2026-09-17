@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/useSession';
 import type { LearningLanguage } from '@/features/auth/data/schemas';
-import { LearningLanguageList } from '@/features/onboarding/components/LearningLanguageStep';
+import { LearningLanguageList } from '@/shared/components/LearningLanguageList';
 import { Headline } from '@/shared/components/Headline';
 import { Button } from '@/shared/ui/Button';
 import { Screen } from '@/shared/ui/Screen';

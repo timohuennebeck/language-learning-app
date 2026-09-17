@@ -5,7 +5,6 @@ export const FlashcardSchema = z.object({
   front: z.string(),
   example: z.string(),
   back: z.string(),
-  tag: z.string(),
 });
 export type Flashcard = z.infer<typeof FlashcardSchema>;
 

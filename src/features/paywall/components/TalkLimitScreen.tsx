@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Circle } from 'react-native-svg';
 
+import { Hint } from '@/shared/components/Hint';
 import { GradientHeader } from '@/shared/components/GradientHeader';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/Button';
@@ -11,6 +12,7 @@ import { Illustration } from '@/shared/ui/Illustration';
 import { RadioMark } from '@/shared/ui/Marks';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
+import { RecommendedBadge } from '@/shared/ui/RecommendedBadge';
 import { Text } from '@/shared/ui/Text';
 
 const PACKS = [
@@ -85,16 +87,7 @@ export function TalkLimitScreen() {
                   boxShadow: on ? `0 0 0 1.8px ${colors.accent[800]}` : '0 0 0 1px #e4e7f5',
                 }}
               >
-                {p.recommended ? (
-                  <View
-                    className="absolute right-[18px] rounded-pill bg-accent-800 px-[12px] py-[4px]"
-                    style={{ top: -11 }}
-                  >
-                    <Text className="font-semibold text-accent-100" style={{ fontSize: 12 }}>
-                      {t('common.recommended')}
-                    </Text>
-                  </View>
-                ) : null}
+                {p.recommended ? <RecommendedBadge style={{ right: 18, top: -11 }} /> : null}
                 <View
                   className="h-[46px] w-[46px] items-center justify-center rounded-full"
                   style={{ backgroundColor: on ? colors.surface : colors.surface2 }}
@@ -134,16 +127,7 @@ export function TalkLimitScreen() {
               </Tap>
             );
           })}
-          <View className="mt-[6px] flex-row items-start px-[4px]" style={{ columnGap: 10 }}>
-            <View className="mt-[1px] h-[20px] w-[20px] items-center justify-center rounded-full bg-surface">
-              <Text className="text-accent-800" style={{ fontSize: 12 }}>
-                i
-              </Text>
-            </View>
-            <Text className="flex-1 text-muted" style={{ fontSize: 14, lineHeight: 20.3 }}>
-              {t('talkLimit.info')}
-            </Text>
-          </View>
+          <Hint glyph="i" align="start" className="mt-[6px] px-[4px]" text={t('talkLimit.info')} />
         </View>
         <View className="flex-1" style={{ minHeight: 14 }} />
         <Button

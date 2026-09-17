@@ -43,9 +43,16 @@
       "A2": "Grundlagen",
       "B1": "Selbstständig",
       "B2": "Fortgeschritten"
-    }
+    },
+    "back": "Zurück",
+    "close": "Schließen",
+    "weekdayLetters": ["M", "D", "M", "D", "F", "S", "S"],
+    "languagePill": "Französisch · A2",
+    "reset": "Zurücksetzen"
   },
-  "splash": { "brand": "Yori" },
+  "splash": {
+    "brand": "Yori"
+  },
   "welcome": {
     "headline1": "Deine Konversationen",
     "headline2": "werden ",
@@ -240,7 +247,10 @@
           "sub": "Meinung begründen, Serien ohne Untertitel",
           "tag": "Passt zu „Serien und Musik“"
         },
-        "C1": { "name": "Beruflich sicher", "sub": "Verhandeln, präsentieren, Feinheiten treffen" }
+        "C1": {
+          "name": "Beruflich sicher",
+          "sub": "Verhandeln, präsentieren, Feinheiten treffen"
+        }
       },
       "cta": "Ziel {{level}} setzen"
     },
@@ -295,7 +305,9 @@
       "password": "Passwort",
       "emailValue": "maya.k@mail.de",
       "hint": "Mindestens 8 Zeichen",
-      "cta": "Konto anlegen"
+      "cta": "Konto anlegen",
+      "showPassword": "Passwort anzeigen",
+      "hidePassword": "Passwort verbergen"
     },
     "plusActive": {
       "title": "Pip ist bereit, {{name}}.",
@@ -316,7 +328,6 @@
     "greeting": "Salut, {{name}}.\nLust auf eine Konversation?",
     "today": "Französisch · {{done}} von {{goal}} Min heute",
     "due": "Karteikarten fällig",
-    "languagePill": "Französisch · A2",
     "hero": {
       "talk": {
         "preview": "Ça te dit ?",
@@ -383,7 +394,6 @@
     }
   },
   "chapter": {
-    "languagePill": "Französisch · A2",
     "chapters": ["Kapitel 1", "Kapitel 2 · Im Café", "Kapitel 3"],
     "title": "Im Café",
     "station": "Station {{n}} von 5 · aus deiner Konversation vom Dienstag",
@@ -540,8 +550,16 @@
       "title": "Karteikarten wiederholen",
       "cta": "Fortfahren"
     },
-    "exercise": { "kicker": "5 AUFGABEN", "title": "Übung wiederholen", "cta": "Übung starten" },
-    "read": { "kicker": "1 THEMA · 4 MIN", "title": "Lesetext lesen", "cta": "Text öffnen" },
+    "exercise": {
+      "kicker": "5 AUFGABEN",
+      "title": "Übung wiederholen",
+      "cta": "Übung starten"
+    },
+    "read": {
+      "kicker": "1 THEMA · 4 MIN",
+      "title": "Lesetext lesen",
+      "cta": "Text öffnen"
+    },
     "bye": "Bis morgen"
   },
   "streak": {
@@ -622,8 +640,18 @@
         "15": "B1 in etwa 8 Monaten",
         "30": "B1 in etwa 5 Monaten"
       },
-      "ex": { "5": "1 Übung", "10": "2 Übungen", "15": "2–3 Übungen", "30": "5 Übungen" },
-      "week": { "5": "35 Min", "10": "1 h 10", "15": "1 h 45", "30": "3 h 30" },
+      "ex": {
+        "5": "1 Übung",
+        "10": "2 Übungen",
+        "15": "2–3 Übungen",
+        "30": "5 Übungen"
+      },
+      "week": {
+        "5": "35 Min",
+        "10": "1 h 10",
+        "15": "1 h 45",
+        "30": "3 h 30"
+      },
       "perWeek": "{{t}} pro Woche",
       "a2today": "A2 heute",
       "b1": "B1",

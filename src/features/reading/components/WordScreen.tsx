@@ -7,6 +7,7 @@ import { segments } from '@/features/reading/data/content';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/Button';
 import { Screen } from '@/shared/ui/Screen';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 import { TopBar } from '@/shared/ui/TopBar';
 
@@ -44,9 +45,9 @@ export function WordScreen() {
         {s.trans}
       </Text>
       <View className="mt-[26px]" style={{ rowGap: 9 }}>
-        <Text className="uppercase text-accent-700" style={{ fontSize: 11, letterSpacing: 1.1 }}>
+        <Kicker tracking={0.1} className="text-accent-700">
           {t('word.inSentence')}
-        </Text>
+        </Kicker>
         <Text style={{ fontSize: 19, lineHeight: 28.9, color: colors.accent[900] }}>
           {s.sentence.pre}
           <Text

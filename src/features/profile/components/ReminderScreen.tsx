@@ -9,10 +9,9 @@ import { PipTip, Strong } from '@/shared/components/PipTip';
 import { RepeatSegments, TimePicker } from '@/shared/components/TimePicker';
 import { Button, TextButton } from '@/shared/ui/Button';
 import { Screen } from '@/shared/ui/Screen';
-import { Text } from '@/shared/ui/Text';
+import { formatTime } from '@/shared/lib/time';
+import { Kicker } from '@/shared/ui/Kicker';
 import { TopBar } from '@/shared/ui/TopBar';
-
-const pad = (n: number) => String(n).padStart(2, '0');
 
 /** 09f · Profil · Erinnerung ändern. */
 export function ReminderScreen() {
@@ -24,7 +23,7 @@ export function ReminderScreen() {
     minute: session.reminder?.minute ?? 30,
   });
   const [repeat, setRepeat] = useState(session.reminder?.repeat ?? 0);
-  const label = `${pad(time.hour)}:${pad(time.minute)}`;
+  const label = formatTime(time.hour, time.minute);
   const freq = t('profile.reminderScreen.freq', { returnObjects: true }) as string[];
   const tail = t('profile.reminderScreen.tail', { returnObjects: true }) as string[];
   return (
@@ -43,9 +42,7 @@ export function ReminderScreen() {
         minuteStep={5}
         onChange={setTime}
       />
-      <Text className="mt-[6px] uppercase text-muted" style={{ fontSize: 11, letterSpacing: 1.32 }}>
-        {t('onboarding.reminder.repeat')}
-      </Text>
+      <Kicker className="mt-[6px] text-muted">{t('onboarding.reminder.repeat')}</Kicker>
       <RepeatSegments className="mt-[8px]" value={repeat} onChange={setRepeat} />
       <PipTip className="mt-[14px]">
         {t('profile.reminderScreen.preview1')}

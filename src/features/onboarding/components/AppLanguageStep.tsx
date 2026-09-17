@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/useSession';
 import { OnboardingFrame } from '@/features/onboarding/components/OnboardingFrame';
+import { isAppLanguage } from '@/shared/lib/i18n';
 import { SelectRow } from '@/shared/components/SelectRow';
 import { Button } from '@/shared/ui/Button';
 
@@ -35,8 +36,9 @@ export function AppLanguageStep() {
             flag={code}
             label={t(`common.languageNative.${code}`)}
             selected={session.appLanguage === code}
+            disabled={!isAppLanguage(code)}
             onPress={() => {
-              if (code === 'de' || code === 'en') update({ appLanguage: code });
+              if (isAppLanguage(code)) update({ appLanguage: code });
             }}
           />
         ))}

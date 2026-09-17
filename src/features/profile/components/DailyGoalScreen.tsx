@@ -36,8 +36,12 @@ export function DailyGoalScreen() {
           size={17.5}
           label={t('profile.goalScreen.save', { min: minutes })}
           onPress={() => {
+            const previous = session.dailyGoalMinutes;
             update({ dailyGoalMinutes: minutes });
-            updateProfile.mutate({ dailyGoalMinutes: minutes });
+            updateProfile.mutate(
+              { dailyGoalMinutes: minutes },
+              { onError: () => update({ dailyGoalMinutes: previous }) },
+            );
             router.back();
           }}
         />

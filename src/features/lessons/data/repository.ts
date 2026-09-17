@@ -40,16 +40,6 @@ const lessons: Lesson[] = [
 
 const delay = (ms = 120) => new Promise((r) => setTimeout(r, ms));
 
-export async function getLessons(): Promise<Lesson[]> {
-  await delay();
-  return lessons;
-}
-
-export async function getLesson(id: string): Promise<Lesson> {
-  await delay();
-  return lessons.find((l) => l.id === id) ?? lessons[0];
-}
-
 export async function getChapter(id: string): Promise<Chapter> {
   await delay();
   return ChapterSchema.parse({

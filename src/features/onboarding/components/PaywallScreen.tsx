@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useSession } from '@/features/auth/hooks/useSession';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/Button';
@@ -14,6 +13,8 @@ import { CheckCircle, RadioMark } from '@/shared/ui/Marks';
 import { NavCircle } from '@/shared/ui/NavCircle';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
+import { RecommendedBadge } from '@/shared/ui/RecommendedBadge';
 import { Text } from '@/shared/ui/Text';
 
 const PLANS = [
@@ -26,7 +27,6 @@ export function PaywallScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { session } = useSession();
   const [plan, setPlan] = useState<string>('p30');
   const perks = t('onboarding.paywall.perks', { returnObjects: true }) as string[];
   const selected = PLANS.find((p) => p.id === plan) ?? PLANS[1];
@@ -46,9 +46,7 @@ export function PaywallScreen() {
             left: 20,
             backgroundColor: 'rgba(255,255,255,.7)',
           }}
-          onPress={() =>
-            session.onboardingComplete ? router.back() : router.push('/(onboarding)/account')
-          }
+          onPress={() => router.push('/(onboarding)/account')}
         />
         <Illustration name="pip-baguette" size={118} />
       </Gradient>
@@ -99,14 +97,11 @@ export function PaywallScreen() {
                 }}
               >
                 {'recommended' in p && p.recommended ? (
-                  <View
-                    className="absolute left-[14px] rounded-pill bg-accent-800 px-[12px] py-[5px]"
-                    style={{ top: -18 }}
-                  >
-                    <Text className="font-semibold text-accent-100" style={{ fontSize: 12.5 }}>
-                      {t('common.recommended')}
-                    </Text>
-                  </View>
+                  <RecommendedBadge
+                    style={{ left: 14, top: -18 }}
+                    size={12.5}
+                    paddingVertical={5}
+                  />
                 ) : null}
                 <View className="flex-row items-center justify-between">
                   <Text
@@ -143,9 +138,7 @@ export function PaywallScreen() {
           })}
         </View>
         <View className="mt-[18px] pb-[15px] pt-[16px]" style={{ rowGap: 9 }}>
-          <Text className="uppercase text-accent-800" style={{ fontSize: 11, letterSpacing: 1.1 }}>
-            {t('onboarding.paywall.alwaysUnlimited')}
-          </Text>
+          <Kicker tracking={0.1}>{t('onboarding.paywall.alwaysUnlimited')}</Kicker>
           {perks.map((p) => (
             <View key={p} className="flex-row items-center" style={{ columnGap: 11 }}>
               <CheckCircle size={22} bg={colors.accent[700]} stroke={2.6} iconSize={12} />

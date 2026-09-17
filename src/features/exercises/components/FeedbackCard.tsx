@@ -5,18 +5,11 @@ import type { Run } from '@/features/exercises/data/schemas';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/Illustration';
 import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 
 /** Sentence with inline highlights and superscript footnote numbers. */
-export function RunsText({
-  runs,
-  color,
-  size = 17,
-}: {
-  runs: Run[];
-  color: string;
-  size?: number;
-}) {
+function RunsText({ runs, color, size = 17 }: { runs: Run[]; color: string; size?: number }) {
   return (
     <Text style={{ fontSize: size, lineHeight: size * 1.45, color }}>
       {runs.map((r, i) => (
@@ -110,23 +103,25 @@ export function FeedbackCard({ correct, why, wrongWhy, youLine, rightLine }: Pro
         <>
           <View className="mt-[12px]" style={{ rowGap: 10 }}>
             <View className="flex-row" style={{ columnGap: 10 }}>
-              <Text
-                className="w-[58px] pt-[4px] uppercase"
-                style={{ fontSize: 11, letterSpacing: 0.88, color: colors.err.label }}
+              <Kicker
+                tracking={0.08}
+                style={{ color: colors.err.label }}
+                className="w-[58px] pt-[4px]"
               >
                 {t('exercise.you')}
-              </Text>
+              </Kicker>
               <View className="flex-1">
                 <RunsText runs={youLine} color={colors.muted} />
               </View>
             </View>
             <View className="flex-row" style={{ columnGap: 10 }}>
-              <Text
-                className="w-[58px] pt-[4px] uppercase"
-                style={{ fontSize: 11, letterSpacing: 0.88, color: colors.err.label }}
+              <Kicker
+                tracking={0.08}
+                style={{ color: colors.err.label }}
+                className="w-[58px] pt-[4px]"
               >
                 {t('exercise.right')}
-              </Text>
+              </Kicker>
               <View className="flex-1">
                 <RunsText runs={rightLine} color={colors.ink} />
               </View>

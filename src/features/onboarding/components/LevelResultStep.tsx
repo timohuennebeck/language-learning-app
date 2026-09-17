@@ -8,6 +8,7 @@ import { Button } from '@/shared/ui/Button';
 import { Illustration } from '@/shared/ui/Illustration';
 import { Ring } from '@/shared/ui/Ring';
 import { Screen } from '@/shared/ui/Screen';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 import { TopBar } from '@/shared/ui/TopBar';
 
@@ -28,23 +29,21 @@ export function LevelResultStep() {
   }[];
   return (
     <Screen top={0} bottom={6} className="px-[22px]">
-      <TopBar left="close" title={t('onboarding.levelResult.title')} titleSize={20} />
+      <TopBar
+        left="close"
+        title={t('onboarding.levelResult.title')}
+        titleSize={20}
+        onLeftPress={() => router.replace('/(onboarding)/assessment-intro')}
+      />
       <View
         className="relative mt-[22px] overflow-hidden rounded-[26px] bg-surface px-[24px] py-[22px]"
         style={{ height: 236 }}
       >
         <View className="flex-row items-center" style={{ columnGap: 8 }}>
           <View className="rounded-pill bg-bg px-[9px] py-[4px]">
-            <Text
-              className="uppercase text-accent-800"
-              style={{ fontSize: 11, letterSpacing: 0.66 }}
-            >
-              {t('onboarding.levelResult.kicker')}
-            </Text>
+            <Kicker tracking={0.06}>{t('onboarding.levelResult.kicker')}</Kicker>
           </View>
-          <Text className="uppercase text-accent-800" style={{ fontSize: 11, letterSpacing: 1.32 }}>
-            {t('onboarding.levelResult.kickerSub')}
-          </Text>
+          <Kicker>{t('onboarding.levelResult.kickerSub')}</Kicker>
         </View>
         <View className="mt-[14px] flex-row items-end" style={{ columnGap: 10 }}>
           <Text

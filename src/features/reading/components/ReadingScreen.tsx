@@ -11,17 +11,22 @@ import {
   swapPairs,
   swapSection,
 } from '@/features/reading/data/content';
-import { cn } from '@/shared/lib/cn';
 import { haptic } from '@/shared/lib/haptics';
 import { colors } from '@/shared/theme/tokens';
 import { ArrowLeft, ArrowRight } from '@/shared/ui/icons';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { Button } from '@/shared/ui/Button';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';
+import { Kicker } from '@/shared/ui/Kicker';
 import { Text } from '@/shared/ui/Text';
 import { TopBar } from '@/shared/ui/TopBar';
 
 const BODY = { fontSize: 20.5, lineHeight: 35.3, color: colors.accent[900] } as const;
+/** The German-to-French variant sets its lines a little looser. */
+const BODY_SWAP = { ...BODY, lineHeight: 36.9 } as const;
+/** Reading sessions have three sections in the design; only the first two are built. */
+const SECTIONS = 3;
 
 /** 14a / 14b / 14e · Lesen. `?section=1|2`, `?mode=swap` for the German-to-French variant. */
 export function ReadingScreen() {
@@ -33,16 +38,15 @@ export function ReadingScreen() {
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [selected, setSelected] = useState<string | null>(params.seg ?? null);
   const revealedCount = Object.values(revealed).filter(Boolean).length;
-  const total = 3;
 
   return (
     <Screen top={0} bottom={0} className="relative px-[22px]">
       <TopBar left="close" title={t('reading.title')} titleSize={20} />
       {section === 1 ? (
         <View className="mt-[20px]">
-          <Text className="uppercase text-accent-700" style={{ fontSize: 11, letterSpacing: 1.1 }}>
+          <Kicker tracking={0.1} className="text-accent-700">
             {t('reading.kicker')}
-          </Text>
+          </Kicker>
           <Text
             className="mt-[8px] font-semibold text-ink"
             style={{ fontSize: 27, lineHeight: 29.7, letterSpacing: -0.81 }}
@@ -97,11 +101,11 @@ export function ReadingScreen() {
           )}
         </Text>
       ) : swap ? (
-        <Text className="mt-[16px]" style={{ ...BODY, lineHeight: 36.9 }}>
+        <Text className="mt-[16px]" style={BODY_SWAP}>
           {swapSection.map((p, i) => {
             if (typeof p === 'string')
               return (
-                <Text key={i} style={{ ...BODY, lineHeight: 36.9 }}>
+                <Text key={i} style={BODY_SWAP}>
                   {p}
                 </Text>
               );
@@ -177,9 +181,9 @@ export function ReadingScreen() {
       <View className="flex-1" />
       <View style={{ rowGap: 11 }}>
         <View className="flex-row items-center" style={{ columnGap: 10 }}>
-          <ProgressBar className="flex-1" progress={section / total} radius={4} />
+          <ProgressBar className="flex-1" progress={section / SECTIONS} radius={4} />
           <Text className="text-muted" style={{ fontSize: 14 }}>
-            {t('reading.section', { n: section, total })}
+            {t('reading.section', { n: section, total: SECTIONS })}
           </Text>
         </View>
         <View className="flex-row items-center" style={{ columnGap: 12 }}>
@@ -190,19 +194,14 @@ export function ReadingScreen() {
           >
             <ArrowLeft />
           </Tap>
-          <Tap
-            haptic="medium"
+          <Button
+            className="flex-1"
+            size={17.5}
+            label={t('reading.continue')}
             onPress={() =>
               section < 2 ? setSection(2) : router.push('/(app)/chapter/cafe?station=1')
             }
-            className={cn(
-              'h-[58px] flex-1 items-center justify-center rounded-pill bg-accent-800 active:opacity-90',
-            )}
-          >
-            <Text className="font-semibold text-accent-100" style={{ fontSize: 17.5 }}>
-              {t('reading.continue')}
-            </Text>
-          </Tap>
+          />
         </View>
       </View>
     </Screen>

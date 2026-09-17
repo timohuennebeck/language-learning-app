@@ -8,23 +8,19 @@ import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/Button';
 import { Illustration } from '@/shared/ui/Illustration';
 import { CheckIcon } from '@/shared/ui/icons';
+import { useGoHome } from '@/shared/hooks/useBack';
 import { Screen } from '@/shared/ui/Screen';
 import { Text } from '@/shared/ui/Text';
-
-const DAYS = ['M', 'D', 'M', 'D', 'F', 'S', 'S'];
 
 /** 08b · Serie gestartet (nach der ersten Übung). */
 export function StreakScreen() {
   const { t } = useTranslation();
+  const DAYS = t('common.weekdayLetters', { returnObjects: true }) as string[];
   const router = useRouter();
+  const goHome = useGoHome();
   return (
     <Screen edgeToEdgeTop bottom={6} className="px-[22px]">
-      <GradientHeader
-        left="close"
-        className="-mx-[22px]"
-        paddingBottom={34}
-        onLeftPress={() => router.replace('/(app)')}
-      >
+      <GradientHeader left="close" className="-mx-[22px]" paddingBottom={34} onLeftPress={goHome}>
         <View className="mt-[8px] items-center justify-center" style={{ width: 212, height: 186 }}>
           <Svg
             pointerEvents="none"
@@ -97,12 +93,7 @@ export function StreakScreen() {
         {t('streak.note')}
       </Text>
       <View className="flex-1" style={{ minHeight: 16 }} />
-      <Button
-        height={58}
-        label={t('common.next')}
-        labelClassName="font-medium"
-        onPress={() => router.replace('/(app)')}
-      />
+      <Button height={58} label={t('common.next')} labelClassName="font-medium" onPress={goHome} />
       <TextButton
         className="mt-[14px]"
         label={t('streak.share')}

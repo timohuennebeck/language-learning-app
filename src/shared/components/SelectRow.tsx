@@ -3,18 +3,20 @@ import { View } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
-import { Flag } from '@/shared/ui/Illustration';
+import { Flag, type FlagCode } from '@/shared/ui/Illustration';
 import { CheckCircle } from '@/shared/ui/Marks';
 import { Tap } from '@/shared/ui/Tap';
 import { Text } from '@/shared/ui/Text';
 
 type Props = {
-  flag?: 'de' | 'en' | 'es' | 'fr' | 'it' | 'pt';
+  flag?: FlagCode;
   left?: ReactNode;
   label: string;
   sub?: string;
   selected?: boolean;
   onPress?: () => void;
+  /** Not selectable yet (e.g. an interface language that has no translation). */
+  disabled?: boolean;
   /** Ring color when selected (accent-700 in onboarding). */
   ringColor?: string;
   className?: string;
@@ -28,6 +30,7 @@ export function SelectRow({
   sub,
   selected,
   onPress,
+  disabled,
   ringColor = colors.accent[700],
   className,
 }: Props) {
@@ -35,6 +38,8 @@ export function SelectRow({
     <Tap
       haptic="selection"
       onPress={onPress}
+      disabled={disabled}
+      accessibilityState={{ selected: !!selected, disabled: !!disabled }}
       className={cn('flex-row items-center rounded-[20px] bg-white', className)}
       style={{
         paddingVertical: 12,

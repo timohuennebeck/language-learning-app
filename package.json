@@ -60,6 +60,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
+    "tokens": "node scripts/gen-tokens.js",
     "screens:reference": "node scripts/reference-shots.js",
     "screens:app": "node scripts/app-shots.js",
     "screens:measure": "node scripts/measure-shots.js"

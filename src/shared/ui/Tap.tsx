@@ -9,9 +9,15 @@ export type TapProps = Omit<PressableProps, 'className'> & {
 };
 
 /** Pressable that fires Expo haptic feedback on press. Every tappable element should use it. */
-export function Tap({ haptic: kind = 'light', onPress, ...props }: TapProps) {
+export function Tap({
+  haptic: kind = 'light',
+  onPress,
+  accessibilityRole = 'button',
+  ...props
+}: TapProps) {
   return (
     <Pressable
+      accessibilityRole={accessibilityRole}
       onPress={(e) => {
         haptic(kind);
         onPress?.(e);

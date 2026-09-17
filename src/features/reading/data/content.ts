@@ -1,5 +1,5 @@
 /** Reading text "Mardi matin" with tappable segments; tier drives highlight strength (0 = strong). */
-export type Segment = {
+type Segment = {
   id: string;
   word: string;
   trans: string;
@@ -122,7 +122,7 @@ export const segments: Record<string, Segment> = {
   },
 };
 
-export type Piece = string | { seg: string };
+type Piece = string | { seg: string };
 
 /** Section 1 of the text, interleaving plain text and tappable segments. */
 export const section1: Piece[] = [

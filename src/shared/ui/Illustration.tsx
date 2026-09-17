@@ -1,18 +1,18 @@
 import { Image, type ImageProps } from 'expo-image';
 import { View } from 'react-native';
 
+import { colors } from '@/shared/theme/tokens';
+
 /** Registry of design illustrations (Pip mascot artwork, flags, avatar). */
-export const illustrations = {
+const illustrations = {
   'pip-cheer-1': require('@assets/illustrations/pip-cheer-1.webp'),
   'pip-cheer-2': require('@assets/illustrations/pip-cheer-2.webp'),
   'pip-cheer-3': require('@assets/illustrations/pip-cheer-3.webp'),
   'pip-cheer-4': require('@assets/illustrations/pip-cheer-4.webp'),
   'pip-cheer-small': require('@assets/illustrations/pip-cheer-small.webp'),
-  'pip-sparkle': require('@assets/illustrations/pip-sparkle.webp'),
   'pip-mic': require('@assets/illustrations/pip-mic.webp'),
   'pip-baguette': require('@assets/illustrations/pip-baguette.webp'),
   'pip-face': require('@assets/illustrations/pip-face.webp'),
-  'pip-face-icon': require('@assets/illustrations/pip-face-icon.webp'),
   'pip-boxing': require('@assets/illustrations/pip-boxing.webp'),
   'pip-wave': require('@assets/illustrations/pip-wave.webp'),
   'pip-wave-2': require('@assets/illustrations/pip-wave-2.webp'),
@@ -24,18 +24,13 @@ export const illustrations = {
   'pip-clock': require('@assets/illustrations/pip-clock.webp'),
   'pip-clock-2': require('@assets/illustrations/pip-clock-2.webp'),
   'pip-headphones': require('@assets/illustrations/pip-headphones.webp'),
-  'pip-headphones-phone': require('@assets/illustrations/pip-headphones-phone.webp'),
-  'pip-laptop': require('@assets/illustrations/pip-laptop.webp'),
   'pip-stars': require('@assets/illustrations/pip-stars.webp'),
   'pip-grumpy': require('@assets/illustrations/pip-grumpy.webp'),
   'pip-book-pencil': require('@assets/illustrations/pip-book-pencil.webp'),
   'pip-pair': require('@assets/illustrations/pip-pair.webp'),
-  'pip-pair-flag': require('@assets/illustrations/pip-pair-flag.webp'),
   'pip-heart': require('@assets/illustrations/pip-heart.webp'),
-  'pip-flag-backpack': require('@assets/illustrations/pip-flag-backpack.webp'),
   'pip-glasses-book': require('@assets/illustrations/pip-glasses-book.webp'),
   'pip-dizzy': require('@assets/illustrations/pip-dizzy.webp'),
-  'food-bibimbap': require('@assets/illustrations/food-bibimbap.webp'),
   'avatar-maja': require('@assets/illustrations/avatar-maja.webp'),
   'flag-de': require('@assets/flags/de.svg'),
   'flag-en': require('@assets/flags/en.svg'),
@@ -46,6 +41,7 @@ export const illustrations = {
 } as const;
 
 export type IllustrationName = keyof typeof illustrations;
+export type FlagCode = 'de' | 'en' | 'es' | 'fr' | 'it' | 'pt';
 
 type Props = Omit<ImageProps, 'source'> & {
   name: IllustrationName;
@@ -84,7 +80,7 @@ export function Flag({
   size = 44,
   opacity = 1,
 }: {
-  code: 'de' | 'en' | 'es' | 'fr' | 'it' | 'pt';
+  code: FlagCode;
   size?: number;
   opacity?: number;
 }) {
@@ -118,7 +114,7 @@ export function Avatar({ size = 34 }: { size?: number }) {
         width: size,
         height: size,
         borderRadius: size / 2,
-        boxShadow: '0 0 0 1.5px #d7d4ee',
+        boxShadow: `0 0 0 1.5px ${colors.line2}`,
       }}
     >
       <Image

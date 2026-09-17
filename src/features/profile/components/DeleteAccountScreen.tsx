@@ -13,7 +13,7 @@ import { Text } from '@/shared/ui/Text';
 export function DeleteAccountScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { session, resetOnboarding } = useSession();
+  const { session, reset } = useSession();
   return (
     <Screen edgeToEdgeTop bottom={6} className="px-[22px]">
       <GradientHeader
@@ -56,7 +56,7 @@ export function DeleteAccountScreen() {
           label={t('profile.delete.confirm')}
           haptic="warning"
           onPress={() => {
-            resetOnboarding();
+            reset();
             router.replace('/');
           }}
         />

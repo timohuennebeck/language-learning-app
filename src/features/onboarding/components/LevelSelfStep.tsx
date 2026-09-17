@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/features/auth/hooks/useSession';
 import { ONBOARDING_STEPS } from '@/features/onboarding/components/OnboardingFrame';
 import { Headline } from '@/shared/components/Headline';
-import { OptionCard } from '@/shared/components/OptionCard';
+import { OptionCard } from '@/features/onboarding/components/OptionCard';
 import { Illustration } from '@/shared/ui/Illustration';
 import { Screen } from '@/shared/ui/Screen';
 import { Tap } from '@/shared/ui/Tap';

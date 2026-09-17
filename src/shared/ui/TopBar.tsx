@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
+import { colors } from '@/shared/theme/tokens';
 import { NavCircle } from '@/shared/ui/NavCircle';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { Text } from '@/shared/ui/Text';
@@ -14,7 +15,6 @@ type TopBarProps = {
   /** Title font size: 20 (large, "Lesen") or 16 (compact, "Profil"). */
   titleSize?: 16 | 20;
   className?: string;
-  leftBg?: string;
 };
 
 /** 40px tall bar: 40px left slot, centered title, 40px right slot. */
@@ -25,13 +25,12 @@ export function TopBar({
   onLeftPress,
   titleSize = 16,
   className,
-  leftBg,
 }: TopBarProps) {
   return (
     <View className={cn('h-[40px] flex-row items-center', className)}>
       <View className="w-[40px] items-start">
         {left === 'back' || left === 'close' ? (
-          <NavCircle icon={left} onPress={onLeftPress} className={leftBg} />
+          <NavCircle icon={left} onPress={onLeftPress} />
         ) : (
           left
         )}
@@ -71,7 +70,7 @@ export function ProgressTopBar({
   height = 34,
   className,
   labelSize = 14.5,
-  trackColor = '#ddd9f2',
+  trackColor = colors.track,
 }: ProgressTopBarProps) {
   return (
     <View className={cn('flex-row items-center', className)} style={{ height, columnGap: 12 }}>
