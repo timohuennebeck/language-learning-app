@@ -1,0 +1,635 @@
+{
+  "common": {
+    "next": "Continue",
+    "check": "Check",
+    "skip": "Skip",
+    "notNow": "Not now",
+    "save": "Save",
+    "later": "Later",
+    "maybeLater": "Maybe later",
+    "decideLater": "I'll decide later",
+    "copy": "Copy",
+    "share": "Share code",
+    "login": "Log in",
+    "signIn": "Sign in",
+    "alreadyMember": "Already a member?",
+    "recommended": "Recommended",
+    "min": "min",
+    "minutes": "minutes",
+    "of": "of",
+    "stepOf": "{{step}} of {{total}}",
+    "soon": "Soon",
+    "understood": "Got it",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "language": {
+      "de": "German",
+      "en": "English",
+      "es": "Spanish",
+      "fr": "French",
+      "it": "Italian",
+      "pt": "Portuguese"
+    },
+    "languageNative": {
+      "de": "Deutsch",
+      "en": "English",
+      "es": "Español",
+      "fr": "Français",
+      "it": "Italiano",
+      "pt": "Português"
+    },
+    "levelName": {
+      "A1": "Beginner",
+      "A2": "Basics",
+      "B1": "Independent",
+      "B2": "Advanced"
+    }
+  },
+  "splash": { "brand": "Yori" },
+  "welcome": {
+    "headline1": "Your conversations",
+    "headline2": "become ",
+    "headline2Mark": "your exercises.",
+    "sub": "Pip listens to your conversations and turns them into new exercises every day.",
+    "rating": "4.9 out of 5",
+    "reviews": "· 2,140 reviews",
+    "cta": "Let's go",
+    "legal1": "By tapping “Let's go” you accept the ",
+    "legal2": " and the ",
+    "legal3": "."
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "meta": "Lorem ipsum · Updated 15 September 2026",
+    "sections": [
+      {
+        "h": "1. Lorem ipsum",
+        "p": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."
+      },
+      {
+        "h": "2. Dolor sit amet",
+        "p": "At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est lorem ipsum dolor sit amet."
+      },
+      {
+        "h": "3. Consetetur elitr",
+        "p": "Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis."
+      },
+      {
+        "h": "4. Takimata sanctus",
+        "p": "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum."
+      }
+    ]
+  },
+  "onboarding": {
+    "appLanguage": {
+      "title": "Which language\nshould the app use?",
+      "sub": "Menus, explanations and Pip's feedback."
+    },
+    "learningLanguage": {
+      "title": "What do you want\nto learn?",
+      "sub": "One language at a time. You can switch any time later.",
+      "cta": "Learn French"
+    },
+    "goal": {
+      "title": "Why are you\nlearning French?",
+      "sub": "Yori picks the topics of your conversations accordingly.",
+      "options": {
+        "travel": "Trip to France",
+        "media": "Shows and music",
+        "family": "Family or partner",
+        "work": "Work or studies",
+        "friends": "Friends in France",
+        "fun": "Just because"
+      },
+      "notSure": "Not sure yet"
+    },
+    "name": {
+      "title": "What should Pip\ncall you?",
+      "sub": "Pip addresses you directly in the exercises.",
+      "placeholder": "Lena"
+    },
+    "notifications": {
+      "title": "May Pip nudge you\nonce a day?",
+      "sub": "One notification a day, nothing more. You'll pick the time in the next step.",
+      "app": "YORI",
+      "now": "now",
+      "notifTitle": "One gap from today",
+      "notifBody": "un café ___ — 20 seconds and you're done.",
+      "cta": "Allow notifications"
+    },
+    "reminder": {
+      "title": "{{name}}, when suits you?",
+      "sub": "One reminder a day, at your time.",
+      "repeat": "Repeat",
+      "daily": "Daily",
+      "weekdays": "Mon–Fri",
+      "weekend": "Weekend",
+      "am": "am",
+      "pm": "pm",
+      "cta": "Use {{time}}"
+    },
+    "assessmentIntro": {
+      "kicker": "Placement conversation",
+      "title": "Five questions, then Pip knows your level.",
+      "sub": "One stage after the other. Answer in French, German or a mix.",
+      "question": "Qu’est-ce que tu fais le week-end ?",
+      "stage": "Stage 1 · Present",
+      "stagesLabel": "The five stages",
+      "stages": ["Today", "Yesterday", "Tomorrow", "Maybe", "Dreams"],
+      "cta": "Start conversation · 2 min"
+    },
+    "levelSelf": {
+      "title": "How good is your French?",
+      "sub": "Roughly is fine. Yori adjusts after your first conversation.",
+      "options": {
+        "new": { "name": "Completely new", "sub": "Never learned French · ", "ex": "bonjour" },
+        "bits": { "name": "A few bits", "sub": "Say hello and thanks · ", "ex": "merci beaucoup" },
+        "simple": {
+          "name": "Simple sentences",
+          "sub": "Ordering, introducing yourself, daily life",
+          "tag1": "un café, s’il vous plaît",
+          "tag2": "Most common start"
+        },
+        "through": {
+          "name": "I get by",
+          "sub": "Telling and asking · ",
+          "ex": "hier, j’ai vu un ami"
+        }
+      },
+      "precise": "Prefer precision? ",
+      "preciseCta": "Talk for 2 minutes."
+    },
+    "assessmentCall": {
+      "title": "Placement · French",
+      "question": "Question 1 of 5",
+      "sub": "Mistakes are welcome here.",
+      "partner": "Pip · your partner",
+      "live": "Live",
+      "prompt": "Qu’est-ce que tu fais le week-end ?",
+      "captions": "Live captions",
+      "you": "You",
+      "answer": "Je vois des amis… je prendre un café",
+      "liveLabel": "Live conversation",
+      "mute": "Mute",
+      "end": "End",
+      "subtitles": "Captions"
+    },
+    "evaluating": {
+      "title": "Pip is listening again.",
+      "steps": [
+        "Vocabulary captured",
+        "Sentence structure checked",
+        "Comparing politeness forms",
+        "Determining level"
+      ],
+      "secondsLeft": "{{n}} seconds left"
+    },
+    "levelResult": {
+      "title": "Your level",
+      "kicker": "Placement",
+      "kickerSub": "2 minute conversation",
+      "blurb": {
+        "A1": "Single words and set phrases. Yori starts with pronunciation and first sentences.",
+        "A2": "You build simple sentences about daily life and weekends. Tenses and politeness are still shaky.",
+        "B1": "You tell coherent stories and correct yourself. Next up: connectors and nuance.",
+        "B2": "You discuss fluently. Next up: register, idioms and written style."
+      },
+      "fromTalk": "From your conversation",
+      "spots": "3 spots",
+      "items": [
+        {
+          "text": "Le week-end je vois des amis",
+          "sub": "Structure and articles are solid",
+          "status": "solid",
+          "pct": 88
+        },
+        {
+          "text": "je prends un café → j’ai pris",
+          "sub": "Base form instead of past tense",
+          "status": "practice",
+          "pct": 41
+        },
+        {
+          "text": "hier je regarde → j’ai regardé",
+          "sub": "Time marker and tense",
+          "status": "practice",
+          "pct": 33
+        }
+      ],
+      "cta": "Save result"
+    },
+    "targetLevel": {
+      "title": "Which level do you want to reach?",
+      "sub": "Pip tunes your exercises to this goal. Change it any time.",
+      "today": "Your level today",
+      "options": {
+        "B1": {
+          "name": "Conversations without stalling",
+          "sub": "Telling, asking, making appointments"
+        },
+        "B2": {
+          "name": "Speak freely",
+          "sub": "Argue your opinion, shows without subtitles",
+          "tag": "Fits “Shows and music”"
+        },
+        "C1": { "name": "Confident at work", "sub": "Negotiate, present, hit the nuances" }
+      },
+      "cta": "Set goal {{level}}"
+    },
+    "dailyGoal": {
+      "title": "{{name}}, how long do you want to learn each day?",
+      "sub": "Short and daily beats long and rare.",
+      "cta": "{{min}} minutes a day"
+    },
+    "paywall": {
+      "brand": "Yori",
+      "plus": "Plus",
+      "title1": "How many ",
+      "titleMark": "conversations",
+      "title2": " per month?",
+      "sub": "A conversation with Pip lasts up to 6 minutes – everything else stays unlimited.",
+      "talks": "Conversations",
+      "perMonth": "/ mo",
+      "approx10": "≈ 1 hour",
+      "approx30": "≈ 3 hours",
+      "alwaysUnlimited": "Always unlimited",
+      "perks": [
+        "Reading, flashcards, grammar and practice",
+        "Chapters from your own conversations",
+        "Your mistakes become new exercises"
+      ],
+      "cta": "Try 5 days for free",
+      "legal": "Then {{price}} / mo · switch or cancel any time",
+      "inviteCode": "Invite code",
+      "restore": "Restore purchases"
+    },
+    "redeem": {
+      "title": "Enter code",
+      "headline": "Redeem a code.",
+      "sub": "Enter your friend's code. You both get 1 hour of live conversation.",
+      "tip1": "The code is in the link, for example ",
+      "tipCode": "yori.app/MAJA7K",
+      "tip2": ".",
+      "cta": "Redeem",
+      "noCode": "I don't have a code"
+    },
+    "account": {
+      "title": "Secure your account.",
+      "sub": "Your subscription, level and conversations stay with you on every device.",
+      "phone": "With phone number",
+      "google": "Continue with Google",
+      "legal1": "By creating an account you accept the\n",
+      "legal2": " and the ",
+      "legal3": "."
+    },
+    "accountEmail": {
+      "email": "Email",
+      "password": "Password",
+      "emailValue": "maya.k@mail.de",
+      "hint": "At least 8 characters",
+      "cta": "Create account"
+    },
+    "plusActive": {
+      "title": "Pip is ready, {{name}}.",
+      "sub": "Plus is active, your account is secured. 15 minutes of conversation a day, exercises from each of them.",
+      "manage": "Manage subscription"
+    },
+    "widget": {
+      "title": "One sentence a day,\nright on your home screen.",
+      "sub": "The widget shows the gap you're currently working on.",
+      "kicker": "One gap",
+      "sentence": "un café ",
+      "opt1": "j’ai pris",
+      "opt2": "prendre",
+      "cta": "Add widget"
+    }
+  },
+  "home": {
+    "greeting": "Salut, {{name}}.\nUp for a conversation?",
+    "today": "French · {{done}} of {{goal}} min today",
+    "due": "flashcards due",
+    "languagePill": "French · A2",
+    "hero": {
+      "talk": {
+        "preview": "Ça te dit ?",
+        "kicker": "SPEAK · 5–15 MIN",
+        "title": "Start live conversation",
+        "cta": "Speak"
+      },
+      "read": {
+        "preview": "marché",
+        "kicker": "1 TOPIC · 4 MIN",
+        "title": "Create reading text",
+        "cta": "Create text"
+      },
+      "exercise": {
+        "wrong": "Hier, je prends un café",
+        "right": "Hier, j’ai pris un café",
+        "kicker": "5 TASKS",
+        "title": "Repeat exercise",
+        "cta": "Start exercise"
+      },
+      "cards": {
+        "front": "le café",
+        "back": "the café",
+        "kicker": "12 CARDS DUE",
+        "title": "Review flashcards",
+        "cta": "Practice"
+      }
+    },
+    "filters": ["For you", "Daily life", "Travel", "Friends"]
+  },
+  "languages": {
+    "title": "Languages",
+    "headline": "Switch language",
+    "sub": "Your progress is kept in every language.",
+    "active": "Français · active · 12 day streak",
+    "enSub": "English · last 3 weeks ago",
+    "esSub": "Español · last in June",
+    "toB1": "64 % to B1",
+    "toB2": "38 % to B2",
+    "toA2": "15 % to A2",
+    "words": "{{level}} · {{n}} words",
+    "new": "New language"
+  },
+  "lesson": {
+    "kicker": "French · Easy · 12 words",
+    "title": "Au café",
+    "live": {
+      "kicker": "3–5 min",
+      "title": "Speak live",
+      "sub": "You write, Pip answers instantly.",
+      "cta": "Start conversation"
+    },
+    "read": {
+      "kicker": "4 min · 2 variants",
+      "title": "Read",
+      "sub": "A short text from your conversation.",
+      "cta": "Open text"
+    },
+    "practice": {
+      "kicker": "5 tasks",
+      "title": "Practice",
+      "sub": "Translate, transform, spot mistakes.",
+      "cta": "Start exercise"
+    }
+  },
+  "chapter": {
+    "languagePill": "French · A2",
+    "chapters": ["Chapter 1", "Chapter 2 · At the café", "Chapter 3"],
+    "title": "At the café",
+    "station": "Station {{n}} of 5 · from your conversation on Tuesday",
+    "next": "Next",
+    "go": "Go",
+    "after": "after",
+    "done": "done",
+    "read": {
+      "num": "01 Reading",
+      "title": "Mardi matin",
+      "sub": "3 sections · from your conversation on Tuesday",
+      "cta": "Start reading",
+      "row": "Reading · Mardi matin",
+      "rowSub": "3 sections"
+    },
+    "cards": {
+      "num": "02 Flashcards",
+      "title": "Practice 18 cards",
+      "sub": "18 cards · from your conversation",
+      "cta": "Practice flashcards",
+      "row": "Flashcards",
+      "rowSub": "18 cards"
+    },
+    "grammar": {
+      "num": "03 Grammar",
+      "title": "Asking politely",
+      "sub": "6 sentences · rephrase politely",
+      "cta": "Practice grammar",
+      "row": "Grammar · Asking politely",
+      "rowSub": "6 sentences"
+    },
+    "practice": {
+      "num": "04 Practice",
+      "title": "5 tasks",
+      "sub": "5 tasks · translate, transform, spot mistakes",
+      "cta": "Start exercise",
+      "row": "Practice · 5 tasks",
+      "rowSub": "5 tasks"
+    },
+    "live": {
+      "num": "05 Conversation",
+      "title": "Conversation · Live",
+      "sub": "4 min · At the café ends here",
+      "cta": "Start conversation",
+      "row": "Conversation · Live",
+      "rowSub": "4 min · At the café ends here"
+    }
+  },
+  "preparing": {
+    "title": "Exercise",
+    "headline": "Pip is building your exercise.",
+    "steps": ["Conversation analysed", "12 words selected", "Writing tasks", "Setting the order"],
+    "secondsLeft": "{{n}} seconds left"
+  },
+  "error": {
+    "title": "Exercise",
+    "headline": "That didn't work.",
+    "sub": "Pip couldn't finish building your exercise. A second try usually does it.",
+    "code": "Error 503",
+    "time": "today 18:42",
+    "retry": "Try again",
+    "report": "Report a problem"
+  },
+  "live": {
+    "timer": "Live · 02:14",
+    "name": "Pip",
+    "sub": "French · Café · A2",
+    "prompt": "Sur place ou à emporter ?",
+    "mute": "Mute",
+    "end": "End",
+    "subtitles": "Captions"
+  },
+  "exercise": {
+    "fill": "Fill the gap",
+    "fillFree": "Fill the gap · free",
+    "translate": "Translate",
+    "translateFree": "Translate · free",
+    "correct": "Exactly",
+    "wrong": "Almost",
+    "you": "You",
+    "right": "Correct",
+    "inFrench": "In French",
+    "yourAnswer": "Your answer",
+    "hintDrop": "Dropped wrongly? Just drag it back out"
+  },
+  "reading": {
+    "title": "Reading",
+    "kicker": "From your conversation · Café in Paris",
+    "headline": "Mardi matin",
+    "hint": "Tap a highlighted part.",
+    "section": "Section {{n}} of {{total}}",
+    "continue": "Keep reading",
+    "swapMode": "Translate in your head",
+    "swapNote": "{{done}} of {{total}} revealed",
+    "german": "deutsch",
+    "french": "français",
+    "tapToReveal": "tap to reveal"
+  },
+  "word": {
+    "sure": "{{pct}} sure",
+    "note": "{{right}} of {{total}} correct",
+    "inSentence": "In the sentence",
+    "save": "Add flashcard",
+    "saved": "In your flashcards",
+    "continue": "Keep reading"
+  },
+  "review": {
+    "title": "Recap",
+    "meta": "Café in Paris · 8 min",
+    "leadWords": "Save words from this conversation for later.",
+    "leadNext": "Here you described instead of naming. The word for it:",
+    "tabWords": "Words",
+    "tabNext": "Described",
+    "count": "{{n}} words",
+    "selectAll": "Select all",
+    "saved": "Saved",
+    "cta": "Save {{n}} words"
+  },
+  "flashcards": {
+    "title": "Review",
+    "left": "← Still learning",
+    "right": "I know it →",
+    "flip": "Tap to flip",
+    "again": "Again",
+    "known": "Known",
+    "done": "Deck finished.",
+    "doneSub": "{{known}} known · {{again}} to repeat",
+    "restart": "Again"
+  },
+  "grammar": {
+    "title": "Grammar",
+    "weakest": "Weakest form",
+    "weakestSub": "2 of 3",
+    "form": "Passé composé",
+    "meta": "5 exercises · 3 min",
+    "practiceNow": "Practice now",
+    "used": "Forms you used",
+    "score": "72 / 100",
+    "finish": "Finish lesson"
+  },
+  "dailyLimit": {
+    "practiced": "{{done}} of {{goal}} min practiced",
+    "title": "Daily limit reached",
+    "resetIn1": "Your limit resets in ",
+    "resetTime": "7 h 12 min",
+    "resetIn2": ".",
+    "cards": { "kicker": "12 CARDS DUE", "title": "Review flashcards", "cta": "Continue" },
+    "exercise": { "kicker": "5 TASKS", "title": "Repeat exercise", "cta": "Start exercise" },
+    "read": { "kicker": "1 TOPIC · 4 MIN", "title": "Read the text", "cta": "Open text" },
+    "bye": "See you tomorrow"
+  },
+  "streak": {
+    "days": "day streak",
+    "note": "Come back tomorrow and Pip keeps counting. Reminder is set to 19:30.",
+    "share": "Share streak"
+  },
+  "rating": {
+    "title": "Do you like Yori?",
+    "sub": "A review on the App Store helps others who want to learn French.",
+    "label": "Your review",
+    "placeholder": "What do you like about Yori?",
+    "note": "Text and stars go straight to the App Store.",
+    "cta": "Send review"
+  },
+  "talkLimit": {
+    "title": "Conversations",
+    "count": "0 of 30",
+    "headline": "You've used up your conversations",
+    "sub": "In 11 days you'll have 30 conversations again.",
+    "talks": "Conversations",
+    "perTalk": "{{price}} / conversation",
+    "info": "Credit never expires and is only used after your monthly quota.",
+    "cta": "Buy 10 conversations",
+    "practice": "Keep practicing"
+  },
+  "shareCode": {
+    "title": "Share your code, talk an hour for free",
+    "sub": "If a friend redeems your code, you both get 1 hour of live conversation."
+  },
+  "profile": {
+    "title": "Profile",
+    "email": "maja@mail.de",
+    "streak": "Streak",
+    "streakDays": "{{n}} days",
+    "todayProgress": "Already {{done}} of {{goal}} min today.",
+    "level": "Level",
+    "toB1": "62 % to B1",
+    "nextAssessment": "8 conversations until the next placement.",
+    "wordsSaved": "words saved",
+    "wordsSub": "14 to 100",
+    "talks": "conversations held",
+    "talksSub": "6 in 30 days",
+    "learn": "Learning",
+    "dailyTime": "Daily study time",
+    "dailySub": "daily · {{ex}}",
+    "learningLanguage": "Learning language",
+    "appLanguage": "App language",
+    "reminder": "Reminder",
+    "reminderSub": "Daily at {{time}}",
+    "account": "Account",
+    "plus": "Yori Plus",
+    "active": "Active",
+    "help": "Help",
+    "reminderScreen": {
+      "title": "Reminder",
+      "headline": "When should Pip\nnudge you?",
+      "sub": "One reminder a day. Tap a number to pick it.",
+      "preview1": "Pip checks in ",
+      "previewAt": " at ",
+      "freq": ["every day", "Monday to Friday", "Saturday and Sunday"],
+      "tail": [" with a gap from your last conversation.", ". Weekends stay quiet.", "."],
+      "save": "Save {{time}}",
+      "off": "Turn reminder off"
+    },
+    "goalScreen": {
+      "title": "Study time",
+      "headline": "How long do you want\nto learn each day?",
+      "sub": "Short and daily beats long and rare",
+      "pace": "At {{min}} min a day",
+      "eta": {
+        "5": "B1 in about 20 months",
+        "10": "B1 in about 11 months",
+        "15": "B1 in about 8 months",
+        "30": "B1 in about 5 months"
+      },
+      "ex": { "5": "1 exercise", "10": "2 exercises", "15": "2–3 exercises", "30": "5 exercises" },
+      "week": { "5": "35 min", "10": "1 h 10", "15": "1 h 45", "30": "3 h 30" },
+      "perWeek": "{{t}} per week",
+      "a2today": "A2 today",
+      "b1": "B1",
+      "save": "{{min}} minutes a day"
+    },
+    "learningLanguageScreen": {
+      "title": "Learning language",
+      "headline": "What do you want\nto learn?",
+      "sub": "One language at a time. Your French progress stays saved.",
+      "frSub": "Français · A2, 86 words"
+    },
+    "appLanguageScreen": {
+      "title": "App language",
+      "headline": "Which language\nshould the app use?",
+      "sub": "Menus, explanations and Pip's feedback."
+    },
+    "delete": {
+      "title": "Delete account",
+      "headline": "Really delete\nyour account, {{name}}?",
+      "sub": "86 words, a 12 day streak and all conversations will be deleted permanently.",
+      "info": "Your Plus subscription continues through the App Store. Cancel it there or it keeps being charged.",
+      "confirm": "Delete permanently",
+      "keep": "Keep account"
+    }
+  },
+  "dev": {
+    "title": "Screens",
+    "sub": "All screens from the Claude Design project"
+  }
+}

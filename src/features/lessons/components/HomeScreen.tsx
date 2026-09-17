@@ -1,0 +1,173 @@
+import { useRouter } from 'expo-router';
+import { useWindowDimensions, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { useSession } from '@/features/auth/hooks/useSession';
+import { HeroCarousel } from '@/features/lessons/components/HeroCarousel';
+import { IllustrationSlot } from '@/features/lessons/components/IllustrationSlot';
+import {
+  CardsPreview,
+  ExercisePreview,
+  ReadPreview,
+  TalkPreview,
+} from '@/features/lessons/components/Previews';
+import { useHomeFeed } from '@/features/lessons/hooks/useLessons';
+import { cn } from '@/shared/lib/cn';
+import { Avatar } from '@/shared/ui/Illustration';
+import { ChevronDown } from '@/shared/ui/icons';
+import { Screen } from '@/shared/ui/Screen';
+import { Tap } from '@/shared/ui/Tap';
+import { Text } from '@/shared/ui/Text';
+
+/** 01 · Lektionen (home). */
+export function HomeScreen() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { width } = useWindowDimensions();
+  const { session } = useSession();
+  const feed = useHomeFeed();
+  const filters = t('home.filters', { returnObjects: true }) as string[];
+  const minutes = feed.data?.minutesToday ?? 6;
+  const goal = feed.data?.goalMinutes ?? 10;
+  const due = feed.data?.dueCards ?? 12;
+  const lessons = feed.data?.lessons ?? [];
+
+  return (
+    <Screen top={0} bottom={-34} className="overflow-hidden">
+      <View className="flex-1 overflow-hidden px-[22px]" style={{ minHeight: 0 }}>
+        <View className="h-[40px] flex-row items-center justify-between">
+          <Tap haptic="light" onPress={() => router.push('/(app)/profile')}>
+            <Avatar size={34} />
+          </Tap>
+          <Tap
+            haptic="light"
+            onPress={() => router.push('/(app)/languages')}
+            className="flex-row items-center rounded-pill bg-surface px-[12px] py-[6px]"
+            style={{ columnGap: 6 }}
+          >
+            <Text className="text-accent-900" style={{ fontSize: 15 }}>
+              {t('home.languagePill')}
+            </Text>
+            <ChevronDown size={14} strokeWidth={2.4} />
+          </Tap>
+        </View>
+        <Text
+          className="mb-[4px] mt-[20px] font-medium text-accent-900"
+          style={{ fontSize: 32, lineHeight: 32, letterSpacing: -0.96 }}
+        >
+          {t('home.greeting', { name: session.name })}
+        </Text>
+        <View className="flex-row flex-wrap items-center" style={{ gap: 10 }}>
+          <Text className="text-sub" style={{ fontSize: 16 }}>
+            {t('home.today', { done: minutes, goal })}
+          </Text>
+          <Tap
+            haptic="light"
+            onPress={() => router.push('/(app)/flashcards')}
+            className="flex-row items-center rounded-pill bg-lavender py-[5px] pl-[9px] pr-[12px]"
+            style={{ columnGap: 7 }}
+          >
+            <View className="h-[20px] min-w-[20px] items-center justify-center rounded-pill bg-accent-800 px-[6px]">
+              <Text className="font-semibold text-accent-100" style={{ fontSize: 12.5 }}>
+                {due}
+              </Text>
+            </View>
+            <Text className="font-medium text-accent-800" style={{ fontSize: 14 }}>
+              {t('home.due')}
+            </Text>
+          </Tap>
+        </View>
+        <HeroCarousel
+          className="mt-[16px]"
+          screenWidth={width}
+          cards={[
+            {
+              key: 'talk',
+              preview: <TalkPreview />,
+              kicker: t('home.hero.talk.kicker'),
+              title: t('home.hero.talk.title'),
+              cta: t('home.hero.talk.cta'),
+              onPress: () => router.push('/(app)/live'),
+            },
+            {
+              key: 'read',
+              preview: <ReadPreview />,
+              kicker: t('home.hero.read.kicker'),
+              title: t('home.hero.read.title'),
+              cta: t('home.hero.read.cta'),
+              onPress: () => router.push('/(app)/reading'),
+            },
+            {
+              key: 'exercise',
+              preview: (
+                <ExercisePreview
+                  wrong={t('home.hero.exercise.wrong')}
+                  right={t('home.hero.exercise.right')}
+                />
+              ),
+              kicker: t('home.hero.exercise.kicker'),
+              title: t('home.hero.exercise.title'),
+              cta: t('home.hero.exercise.cta'),
+              onPress: () => router.push('/(app)/exercise/preparing'),
+            },
+            {
+              key: 'cards',
+              preview: <CardsPreview />,
+              kicker: t('home.hero.cards.kicker'),
+              title: t('home.hero.cards.title'),
+              cta: t('home.hero.cards.cta'),
+              onPress: () => router.push('/(app)/flashcards'),
+            },
+          ]}
+        />
+        <View className="mt-[18px] flex-row overflow-hidden" style={{ columnGap: 8 }}>
+          {filters.map((f, i) => (
+            <Tap
+              key={f}
+              haptic="selection"
+              className={cn(
+                'rounded-pill px-[18px] py-[10px]',
+                i === 0 ? 'bg-accent-800' : 'bg-surface2',
+              )}
+            >
+              <Text
+                className={cn('font-medium', i === 0 ? 'text-accent-100' : 'text-accent-900')}
+                style={{ fontSize: 15 }}
+                numberOfLines={1}
+              >
+                {f}
+              </Text>
+            </Tap>
+          ))}
+        </View>
+        <View
+          className="mt-[14px] flex-1 flex-row flex-wrap content-start overflow-hidden"
+          style={{ gap: 12, minHeight: 0 }}
+        >
+          {lessons.map((l) => (
+            <Tap
+              key={l.id}
+              haptic="light"
+              onPress={() => router.push({ pathname: '/(app)/lesson/[id]', params: { id: l.id } })}
+              className="rounded-[22px] bg-surface2 p-[14px]"
+              style={{ width: (width - 44 - 12) / 2, height: 176 }}
+            >
+              <View className="flex-1 items-center justify-center" style={{ minHeight: 0 }}>
+                <IllustrationSlot placeholder={l.placeholder} />
+              </View>
+              <Text
+                className="mt-[8px] font-medium text-accent-900"
+                style={{ fontSize: 18, lineHeight: 20.7 }}
+              >
+                {l.title}
+              </Text>
+              <Text className="mt-[2px] text-muted" style={{ fontSize: 13 }} numberOfLines={1}>
+                {l.meta}
+              </Text>
+            </Tap>
+          ))}
+        </View>
+      </View>
+    </Screen>
+  );
+}

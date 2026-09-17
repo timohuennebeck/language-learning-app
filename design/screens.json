@@ -1,0 +1,428 @@
+[
+  {
+    "name": "01-splash",
+    "ref": "01_Splash.png",
+    "route": "/?splash=1",
+    "h": 874
+  },
+  {
+    "name": "02b-welcome",
+    "ref": "02b_Welcome_Alt_A.png",
+    "route": "/welcome",
+    "h": 874
+  },
+  {
+    "name": "02c-terms",
+    "ref": "02c_Nutzungsbedingungen.png",
+    "route": "/terms",
+    "h": 874
+  },
+  {
+    "name": "02c-ii-terms-open",
+    "ref": "02c-ii_Auswahl_offen.png",
+    "route": "/terms?open=1",
+    "h": 874
+  },
+  {
+    "name": "03-app-language",
+    "ref": "03_App-Sprache.png",
+    "route": "/app-language",
+    "h": 874
+  },
+  {
+    "name": "03a-learning-language",
+    "ref": "03a_Lernsprache.png",
+    "route": "/learning-language",
+    "h": 874
+  },
+  {
+    "name": "03b-goal",
+    "ref": "03b_Ziel.png",
+    "route": "/goal",
+    "h": 952
+  },
+  {
+    "name": "04-name",
+    "ref": "04_Name.png",
+    "route": "/name",
+    "h": 874
+  },
+  {
+    "name": "05-notifications",
+    "ref": "05_Mitteilungen.png",
+    "route": "/notifications",
+    "h": 874
+  },
+  {
+    "name": "05a-reminder",
+    "ref": "05a_Erinnerungszeit.png",
+    "route": "/reminder-time",
+    "h": 874
+  },
+  {
+    "name": "06-assessment-intro",
+    "ref": "06_Einstufung_Intro.png",
+    "route": "/assessment-intro",
+    "h": 874
+  },
+  {
+    "name": "06a-level-self",
+    "ref": "06a_Level_selbst.png",
+    "route": "/level-self",
+    "h": 874
+  },
+  {
+    "name": "07-assessment-call",
+    "ref": "07_Konversation_l_uft.png",
+    "route": "/assessment-call",
+    "h": 874
+  },
+  {
+    "name": "08-evaluating",
+    "ref": "08_Auswertung.png",
+    "route": "/assessment-evaluating",
+    "h": 874
+  },
+  {
+    "name": "09-level-result",
+    "ref": "09_Level-Ergebnis.png",
+    "route": "/level-result",
+    "h": 874
+  },
+  {
+    "name": "09g-target-level",
+    "ref": "09g_Ziel-Level.png",
+    "route": "/target-level",
+    "h": 874
+  },
+  {
+    "name": "09h-daily-goal",
+    "ref": "09h_T_gliche_Lernzeit.png",
+    "route": "/daily-goal",
+    "h": 982
+  },
+  {
+    "name": "11f-paywall",
+    "ref": "11f_Monatskontingent_Karten.png",
+    "route": "/paywall",
+    "h": 874
+  },
+  {
+    "name": "11b-redeem",
+    "ref": "11b_Code_einl_sen.png",
+    "route": "/redeem-code",
+    "h": 874
+  },
+  {
+    "name": "12-account",
+    "ref": "12_Konto_nach_dem_Kauf.png",
+    "route": "/account",
+    "h": 874
+  },
+  {
+    "name": "12b-account-email",
+    "ref": "12b_E-Mail_und_Passwort.png",
+    "route": "/account-email",
+    "h": 874
+  },
+  {
+    "name": "13-plus-active",
+    "ref": "13_Plus_aktiv.png",
+    "route": "/plus-active",
+    "h": 874
+  },
+  {
+    "name": "13b-widget",
+    "ref": "13b_Widget.png",
+    "route": "/widget",
+    "h": 874
+  },
+  {
+    "name": "10a-rating",
+    "ref": "10a_Bewertung.png",
+    "route": "/rating",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "30a-talk-limit",
+    "ref": "30a_Gespr_chslimit.png",
+    "route": "/talk-limit",
+    "h": 963,
+    "onboarded": 1
+  },
+  {
+    "name": "19a2-fill-options",
+    "ref": "19a2_Aufgabe.png",
+    "route": "/exercise?step=3",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25a-fill-options-ok",
+    "ref": "25a_L_cke_mit_Optionen_richtig.png",
+    "route": "/exercise?step=3&state=correct",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25b-fill-options-wrong",
+    "ref": "25b_L_cke_mit_Optionen_falsch.png",
+    "route": "/exercise?step=3&state=wrong",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "19b3-fill-free",
+    "ref": "19b3_Aufgabe.png",
+    "route": "/exercise?step=4",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25c-fill-free-ok",
+    "ref": "25c_L_cke_frei_getippt_richtig.png",
+    "route": "/exercise?step=4&state=correct",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25d-fill-free-wrong",
+    "ref": "25d_L_cke_frei_getippt_falsch.png",
+    "route": "/exercise?step=4&state=wrong",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "19c1-build",
+    "ref": "19c1_Aufgabe.png",
+    "route": "/exercise?step=5",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25e-build-ok",
+    "ref": "25e_bersetzen_mit_Bausteinen_richtig.png",
+    "route": "/exercise?step=5&state=correct",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25f-build-wrong",
+    "ref": "25f_bersetzen_mit_Bausteinen_falsch.png",
+    "route": "/exercise?step=5&state=wrong",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "19d1-translate-free",
+    "ref": "19d1_Aufgabe.png",
+    "route": "/exercise?step=6",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25g-translate-ok",
+    "ref": "25g_bersetzen_frei_getippt_richtig.png",
+    "route": "/exercise?step=6&state=correct",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "25h-translate-wrong",
+    "ref": "25h_bersetzen_frei_getippt_falsch.png",
+    "route": "/exercise?step=6&state=wrong",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "3c-chapter-read",
+    "ref": "3c_Lesen_expandiert.png",
+    "route": "/chapter/cafe?station=0",
+    "h": 946,
+    "onboarded": 1
+  },
+  {
+    "name": "3b-chapter-cards",
+    "ref": "3b_Karteikarten_expandiert.png",
+    "route": "/chapter/cafe?station=1",
+    "h": 942,
+    "onboarded": 1
+  },
+  {
+    "name": "3f-chapter-grammar",
+    "ref": "3f_Grammatik_expandiert.png",
+    "route": "/chapter/cafe?station=2",
+    "h": 905,
+    "onboarded": 1
+  },
+  {
+    "name": "3d-chapter-practice",
+    "ref": "3d_ben_expandiert.png",
+    "route": "/chapter/cafe?station=3",
+    "h": 930,
+    "onboarded": 1
+  },
+  {
+    "name": "3e-chapter-live",
+    "ref": "3e_Konversation_expandiert.png",
+    "route": "/chapter/cafe?station=4",
+    "h": 936,
+    "onboarded": 1
+  },
+  {
+    "name": "16a-word",
+    "ref": "16a_Worterkl_rung.png",
+    "route": "/reading/word?seg=creme",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "14a-reading-1",
+    "ref": "14a_Lesen_Fu_zeile_Balken.png",
+    "route": "/reading?section=1&seg=creme",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "14b-reading-2",
+    "ref": "14b_Lesen_Abschnitt_2.png",
+    "route": "/reading?section=2",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "14e-reading-swap",
+    "ref": "14e_Lesen_Tauschw_rter.png",
+    "route": "/reading?section=2&mode=swap",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "09e-delete",
+    "ref": "09e_Konto_l_schen.png",
+    "route": "/profile/delete",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "09b-profile",
+    "ref": "09b_Fortschritt.png",
+    "route": "/profile",
+    "h": 1256,
+    "onboarded": 1
+  },
+  {
+    "name": "09f-reminder",
+    "ref": "09f_Erinnerungszeit.png",
+    "route": "/profile/reminder",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "09g-goal",
+    "ref": "09g_Lernzeit.png",
+    "route": "/profile/daily-goal",
+    "h": 980,
+    "onboarded": 1
+  },
+  {
+    "name": "09c-learning-language",
+    "ref": "09c_Lernsprache.png",
+    "route": "/profile/learning-language",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "09d-app-language",
+    "ref": "09d_Interface-Sprache.png",
+    "route": "/profile/app-language",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "08-daily-limit",
+    "ref": "08_Tageslimit.png",
+    "route": "/daily-limit",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "08b-streak",
+    "ref": "08b_Serie_gestartet.png",
+    "route": "/streak",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "01-home",
+    "ref": "Lektionen.png",
+    "route": "/",
+    "h": 874,
+    "onboarded": 1,
+    "wait": 3500
+  },
+  {
+    "name": "01a-languages",
+    "ref": "01a_Sprache_wechseln.png",
+    "route": "/languages",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "01b-lesson",
+    "ref": "Lektion_Start.png",
+    "route": "/lesson/au-cafe",
+    "h": 1100,
+    "onboarded": 1
+  },
+  {
+    "name": "01c-preparing",
+    "ref": "_bung_wird_vorbereitet.png",
+    "route": "/exercise/preparing",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "01d-error",
+    "ref": "01d-iv_Kurz_und_knapp.png",
+    "route": "/exercise/error",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "02c-live",
+    "ref": "Live-Konversation_Vollbild.png",
+    "route": "/live",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "3h-review",
+    "ref": "3h_R_ckblick_Umschrieben.png",
+    "route": "/review",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "04-flashcards",
+    "ref": "Karteikarten.png",
+    "route": "/flashcards",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "05-grammar",
+    "ref": "Grammatik.png",
+    "route": "/grammar",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "15-share",
+    "ref": "15_Code_teilen.png",
+    "route": "/share-code",
+    "h": 874,
+    "onboarded": 1
+  }
+]

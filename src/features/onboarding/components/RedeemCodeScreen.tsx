@@ -1,0 +1,68 @@
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { CodeBoxes } from '@/shared/components/CodeBoxes';
+import { Headline } from '@/shared/components/Headline';
+import { PipTip, Strong } from '@/shared/components/PipTip';
+import { Button, TextButton } from '@/shared/ui/Button';
+import { Screen } from '@/shared/ui/Screen';
+import { TopBar } from '@/shared/ui/TopBar';
+
+/** 11b · Code einlösen. */
+export function RedeemCodeScreen() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const [code, setCode] = useState('MAJA7');
+  return (
+    <Screen top={0} bottom={6} className="px-[22px]">
+      <TopBar left="back" title={t('onboarding.redeem.title')} />
+      <Headline
+        size={30}
+        titleMarginTop={20}
+        title={t('onboarding.redeem.headline')}
+        sub={t('onboarding.redeem.sub')}
+      />
+      <View className="mt-[22px]">
+        <CodeBoxes value={code} activeIndex={Math.min(code.length, 5)} variant="input" />
+        <TextInput
+          value={code}
+          onChangeText={(v) =>
+            setCode(
+              v
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, '')
+                .slice(0, 6),
+            )
+          }
+          autoCapitalize="characters"
+          autoCorrect={false}
+          style={{ position: 'absolute', opacity: 0, width: 1, height: 1 }}
+          accessibilityLabel={t('onboarding.redeem.title')}
+        />
+      </View>
+      <PipTip className="mt-[16px]">
+        {t('onboarding.redeem.tip1')}
+        <Strong>{t('onboarding.redeem.tipCode')}</Strong>
+        {t('onboarding.redeem.tip2')}
+      </PipTip>
+      <View className="flex-1" />
+      <View style={{ rowGap: 10 }}>
+        <Button
+          height={60}
+          size={17.5}
+          label={t('onboarding.redeem.cta')}
+          onPress={() => router.back()}
+        />
+        <TextButton
+          className="h-[52px]"
+          label={t('onboarding.redeem.noCode')}
+          color="text-muted"
+          labelClassName="font-regular"
+          onPress={() => router.back()}
+        />
+      </View>
+    </Screen>
+  );
+}
