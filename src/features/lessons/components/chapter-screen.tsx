@@ -65,7 +65,7 @@ export function ChapterScreen() {
   return (
     <Screen top={TAB_TOP} bottom={6} scroll>
       <View className="flex-1 px-[22px]" style={{ minHeight: 0 }}>
-        <HomeHeader compact />
+        <HomeHeader />
         <ChapterChips className="mt-[14px]" />
         <View className="mt-[16px] flex-row items-end justify-between" style={{ columnGap: 14 }}>
           <View className="flex-1" style={{ minWidth: 0 }}>
