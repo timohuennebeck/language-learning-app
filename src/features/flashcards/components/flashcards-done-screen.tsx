@@ -18,6 +18,7 @@ import { Text } from '@/shared/ui/text';
 
 /** Cards missed this often are drawn as filled chips with their count. */
 const EMPHASIS_AT = 3;
+const RING = { size: 190, stroke: 8, badge: 36 };
 
 type RepeatCard = DeckResult['again'][number];
 
@@ -95,10 +96,11 @@ export function FlashcardsDoneScreen() {
         <NavCircle icon="close" onPress={back} />
       </View>
       <View className="mt-[24px] items-center">
-        <View className="items-center" style={{ paddingBottom: 18 }}>
+        {/* The badge's centre sits on the ring line: half the badge height minus half the stroke. */}
+        <View className="items-center" style={{ paddingBottom: RING.badge / 2 - RING.stroke / 2 }}>
           <Ring
-            size={190}
-            stroke={8}
+            size={RING.size}
+            stroke={RING.stroke}
             progress={progress}
             trackColor={colors.track3}
             color={colors.accent[700]}
@@ -107,7 +109,7 @@ export function FlashcardsDoneScreen() {
           </Ring>
           <View
             className="absolute rounded-pill bg-accent-800 px-[16px]"
-            style={{ bottom: 0, height: 36, justifyContent: 'center' }}
+            style={{ bottom: 0, height: RING.badge, justifyContent: 'center' }}
           >
             <Text
               className="font-semibold text-accent-100"
