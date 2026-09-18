@@ -18,7 +18,8 @@ export function WelcomeScreen() {
   // The design is laid out for 402pt; shrink the headline on narrower phones so the mark fits.
   const { width } = useWindowDimensions();
   const h = Math.min(1, width / 402) * 33;
-  const headline = { fontSize: h, lineHeight: h * 1.14, letterSpacing: -0.035 * h };
+  // Line height must clear the umlaut dots; iOS clips glyphs that poke above the line box.
+  const headline = { fontSize: h, lineHeight: h * 1.22, letterSpacing: -0.035 * h };
   return (
     <Gradient
       colors={['#e7e5fe', '#eceafe', '#f3f5fe']}
@@ -33,11 +34,11 @@ export function WelcomeScreen() {
         <Text className="font-semibold text-ink" style={headline}>
           {t('welcome.headline1')}
         </Text>
-        <View className="mt-[9px] flex-row items-center">
+        <View className="mt-[6px] flex-row flex-wrap items-center" style={{ rowGap: 6 }}>
           <Text className="font-semibold text-ink" style={headline}>
-            {t('welcome.headline2')}
+            {t('welcome.headline2')}{' '}
           </Text>
-          <View className="rounded-[8px] bg-lilac3 px-[7px] py-[3px]">
+          <View className="rounded-[8px] bg-lilac3 px-[7px] py-[2px]" style={{ flexShrink: 0 }}>
             <Text className="font-semibold text-ink" style={headline}>
               {t('welcome.headline2Mark')}
             </Text>
