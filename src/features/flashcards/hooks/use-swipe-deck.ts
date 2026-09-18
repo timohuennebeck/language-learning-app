@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
-import { Easing, runOnJS, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import { runOnJS, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import type { Flashcard } from '@/features/flashcards/data/schemas';
 import { haptic } from '@/shared/lib/haptics';
@@ -19,10 +19,8 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
   const [againIds, setAgainIds] = useState<string[]>([]);
   const again = againIds.length;
   const dx = useSharedValue(0);
-  const flip = useSharedValue(0);
   /** -1 / 1 while a card is flying out, 0 otherwise. Guards against double commits. */
   const leaving = useSharedValue(0);
-  const flipping = useSharedValue(false);
 
   const card = cards[index];
 
@@ -37,7 +35,6 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
     setFlipped(false);
     dx.value = 0;
     leaving.value = 0;
-    flip.value = 0;
   };
 
   const flyOut = (dir: 1 | -1) => {
@@ -46,22 +43,11 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
     dx.value = withTiming(dir * FLY_DISTANCE, { duration: 260 }, () => runOnJS(commit)(dir));
   };
 
-  const toggleFlip = () => setFlipped((f) => !f);
-  const endFlip = () => {
-    flipping.value = false;
-  };
-
+  /** Tap shows the other side immediately; no turn animation. */
   const onFlip = () => {
-    if (flipping.value || leaving.value !== 0) return;
-    flipping.value = true;
+    if (leaving.value !== 0) return;
     haptic('light');
-    flip.value = withSequence(
-      withTiming(90, { duration: 180, easing: Easing.out(Easing.ease) }, () =>
-        runOnJS(toggleFlip)(),
-      ),
-      withTiming(-90, { duration: 0 }),
-      withTiming(0, { duration: 180, easing: Easing.out(Easing.ease) }, () => runOnJS(endFlip)()),
-    );
+    setFlipped((f) => !f);
   };
 
   const pan = Gesture.Pan()
@@ -77,5 +63,5 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
   const tap = Gesture.Tap().onEnd(() => runOnJS(onFlip)());
   const gesture = Gesture.Exclusive(pan, tap);
 
-  return { index, card, flipped, known, again, dx, flip, leaving, gesture, flyOut };
+  return { index, card, flipped, known, again, dx, leaving, gesture, flyOut };
 }

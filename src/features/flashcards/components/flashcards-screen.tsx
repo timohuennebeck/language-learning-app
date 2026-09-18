@@ -92,7 +92,6 @@ export function FlashcardsScreen() {
             flipped={d.flipped}
             gesture={d.gesture}
             dx={d.dx}
-            flip={d.flip}
             leaving={d.leaving}
           />
         ) : null}

@@ -64,20 +64,16 @@ type Props = {
   flipped: boolean;
   gesture: ComposedGesture;
   dx: SharedValue<number>;
-  flip: SharedValue<number>;
   leaving: SharedValue<number>;
 };
 
 /** The draggable, flippable front card with its "Nochmal" / "Gewusst" stamps. */
-export function SwipeCard({ card, flipped, gesture, dx, flip, leaving }: Props) {
+export function SwipeCard({ card, flipped, gesture, dx, leaving }: Props) {
   const { t } = useTranslation();
   const cardStyle = useAnimatedStyle(() => ({
-    // `perspective` only takes effect as the first entry of a native transform list.
     transform: [
-      { perspective: 1000 },
       { translateX: dx.value },
       { rotate: `${leaving.value ? leaving.value * 18 : dx.value / 18}deg` },
-      { rotateY: `${flip.value}deg` },
     ],
   }));
   return (
