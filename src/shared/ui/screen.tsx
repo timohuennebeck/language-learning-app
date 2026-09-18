@@ -54,7 +54,9 @@ export function Screen({
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
   const paddingTop = edgeToEdgeTop ? 0 : insets.top + (tabRoot ? TAB_ROOT_TOP : top);
-  const paddingBottom = insets.bottom + bottom;
+  // Tab roots let the native tab bar inset their scroll view (content runs under the glass bar),
+  // so they add no bottom padding of their own on device.
+  const paddingBottom = tabRoot && Platform.OS !== 'web' ? 0 : insets.bottom + bottom;
   let body: ReactNode;
   if (footer || header) {
     body = (
@@ -69,7 +71,9 @@ export function Screen({
             className="flex-1"
             // Bleed the scroll area past the horizontal padding so shadows/rings are not clipped.
             contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
-            contentInsetAdjustmentBehavior="never"
+            // Inside native tabs iOS insets the first scroll view for the tab bar and drives the
+            // bar's transparent scroll-edge appearance; elsewhere the Screen pads for itself.
+            contentInsetAdjustmentBehavior={tabRoot ? 'automatic' : 'never'}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >

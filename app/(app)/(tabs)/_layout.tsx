@@ -19,6 +19,8 @@ export default function TabsLayout() {
   return (
     <NativeTabs
       tintColor={colors.accent[800]}
+      // No material behind the bar: on iOS 26 this leaves pure Liquid Glass over the content.
+      blurEffect="none"
       // No custom label font: the bar's own SF metrics keep the platform spacing between icon and label.
       minimizeBehavior="onScrollDown"
     >
