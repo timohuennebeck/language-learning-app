@@ -54,9 +54,12 @@ export function HeroCarousel({ cards, className, dotsClassName = 'mt-[12px]' }: 
         contentContainerStyle={{ paddingHorizontal: SIDE, columnGap: GAP }}
       >
         {cards.map((c) => (
-          <View
+          <Tap
             key={c.key}
-            className="items-center rounded-[26px] bg-surface px-[20px] pb-[22px] pt-[16px]"
+            haptic="light"
+            onPress={c.onPress}
+            accessibilityLabel={c.title}
+            className="items-center rounded-[26px] bg-surface px-[20px] pb-[22px] pt-[16px] active:opacity-95"
             style={{ width: cardWidth, height: 248 }}
           >
             <View className="items-center justify-center" style={{ width: 200, height: 100 }}>
@@ -71,16 +74,13 @@ export function HeroCarousel({ cards, className, dotsClassName = 'mt-[12px]' }: 
             >
               {c.title}
             </Text>
-            <Tap
-              haptic="medium"
-              onPress={c.onPress}
-              className="mt-auto items-center self-stretch rounded-pill bg-accent-800 p-[12px] active:opacity-90"
-            >
+            {/* Visual only: the whole card is the pressable, so no nested button. */}
+            <View className="mt-auto items-center self-stretch rounded-pill bg-accent-800 p-[12px]">
               <Text className="font-medium text-accent-100" style={{ fontSize: 16 }}>
                 {c.cta}
               </Text>
-            </Tap>
-          </View>
+            </View>
+          </Tap>
         ))}
       </ScrollView>
       <Dots
