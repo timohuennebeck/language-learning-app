@@ -93,7 +93,7 @@ export function FlashcardsDoneScreen() {
   const progress = result.total ? result.known / result.total : 0;
 
   return (
-    <Screen top={0} bottom={-10} className="px-[22px]">
+    <Screen bottom={-10} className="px-[22px]">
       <View className="h-[40px] justify-center">
         <NavCircle icon="close" onPress={back} />
       </View>

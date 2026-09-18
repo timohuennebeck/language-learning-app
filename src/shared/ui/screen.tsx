@@ -8,13 +8,15 @@ import { Gradient } from '@/shared/ui/gradient';
 
 /** Gap between the status bar and the pinned tab header. */
 const TAB_ROOT_TOP = 0;
+/** Gap between the status bar and a pushed page's top bar, so back/close circles clear the notch. */
+export const PAGE_TOP = 8;
 /** Space between a pinned header and the scrolling content, and the fade drawn over that content. */
 const HEADER_GAP = 8;
 const HEADER_FADE = 18;
 
 type ScreenProps = ViewProps & {
   className?: string;
-  /** Extra top padding added to the safe-area inset (design screens use 56–60px on a 60px inset). */
+  /** Extra top padding added on top of the safe-area inset and the page gap. */
   top?: number;
   /** Extra bottom padding added to the home-indicator inset (design screens use 34–42px on a 34px inset). */
   bottom?: number;
@@ -53,7 +55,7 @@ export function Screen({
   ...props
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
-  const paddingTop = edgeToEdgeTop ? 0 : insets.top + (tabRoot ? TAB_ROOT_TOP : top);
+  const paddingTop = edgeToEdgeTop ? 0 : insets.top + (tabRoot ? TAB_ROOT_TOP : PAGE_TOP + top);
   // Tab roots let the native tab bar inset their scroll view (content runs under the glass bar),
   // so they add no bottom padding of their own on device.
   const paddingBottom = tabRoot && Platform.OS !== 'web' ? 0 : insets.bottom + bottom;

@@ -38,7 +38,7 @@ export function ExerciseScreen() {
   };
 
   return (
-    <Screen top={0} bottom={keyboard ? -34 : 0} style={{ paddingHorizontal: px }} keyboard={typed}>
+    <Screen bottom={keyboard ? -34 : 0} style={{ paddingHorizontal: px }} keyboard={typed}>
       <ProgressTopBar
         height={32}
         progress={(s.index + 1) / s.total}

@@ -18,7 +18,7 @@ export function EvaluatingStep() {
     return () => clearTimeout(id);
   }, [router]);
   return (
-    <Screen top={-4} bottom={0} className="px-[20px]">
+    <Screen bottom={0} className="px-[20px]">
       <View className="flex-1 items-center justify-center" style={{ rowGap: 26 }}>
         <LoadingRing progress={0.68} label="68 %" pip="pip-cheer-2" pipSize={140} />
         <Text

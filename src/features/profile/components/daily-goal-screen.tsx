@@ -19,7 +19,7 @@ export function DailyGoalScreen() {
   const updateProfile = useUpdateProfile();
   const [minutes, setMinutes] = useState(session.dailyGoalMinutes);
   return (
-    <Screen top={0} bottom={6} scroll>
+    <Screen bottom={6} scroll>
       <View className="flex-1 px-[22px]">
         <TopBar left="back" title={t('profile.goalScreen.title')} />
         <Headline

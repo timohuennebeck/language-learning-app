@@ -49,7 +49,6 @@ export function OnboardingFrame({
   const back = useBack('/(onboarding)/welcome');
   return (
     <Screen
-      top={-4}
       bottom={0}
       style={{ paddingHorizontal: px }}
       footer={footer ? <View className="pt-[12px]">{footer}</View> : undefined}

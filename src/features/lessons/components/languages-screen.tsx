@@ -30,7 +30,7 @@ export function LanguagesScreen() {
   const router = useRouter();
   const { session, update } = useSession();
   return (
-    <Screen top={0} bottom={6} className="px-[22px]" style={{ rowGap: 16 }}>
+    <Screen bottom={6} className="px-[22px]" style={{ rowGap: 16 }}>
       <TopBar left="back" title={t('languages.title')} />
       <View style={{ rowGap: 4 }}>
         <Text

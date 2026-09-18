@@ -27,7 +27,7 @@ export function ReminderScreen() {
   const freq = t('profile.reminderScreen.freq', { returnObjects: true }) as string[];
   const tail = t('profile.reminderScreen.tail', { returnObjects: true }) as string[];
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="back" title={t('profile.reminderScreen.title')} />
       <Headline
         size={30}

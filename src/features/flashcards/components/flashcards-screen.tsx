@@ -48,7 +48,7 @@ export function FlashcardsScreen() {
   }));
 
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar
         left="close"
         title={t('flashcards.title')}

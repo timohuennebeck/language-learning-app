@@ -18,7 +18,7 @@ export function LearningLanguageScreen() {
   const { session, update } = useSession();
   const [value, setValue] = useState<LearningLanguage>(session.learningLanguage);
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="back" title={t('profile.learningLanguageScreen.title')} />
       <Headline
         size={30}

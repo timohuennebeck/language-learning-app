@@ -23,7 +23,6 @@ export function AssessmentReadingScreen() {
   const tapped = p.tappedFor(round);
   return (
     <Screen
-      top={0}
       bottom={6}
       className="px-[22px]"
       footer={

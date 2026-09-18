@@ -48,7 +48,6 @@ export function LevelSkillScreen({ skill }: { skill: Skill }) {
 
   return (
     <Screen
-      top={-4}
       bottom={0}
       className="px-[22px]"
       footer={

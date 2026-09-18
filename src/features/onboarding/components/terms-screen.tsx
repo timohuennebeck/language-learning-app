@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBack } from '@/shared/hooks/use-back';
 import { Button } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
+import { PAGE_TOP } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 import { TopBar } from '@/shared/ui/top-bar';
 
@@ -21,7 +22,7 @@ export function TermsScreen() {
 
   return (
     <View className="flex-1 bg-bg">
-      <View className="px-[20px]" style={{ paddingTop: insets.top - 4 }}>
+      <View className="px-[20px]" style={{ paddingTop: insets.top + PAGE_TOP }}>
         <TopBar left="back" />
       </View>
       <ScrollView

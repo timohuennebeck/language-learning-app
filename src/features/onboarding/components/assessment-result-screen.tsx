@@ -41,7 +41,6 @@ export function AssessmentResultScreen() {
 
   return (
     <Screen
-      top={0}
       bottom={6}
       className="px-[22px]"
       footer={<Button height={58} size={17} label={t('common.next')} onPress={onNext} />}

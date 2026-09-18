@@ -13,7 +13,7 @@ import { Illustration } from '@/shared/ui/illustration';
 import { MicSmall } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { CheckCircle } from '@/shared/ui/marks';
-import { Screen } from '@/shared/ui/screen';
+import { PAGE_TOP, Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 import { ProgressTopBar } from '@/shared/ui/top-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -42,7 +42,7 @@ export function AssessmentCallIntroScreen() {
       <Gradient
         {...HEADER_GRADIENT}
         className="-mx-[22px] items-center overflow-hidden px-[22px]"
-        style={{ paddingTop: insets.top - 4, paddingBottom: 18 }}
+        style={{ paddingTop: insets.top + PAGE_TOP, paddingBottom: 18 }}
       >
         <ProgressTopBar
           className="self-stretch"

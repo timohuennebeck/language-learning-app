@@ -20,7 +20,7 @@ export function AppLanguageScreen() {
   const { session, update } = useSession();
   const [value, setValue] = useState<AppLanguage>(session.appLanguage);
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="back" title={t('profile.appLanguageScreen.title')} />
       <Headline
         size={30}

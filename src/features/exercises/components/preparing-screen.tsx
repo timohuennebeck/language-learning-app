@@ -19,7 +19,7 @@ export function PreparingScreen() {
     return () => clearTimeout(id);
   }, [router]);
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="close" title={t('preparing.title')} titleSize={20} />
       <View className="flex-1 items-center justify-center" style={{ rowGap: 26 }}>
         <LoadingRing progress={0.62} label="62 %" pip="pip-cheer-2" />

@@ -18,7 +18,7 @@ export function RedeemCodeScreen() {
   const [code, setCode] = useState('MAJA7');
   const inputRef = useRef<TextInput>(null);
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="back" title={t('onboarding.redeem.title')} />
       <Headline
         size={30}

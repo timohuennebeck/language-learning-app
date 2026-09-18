@@ -42,7 +42,7 @@ export function ReadingScreen() {
   const revealedCount = Object.values(revealed).filter(Boolean).length;
 
   return (
-    <Screen top={0} bottom={0} className="relative px-[22px]">
+    <Screen bottom={0} className="relative px-[22px]">
       <TopBar left="back" title={t('reading.title')} titleSize={20} />
       {section === 1 ? (
         <View className="mt-[20px]">

@@ -40,7 +40,7 @@ export function WordScreen() {
   const pct = Math.round((s.stats.right / s.stats.total) * 100);
   const [saved, setSaved] = useState(false);
   return (
-    <Screen top={-4} bottom={0} className="px-[20px]">
+    <Screen bottom={0} className="px-[20px]">
       <TopBar left="back" title={t('reading.headline')} />
       <View className="mt-[22px] flex-row items-center" style={{ columnGap: 10 }}>
         <View className="rounded-pill bg-surface px-[12px] py-[5px]">
