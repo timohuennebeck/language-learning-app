@@ -121,10 +121,7 @@ export function AccountEmailStep() {
               placeholder={t('onboarding.accountEmail.passwordPlaceholder')}
               placeholderTextColor={colors.faint}
               className="flex-1 font-regular text-ink"
-              style={[
-                { fontSize: 17, padding: 0, letterSpacing: show || !password ? 0 : 3.74 },
-                NO_OUTLINE,
-              ]}
+              style={[{ fontSize: 17, padding: 0 }, NO_OUTLINE]}
             />
             <Tap
               haptic="light"
