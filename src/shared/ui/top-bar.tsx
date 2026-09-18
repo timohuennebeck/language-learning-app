@@ -28,7 +28,7 @@ export function TopBar({
 }: TopBarProps) {
   return (
     <View className={cn('h-[40px] flex-row items-center', className)}>
-      <View className="w-[40px] items-start">
+      <View className="w-[44px] items-start">
         {left === 'back' || left === 'close' ? (
           <NavCircle icon={left} onPress={onLeftPress} />
         ) : (
@@ -46,7 +46,7 @@ export function TopBar({
           </Text>
         ) : null}
       </View>
-      <View className="w-[40px] items-end">{right}</View>
+      <View className="w-[44px] items-end">{right}</View>
     </View>
   );
 }

@@ -51,7 +51,7 @@ export function GradientHeader({
           <Text className="flex-1 text-center font-medium text-accent-900" style={{ fontSize: 16 }}>
             {title}
           </Text>
-          <View style={{ width: 32 }} />
+          <View style={{ width: 36 }} />
         </View>
       ) : (
         <NavCircle

@@ -18,10 +18,10 @@ type Props = Omit<TapProps, 'children' | 'style'> & {
   autoBack?: boolean;
 };
 
-/** 32px circular icon button used for back/close in every top bar. */
+/** 36px circular icon button used for back/close in every top bar. */
 export function NavCircle({
   icon,
-  size = 32,
+  size = 36,
   className,
   color,
   autoBack = true,
@@ -48,9 +48,9 @@ export function NavCircle({
       {...props}
     >
       {icon === 'back' ? (
-        <BackIcon color={color} />
+        <BackIcon size={14} color={color} />
       ) : icon === 'close' ? (
-        <CloseIcon color={color} />
+        <CloseIcon size={18} color={color} />
       ) : (
         icon
       )}
