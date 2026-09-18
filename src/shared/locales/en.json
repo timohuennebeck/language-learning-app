@@ -683,6 +683,9 @@
       "sub": "Your progress stays in your account. Everything is back the next time you sign in.",
       "stay": "Stay signed in",
       "confirm": "Log out"
+    },
+    "settings": {
+      "title": "Settings"
     }
   },
   "dev": {

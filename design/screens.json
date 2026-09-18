@@ -320,6 +320,13 @@
     "onboarded": 1
   },
   {
+    "name": "09i-settings",
+    "ref": "09b_Fortschritt.png",
+    "route": "/profile/settings",
+    "h": 874,
+    "onboarded": true
+  },
+  {
     "name": "09f-reminder",
     "ref": "09f_Erinnerungszeit.png",
     "route": "/profile/reminder",

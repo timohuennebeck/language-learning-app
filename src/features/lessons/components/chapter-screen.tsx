@@ -11,7 +11,7 @@ import { HomeHeader } from '@/shared/components/home-header';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { CheckIcon } from '@/shared/ui/icons';
-import { Screen } from '@/shared/ui/screen';
+import { Screen, TAB_TOP } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
 const DEFAULT_STATIONS: StationKind[] = ['read', 'cards', 'grammar', 'practice', 'live'];
@@ -63,8 +63,8 @@ export function ChapterScreen() {
   };
 
   return (
-    <Screen top={-2} bottom={0} scroll>
-      <View className="flex-1 px-[18px]" style={{ minHeight: 0 }}>
+    <Screen top={TAB_TOP} bottom={6} scroll>
+      <View className="flex-1 px-[22px]" style={{ minHeight: 0 }}>
         <HomeHeader compact />
         <ChapterChips className="mt-[14px]" />
         <View className="mt-[16px] flex-row items-end justify-between" style={{ columnGap: 14 }}>

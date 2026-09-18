@@ -19,13 +19,7 @@ export function HomeHeader({ compact = false, className }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
   return (
-    <View
-      className={cn(
-        'flex-row items-center justify-between',
-        compact ? 'h-[38px]' : 'h-[40px]',
-        className,
-      )}
-    >
+    <View className={cn('h-[40px] flex-row items-center justify-between', className)}>
       <Tap
         haptic="light"
         onPress={() => router.push('/(app)/(tabs)/profile')}

@@ -692,6 +692,9 @@
       "sub": "Dein Fortschritt bleibt in deinem Konto. Beim nächsten Anmelden ist alles wieder da.",
       "stay": "Angemeldet bleiben",
       "confirm": "Abmelden"
+    },
+    "settings": {
+      "title": "Einstellungen"
     }
   },
   "dev": {

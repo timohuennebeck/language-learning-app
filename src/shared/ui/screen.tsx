@@ -4,6 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
 
+/** Top offset shared by the three tab roots so the header never jumps when switching tabs. */
+export const TAB_TOP = -8;
+
 type ScreenProps = ViewProps & {
   className?: string;
   /** Extra top padding added to the safe-area inset (design screens use 56–60px on a 60px inset). */

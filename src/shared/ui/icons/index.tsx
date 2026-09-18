@@ -12,6 +12,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ClockIcon,
+  Cog6ToothIcon,
   EyeIcon,
   PlusIcon,
   XMarkIcon,
@@ -116,6 +117,10 @@ export function DragHandle({
 }
 
 /** Three-dot overflow glyph inside a nav circle. */
+export function CogIcon({ size = 20, color = colors.glyph, strokeWidth = 1.8 }: IconProps) {
+  return <Cog6ToothIcon size={size} color={color} strokeWidth={strokeWidth} />;
+}
+
 export function Ellipsis({ color = colors.glyph }: { color?: string }) {
   return (
     <View style={{ flexDirection: 'row', columnGap: 3 }}>

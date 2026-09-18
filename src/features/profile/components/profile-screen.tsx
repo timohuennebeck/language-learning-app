@@ -4,19 +4,14 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { LevelCard } from '@/features/profile/components/level-card';
-import { ProfileRow } from '@/features/profile/components/profile-row';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/features/profile/components/streak-card';
 import { useProfile, useProgress } from '@/features/profile/hooks/use-profile';
-import { formatTime } from '@/shared/lib/time';
-import { TextButton } from '@/shared/ui/button';
 import { Avatar } from '@/shared/ui/illustration';
-import { Ellipsis } from '@/shared/ui/icons';
-import { Kicker } from '@/shared/ui/kicker';
+import { CogIcon } from '@/shared/ui/icons';
 import { NavCircle } from '@/shared/ui/nav-circle';
-import { Screen } from '@/shared/ui/screen';
+import { Screen, TAB_TOP } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
-import { TopBar } from '@/shared/ui/top-bar';
 
 /** Design values shown while the progress query is loading. */
 const FALLBACK = {
@@ -57,26 +52,19 @@ export function ProfileScreen() {
   const { session } = useSession();
   const profile = useProfile();
   const p = useProgress().data ?? FALLBACK;
-  const reminder = session.reminder
-    ? formatTime(session.reminder.hour, session.reminder.minute)
-    : '—';
 
   return (
-    <Screen top={0} bottom={6} scroll>
+    <Screen top={TAB_TOP} bottom={6} scroll>
       <View className="flex-1 px-[22px]">
-        <TopBar
-          left={null}
-          title={t('profile.title')}
-          right={
-            <NavCircle
-              icon={<Ellipsis />}
-              autoBack={false}
-              accessibilityLabel={t('profile.delete.title')}
-              onPress={() => router.push('/(app)/profile/delete')}
-            />
-          }
-        />
-        <View className="mt-[16px] flex-row items-center" style={{ columnGap: 14 }}>
+        <View className="h-[40px] flex-row items-center justify-end">
+          <NavCircle
+            icon={<CogIcon />}
+            autoBack={false}
+            accessibilityLabel={t('profile.settings.title')}
+            onPress={() => router.push('/(app)/profile/settings')}
+          />
+        </View>
+        <View className="mt-[6px] flex-row items-center" style={{ columnGap: 14 }}>
           <Avatar size={62} />
           <View>
             <View className="flex-row items-center" style={{ columnGap: 7 }}>
@@ -120,56 +108,6 @@ export function ProfileScreen() {
           ]}
         />
 
-        <Kicker className="mt-[22px] text-muted">{t('profile.learn')}</Kicker>
-        <View className="mt-[8px] rounded-[24px] bg-surface2">
-          <ProfileRow
-            label={t('profile.dailyTime')}
-            sub={t('profile.dailySub', {
-              ex: t(`profile.goalScreen.ex.${session.dailyGoalMinutes}`),
-            })}
-            value={`${session.dailyGoalMinutes} ${t('common.min')}`}
-            onPress={() => router.push('/(app)/profile/daily-goal')}
-          />
-          <ProfileRow
-            label={t('profile.learningLanguage')}
-            value={t(`common.language.${session.learningLanguage}`)}
-            onPress={() => router.push('/(app)/profile/learning-language')}
-          />
-          <ProfileRow
-            label={t('profile.appLanguage')}
-            value={t(`common.languageNative.${session.appLanguage}`)}
-            onPress={() => router.push('/(app)/profile/app-language')}
-          />
-          <ProfileRow
-            label={t('profile.reminder')}
-            sub={t('profile.reminderSub', { time: reminder })}
-            onPress={() => router.push('/(app)/profile/reminder')}
-            last
-          />
-        </View>
-
-        <Kicker className="mt-[20px] text-muted">{t('profile.account')}</Kicker>
-        <View className="mt-[8px] rounded-[24px] bg-surface2">
-          <ProfileRow
-            label={t('profile.plus')}
-            right={
-              <View className="rounded-pill bg-accent-800 px-[10px] py-[4px]">
-                <Text className="font-medium text-accent-100" style={{ fontSize: 12.5 }}>
-                  {t('profile.active')}
-                </Text>
-              </View>
-            }
-            onPress={() => router.push('/(app)/talk-limit')}
-          />
-          <ProfileRow label={t('profile.help')} onPress={() => router.push('/(app)/rating')} last />
-        </View>
-        <TextButton
-          className="mt-[18px] h-[48px]"
-          label={t('profile.logout.row')}
-          color="text-muted"
-          size={15.5}
-          onPress={() => router.push('/(app)/profile/logout')}
-        />
         <View className="flex-1" />
       </View>
     </Screen>
