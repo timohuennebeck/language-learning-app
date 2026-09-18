@@ -68,13 +68,13 @@
   {
     "name": "60b-placement-question",
     "ref": "60B_Stimmt_das.png",
-    "route": "/assessment-reading?phase=question",
+    "route": "/assessment-question",
     "h": 874
   },
   {
     "name": "60d-placement-result",
     "ref": "60D_Text_Ergebnis.png",
-    "route": "/assessment-reading?phase=result",
+    "route": "/assessment-result",
     "h": 874
   },
   {

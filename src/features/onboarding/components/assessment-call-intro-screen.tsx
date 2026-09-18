@@ -39,7 +39,7 @@ export function AssessmentCallIntroScreen() {
         paddingBottom={18}
         onLeftPress={() => router.back()}
       >
-        <Illustration name="pip-barista" size={150} style={{ marginTop: 10 }} />
+        <Illustration name="pip-barista" size={150} style={{ marginTop: 26 }} />
       </GradientHeader>
       <Kicker tracking={0.1} className="mt-[22px] text-accent-700">
         {t('onboarding.placement.call.kicker')}
