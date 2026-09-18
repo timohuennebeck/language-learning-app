@@ -58,7 +58,7 @@ export function PrognosisStep() {
           <Button
             height={60}
             size={17.5}
-            label={t('onboarding.prognosis.cta')}
+            label={t('common.next')}
             onPress={() => router.push('/(onboarding)/paywall')}
           />
           <TextButton
@@ -82,7 +82,10 @@ export function PrognosisStep() {
       >
         {t('onboarding.prognosis.title', { min: minutes })}
       </Text>
-      <View className="mt-[18px]" style={{ rowGap: 12 }}>
+      <Text className="mt-[10px] text-sub" style={{ fontSize: 16, lineHeight: 22 }}>
+        {t('onboarding.prognosis.note')}
+      </Text>
+      <View className="mt-[20px]" style={{ rowGap: 12 }}>
         {rows.map((r) => {
           const months = monthsFor(r.skill, minutes);
           return (
@@ -135,9 +138,6 @@ export function PrognosisStep() {
           );
         })}
       </View>
-      <Text className="mt-[18px] text-muted" style={{ fontSize: 14.5, lineHeight: 20.5 }}>
-        {t('onboarding.prognosis.note')}
-      </Text>
     </Screen>
   );
 }
