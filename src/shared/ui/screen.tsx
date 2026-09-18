@@ -4,6 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
 
+/** Breathing room above the tab header on device (the native tab container handles the status bar). */
+const TAB_ROOT_TOP = 8;
+
 type ScreenProps = ViewProps & {
   className?: string;
   /** Extra top padding added to the safe-area inset (design screens use 56–60px on a 60px inset). */
@@ -16,7 +19,7 @@ type ScreenProps = ViewProps & {
   edgeToEdgeTop?: boolean;
   /**
    * Root of a bottom tab. The native tab container already insets its content below the status
-   * bar, so no top padding is added on device; the web preview keeps a simulated inset.
+   * bar, so only a small gap is added on device; the web preview keeps a simulated inset.
    */
   tabRoot?: boolean;
   /** Keep the footer above the keyboard (screens with text inputs). */
@@ -47,8 +50,8 @@ export function Screen({
     ? 0
     : tabRoot
       ? Platform.OS === 'web'
-        ? insets.top - 16
-        : 0
+        ? insets.top - 8
+        : TAB_ROOT_TOP
       : insets.top + top;
   const paddingBottom = insets.bottom + bottom;
   let body: ReactNode;
