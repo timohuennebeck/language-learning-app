@@ -22,6 +22,8 @@ const PLANS = [
   { id: 'p30', talks: 30, approx: 'approx30', price: '19,99 €', recommended: true },
 ] as const;
 
+const TITLE = { fontSize: 29, lineHeight: 36, letterSpacing: -1.015 } as const;
+
 /** 11f · Monatskontingent · zwei Tarife (RevenueCat offerings will feed the plans later). */
 export function PaywallScreen() {
   const { t } = useTranslation();
@@ -99,19 +101,31 @@ export function PaywallScreen() {
             </Text>
           </View>
         </View>
-        <Text
-          className="mt-[6px] font-semibold text-ink"
-          style={{ fontSize: 29, lineHeight: 33.1, letterSpacing: -1.015 }}
-        >
-          {t('onboarding.paywall.title1')}
-          <Text
-            className="rounded-[8px] bg-lilac3 font-semibold text-ink"
-            style={{ fontSize: 29, letterSpacing: -1.015 }}
-          >
-            {t('onboarding.paywall.titleMark')}
-          </Text>
-          {t('onboarding.paywall.title2')}
-        </Text>
+        {/* Word-wrapping row so the highlighted word is a View with a real rounded background. */}
+        <View className="mt-[6px] flex-row flex-wrap items-center">
+          {t('onboarding.paywall.title1')
+            .split(' ')
+            .filter(Boolean)
+            .map((w, i) => (
+              <Text key={`a${i}`} className="font-semibold text-ink" style={TITLE}>
+                {w}{' '}
+              </Text>
+            ))}
+          <View className="rounded-[8px] bg-lilac3 px-[6px]" style={{ flexShrink: 0 }}>
+            <Text className="font-semibold text-ink" style={TITLE}>
+              {t('onboarding.paywall.titleMark')}
+            </Text>
+          </View>
+          {t('onboarding.paywall.title2')
+            .split(' ')
+            .filter(Boolean)
+            .map((w, i) => (
+              <Text key={`b${i}`} className="font-semibold text-ink" style={TITLE}>
+                {i === 0 ? ' ' : ''}
+                {w}{' '}
+              </Text>
+            ))}
+        </View>
         <Text className="mt-[8px] text-muted" style={{ fontSize: 15.5, lineHeight: 22 }}>
           {t('onboarding.paywall.sub')}
         </Text>
