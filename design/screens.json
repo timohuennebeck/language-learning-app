@@ -306,6 +306,13 @@
     "onboarded": 1
   },
   {
+    "name": "41a-logout",
+    "ref": "41A_Abmelden.png",
+    "route": "/profile/logout",
+    "h": 874,
+    "onboarded": true
+  },
+  {
     "name": "09b-profile",
     "ref": "09b_Fortschritt.png",
     "route": "/profile",

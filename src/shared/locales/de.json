@@ -671,6 +671,15 @@
       "info": "Dein Plus-Abo läuft über den App Store weiter. Kündige es dort, sonst wird es weiter abgebucht.",
       "confirm": "Endgültig löschen",
       "keep": "Konto behalten"
+    },
+    "logout": {
+      "row": "Abmelden",
+      "title": "Abmelden",
+      "headline": "Wirklich abmelden?",
+      "sub": "Dein Fortschritt bleibt in deinem Konto. Beim nächsten Anmelden ist alles wieder da.",
+      "info": "Offline gespeicherte Karten und Gespräche werden von diesem Gerät entfernt.",
+      "stay": "Angemeldet bleiben",
+      "confirm": "Abmelden"
     }
   },
   "dev": {

@@ -9,6 +9,7 @@ import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/features/profile/components/streak-card';
 import { useProfile, useProgress } from '@/features/profile/hooks/use-profile';
 import { formatTime } from '@/shared/lib/time';
+import { TextButton } from '@/shared/ui/button';
 import { Avatar } from '@/shared/ui/illustration';
 import { Ellipsis } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
@@ -161,6 +162,13 @@ export function ProfileScreen() {
           />
           <ProfileRow label={t('profile.help')} onPress={() => router.push('/(app)/rating')} last />
         </View>
+        <TextButton
+          className="mt-[18px] h-[48px]"
+          label={t('profile.logout.row')}
+          color="text-muted"
+          size={15.5}
+          onPress={() => router.push('/(app)/profile/logout')}
+        />
         <View className="flex-1" />
       </View>
     </Screen>

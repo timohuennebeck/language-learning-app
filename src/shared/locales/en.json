@@ -662,6 +662,15 @@
       "info": "Your Plus subscription continues through the App Store. Cancel it there or it keeps being charged.",
       "confirm": "Delete permanently",
       "keep": "Keep account"
+    },
+    "logout": {
+      "row": "Log out",
+      "title": "Log out",
+      "headline": "Really log out?",
+      "sub": "Your progress stays in your account. Everything is back the next time you sign in.",
+      "info": "Cards and conversations stored offline will be removed from this device.",
+      "stay": "Stay signed in",
+      "confirm": "Log out"
     }
   },
   "dev": {

@@ -72,10 +72,11 @@ type Props = {
 export function SwipeCard({ card, flipped, gesture, dx, flip, leaving }: Props) {
   const { t } = useTranslation();
   const cardStyle = useAnimatedStyle(() => ({
+    // `perspective` only takes effect as the first entry of a native transform list.
     transform: [
+      { perspective: 1000 },
       { translateX: dx.value },
       { rotate: `${leaving.value ? leaving.value * 18 : dx.value / 18}deg` },
-      { perspective: 1000 },
       { rotateY: `${flip.value}deg` },
     ],
   }));

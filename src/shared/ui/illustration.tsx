@@ -31,6 +31,7 @@ const illustrations = {
   'pip-heart': require('@assets/illustrations/pip-heart.webp'),
   'pip-glasses-book': require('@assets/illustrations/pip-glasses-book.webp'),
   'pip-dizzy': require('@assets/illustrations/pip-dizzy.webp'),
+  'pip-door': require('@assets/illustrations/pip-door.webp'),
   'avatar-maja': require('@assets/illustrations/avatar-maja.webp'),
   'flag-de': require('@assets/flags/de.svg'),
   'flag-en': require('@assets/flags/en.svg'),
