@@ -10,6 +10,7 @@ import { Illustration } from '@/shared/ui/illustration';
 import { Star } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
+import { TextLink } from '@/shared/ui/text-link';
 
 /** 02b · Welcome (full-bleed Pip, headline with highlighted phrase, rating, CTA, legal). */
 export function WelcomeScreen() {
@@ -82,25 +83,18 @@ export function WelcomeScreen() {
         style={{ fontSize: 13, lineHeight: 19.5 }}
       >
         {t('welcome.legal1')}
-        <Text
-          className="font-semibold text-accent-800"
-          suppressHighlighting
-          style={{ fontSize: 13 }}
-          onPress={() => router.push('/(onboarding)/terms')}
-        >
+        <TextLink style={{ fontSize: 13 }} onPress={() => router.push('/(onboarding)/terms')}>
           {t('common.terms')}
-        </Text>
+        </TextLink>
         {t('welcome.legal2')}
-        <Text
-          className="font-semibold text-accent-800"
-          suppressHighlighting
+        <TextLink
           style={{ fontSize: 13 }}
           onPress={() =>
             router.push({ pathname: '/(onboarding)/terms', params: { doc: 'privacy' } })
           }
         >
           {t('common.privacy')}
-        </Text>
+        </TextLink>
         {t('welcome.legal3')}
       </Text>
     </Gradient>
