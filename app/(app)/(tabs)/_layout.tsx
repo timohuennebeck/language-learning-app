@@ -17,11 +17,11 @@ export default function TabsLayout() {
       labelStyle={{ fontFamily: 'Inter-Medium', fontSize: 11 }}
     >
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon sf="asterisk" md="emergency" />
+        <NativeTabs.Trigger.Icon sf="book.pages.fill" md="menu_book" />
         <NativeTabs.Trigger.Label>{t('tabs.learn')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="course">
-        <NativeTabs.Trigger.Icon sf="book.pages.fill" md="menu_book" />
+        <NativeTabs.Trigger.Icon sf="list.clipboard.fill" md="assignment" />
         <NativeTabs.Trigger.Label>{t('tabs.course')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
