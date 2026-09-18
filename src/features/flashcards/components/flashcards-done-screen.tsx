@@ -13,6 +13,7 @@ import { Button, TextButton } from '@/shared/ui/button';
 import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
+import { NavCircle } from '@/shared/ui/nav-circle';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
@@ -74,7 +75,7 @@ export function FlashcardsDoneScreen() {
   return (
     <Screen
       edgeToEdgeTop
-      bottom={6}
+      bottom={-10}
       className="px-[22px]"
       footer={
         <View style={{ rowGap: 6 }}>
@@ -89,7 +90,7 @@ export function FlashcardsDoneScreen() {
             />
           ) : null}
           <TextButton
-            className="h-[48px]"
+            className="h-[44px]"
             label={t('flashcards.result.finish')}
             color="text-sub"
             size={16}
@@ -101,8 +102,13 @@ export function FlashcardsDoneScreen() {
       <Gradient
         {...HEADER_GRADIENT}
         className="-mx-[22px] flex-row items-center px-[22px]"
-        style={{ paddingTop: insets.top + 32, paddingBottom: 34, columnGap: 20 }}
+        style={{ paddingTop: insets.top + 40, paddingBottom: 30, columnGap: 20 }}
       >
+        <NavCircle
+          icon="close"
+          onPress={back}
+          style={{ position: 'absolute', left: 22, top: insets.top - 4 }}
+        />
         <Illustration name="pip-trophy" size={82} />
         <View className="flex-1">
           <Kicker size={13}>{t('flashcards.result.kicker')}</Kicker>
