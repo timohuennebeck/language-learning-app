@@ -64,7 +64,12 @@ export function WelcomeScreen() {
         <Text className="text-ink2" style={{ fontSize: 16 }}>
           {t('common.alreadyMember')}{' '}
         </Text>
-        <Tap haptic="light" onPress={() => router.push('/(onboarding)/account-email')}>
+        <Tap
+          haptic="light"
+          hitSlop={8}
+          className="active:opacity-60"
+          onPress={() => router.push('/(onboarding)/account-email')}
+        >
           <Text className="font-semibold text-accent-800" style={{ fontSize: 16 }}>
             {t('common.login')}
           </Text>
