@@ -28,7 +28,7 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>{t('tabs.learn')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="course">
-        <NativeTabs.Trigger.Icon sf="asterisk" md="emergency" />
+        <NativeTabs.Trigger.Icon sf="square.grid.2x2.fill" md="grid_view" />
         <NativeTabs.Trigger.Label>{t('tabs.course')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
