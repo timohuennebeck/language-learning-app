@@ -18,12 +18,6 @@
     "h": 874
   },
   {
-    "name": "02c-ii-terms-open",
-    "ref": "02c-ii_Auswahl_offen.png",
-    "route": "/terms?open=1",
-    "h": 874
-  },
-  {
     "name": "03-app-language",
     "ref": "03_App-Sprache.png",
     "route": "/app-language",
