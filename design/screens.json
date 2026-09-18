@@ -61,8 +61,32 @@
   },
   {
     "name": "06-assessment-intro",
-    "ref": "06_Einstufung_Intro.png",
+    "ref": "60A_Einstufung_Intro.png",
     "route": "/assessment-intro",
+    "h": 874
+  },
+  {
+    "name": "60b-placement-question",
+    "ref": "60B_Stimmt_das.png",
+    "route": "/assessment-reading?phase=question",
+    "h": 874
+  },
+  {
+    "name": "60d-placement-result",
+    "ref": "60D_Text_Ergebnis.png",
+    "route": "/assessment-reading?phase=result",
+    "h": 874
+  },
+  {
+    "name": "60e-placement-read",
+    "ref": "60B_Stimmt_das.png",
+    "route": "/assessment-reading",
+    "h": 874
+  },
+  {
+    "name": "60c-placement-call-intro",
+    "ref": "60C_Im_Cafe.png",
+    "route": "/assessment-call-intro",
     "h": 874
   },
   {

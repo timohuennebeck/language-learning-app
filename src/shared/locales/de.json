@@ -48,7 +48,9 @@
     "close": "Schließen",
     "weekdayLetters": ["M", "D", "M", "D", "F", "S", "S"],
     "languagePill": "Französisch · A2",
-    "reset": "Zurücksetzen"
+    "reset": "Zurücksetzen",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "splash": {
     "brand": "Yori"
@@ -134,16 +136,6 @@
       "am": "vorm.",
       "pm": "nachm.",
       "cta": "{{time}} übernehmen"
-    },
-    "assessmentIntro": {
-      "kicker": "Einstufungsgespräch",
-      "title": "Fünf Fragen, dann kennt Pip dein Level.",
-      "sub": "Eine Stufe nach der anderen. Antworte französisch, deutsch oder gemischt.",
-      "question": "Qu’est-ce que tu fais le week-end ?",
-      "stage": "Stufe 1 · Präsens",
-      "stagesLabel": "Die fünf Stufen",
-      "stages": ["Heute", "Gestern", "Morgen", "Eventuell", "Träume"],
-      "cta": "Gespräch starten · 2 Min"
     },
     "levelSelf": {
       "title": "Wie gut ist dein Französisch?",
@@ -323,6 +315,42 @@
       "opt1": "j’ai pris",
       "opt2": "prendre",
       "cta": "Widget hinzufügen"
+    },
+    "placement": {
+      "kicker": "Einstufung",
+      "title": "Lass uns dein\nLevel finden.",
+      "sub": "Ein kurzer Test, danach passen die Übungen zu dir. Keine 5 Minuten.",
+      "cta": "Los geht’s",
+      "self": "Level selbst wählen",
+      "read": {
+        "title": "Lesen",
+        "sub": "Lies zwei kurze Texte. Tippe an, was du nicht kennst."
+      },
+      "speak": {
+        "title": "Sprechen",
+        "sub": "Ein Rollenspiel von zwei Minuten mit Pip."
+      },
+      "screenTitle": "Einstufung",
+      "roundOf": "{{n}} von 2",
+      "readKicker": "Lesen · Text {{n}}",
+      "tapHint": "Tippe jedes Wort an, das du nicht kennst.",
+      "questionKicker": "Stimmt das?",
+      "textOf": "Text {{n}} von 2",
+      "known": "waren dir schon bekannt",
+      "cardsMade": "Karteikarten erstellt",
+      "questionsRight": "Fragen richtig",
+      "call": {
+        "kicker": "Sprechen · 2 Minuten",
+        "title": "Im Café",
+        "sub": "Du bist in einem Café in Paris. Du wolltest einen Cappuccino, aber die Maschine ist heute kaputt.",
+        "tasksLabel": "Deine Aufgaben",
+        "tasks": [
+          "Sprich den Serveur an und bestelle ein Getränk.",
+          "Frage nach, was es stattdessen gibt.",
+          "Entscheide dich für eine Alternative und sage sie klar."
+        ],
+        "cta": "Rollenspiel starten · 2 Min"
+      }
     }
   },
   "home": {

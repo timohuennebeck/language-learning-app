@@ -48,7 +48,9 @@
     "close": "Close",
     "weekdayLetters": ["M", "T", "W", "T", "F", "S", "S"],
     "languagePill": "French · A2",
-    "reset": "Reset"
+    "reset": "Reset",
+    "yes": "Yes",
+    "no": "No"
   },
   "splash": {
     "brand": "Yori"
@@ -134,16 +136,6 @@
       "am": "am",
       "pm": "pm",
       "cta": "Use {{time}}"
-    },
-    "assessmentIntro": {
-      "kicker": "Placement conversation",
-      "title": "Five questions, then Pip knows your level.",
-      "sub": "One stage after the other. Answer in French, German or a mix.",
-      "question": "Qu’est-ce que tu fais le week-end ?",
-      "stage": "Stage 1 · Present",
-      "stagesLabel": "The five stages",
-      "stages": ["Today", "Yesterday", "Tomorrow", "Maybe", "Dreams"],
-      "cta": "Start conversation · 2 min"
     },
     "levelSelf": {
       "title": "How good is your French?",
@@ -323,6 +315,42 @@
       "opt1": "j’ai pris",
       "opt2": "prendre",
       "cta": "Add widget"
+    },
+    "placement": {
+      "kicker": "Placement",
+      "title": "Let’s find\nyour level.",
+      "sub": "A short test, then the exercises fit you. Under 5 minutes.",
+      "cta": "Let’s go",
+      "self": "Choose level myself",
+      "read": {
+        "title": "Reading",
+        "sub": "Read two short texts. Tap what you don’t know."
+      },
+      "speak": {
+        "title": "Speaking",
+        "sub": "A two-minute role-play with Pip."
+      },
+      "screenTitle": "Placement",
+      "roundOf": "{{n}} of 2",
+      "readKicker": "Reading · Text {{n}}",
+      "tapHint": "Tap every word you don’t know.",
+      "questionKicker": "True or false?",
+      "textOf": "Text {{n}} of 2",
+      "known": "were already familiar",
+      "cardsMade": "Flashcards created",
+      "questionsRight": "Questions right",
+      "call": {
+        "kicker": "Speaking · 2 minutes",
+        "title": "At the café",
+        "sub": "You are in a café in Paris. You wanted a cappuccino, but the machine is broken today.",
+        "tasksLabel": "Your tasks",
+        "tasks": [
+          "Address the waiter and order a drink.",
+          "Ask what they have instead.",
+          "Pick an alternative and say it clearly."
+        ],
+        "cta": "Start role-play · 2 min"
+      }
     }
   },
   "home": {
