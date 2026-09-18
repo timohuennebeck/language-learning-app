@@ -3,9 +3,14 @@ import { KeyboardAvoidingView, Platform, ScrollView, View, type ViewProps } from
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
+import { colors } from '@/shared/theme/tokens';
+import { Gradient } from '@/shared/ui/gradient';
 
 /** Gap between the status bar and the pinned tab header. */
 const TAB_ROOT_TOP = 0;
+/** Space between a pinned header and the scrolling content, and the fade drawn over that content. */
+const HEADER_GAP = 8;
+const HEADER_FADE = 18;
 
 type ScreenProps = ViewProps & {
   className?: string;
@@ -58,18 +63,28 @@ export function Screen({
         style={[{ paddingTop, paddingBottom }, style]}
         {...props}
       >
-        {header}
-        <ScrollView
-          className="flex-1"
-          // Bleed the scroll area past the horizontal padding so shadows/rings are not clipped.
-          style={{ marginHorizontal: -24 }}
-          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
-          contentInsetAdjustmentBehavior="never"
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {children}
-        </ScrollView>
+        {header ? <View style={{ paddingBottom: HEADER_GAP }}>{header}</View> : null}
+        <View className="flex-1" style={{ marginHorizontal: -24 }}>
+          <ScrollView
+            className="flex-1"
+            // Bleed the scroll area past the horizontal padding so shadows/rings are not clipped.
+            contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
+            contentInsetAdjustmentBehavior="never"
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {children}
+          </ScrollView>
+          {header ? (
+            // Content slides under the pinned header through a short fade.
+            <Gradient
+              pointerEvents="none"
+              colors={[colors.bg, 'rgba(243,245,254,0)']}
+              className="absolute left-0 right-0 top-0"
+              style={{ height: HEADER_FADE }}
+            />
+          ) : null}
+        </View>
         {footer}
       </View>
     );
