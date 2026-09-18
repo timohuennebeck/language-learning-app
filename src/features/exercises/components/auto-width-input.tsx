@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Platform, TextInput, View, type TextInputProps } from 'react-native';
+import { TextInput, View, type TextInputProps } from 'react-native';
 
+import { NO_OUTLINE } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Text } from '@/shared/ui/text';
 
@@ -45,8 +46,7 @@ export function AutoWidthInput({
         className="font-regular"
         style={[
           { fontSize, lineHeight, padding: 0, width: w, maxWidth: '100%', color },
-          // The design draws its own caret; hide the browser focus ring on web.
-          Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null,
+          NO_OUTLINE,
         ]}
         {...props}
       />
