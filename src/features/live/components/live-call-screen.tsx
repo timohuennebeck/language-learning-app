@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
+import Svg, { Defs, Ellipse, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { CallControls } from '@/shared/components/call-controls';
 import { Waveform } from '@/shared/components/waveform';
@@ -12,33 +12,42 @@ import { NavCircle } from '@/shared/ui/nav-circle';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
-/** Soft radial glow behind the call (design: radial-gradient 125% 85% at 50% 8%). */
+/**
+ * Soft radial glow behind the call (design: radial-gradient 125% 85% at 50% 8%).
+ * Drawn with absolute numbers: percentage geometry resolves differently on native SVG and left
+ * an unpainted strip at the right edge.
+ */
 function CallBackdrop() {
+  const { width, height } = useWindowDimensions();
+  const cx = width / 2;
+  const cy = height * 0.08;
+  const rx = width * 1.25;
+  const ry = height * 0.85;
   return (
     <Svg
       pointerEvents="none"
-      style={{ position: 'absolute', inset: 0 }}
-      width="100%"
-      height="100%"
-      preserveAspectRatio="none"
+      style={{ position: 'absolute', top: 0, left: 0 }}
+      width={width}
+      height={height}
     >
       <Defs>
         <RadialGradient
           id="glow"
-          cx="50%"
-          cy="8%"
-          rx="125%"
-          ry="85%"
-          fx="50%"
-          fy="8%"
-          gradientUnits="objectBoundingBox"
+          cx={cx}
+          cy={cy}
+          rx={rx}
+          ry={ry}
+          fx={cx}
+          fy={cy}
+          gradientUnits="userSpaceOnUse"
         >
           <Stop offset="0" stopColor="#efedfd" />
           <Stop offset="0.55" stopColor="#f3f5fe" />
           <Stop offset="1" stopColor="#e9ebf9" />
         </RadialGradient>
       </Defs>
-      <Ellipse cx="50%" cy="8%" rx="125%" ry="85%" fill="url(#glow)" />
+      <Rect x={0} y={0} width={width} height={height} fill="#e9ebf9" />
+      <Ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill="url(#glow)" />
     </Svg>
   );
 }
