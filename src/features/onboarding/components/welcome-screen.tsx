@@ -77,6 +77,7 @@ export function WelcomeScreen() {
         {t('welcome.legal1')}
         <Text
           className="font-semibold text-accent-800"
+          suppressHighlighting
           style={{ fontSize: 13 }}
           onPress={() => router.push('/(onboarding)/terms')}
         >
@@ -85,6 +86,7 @@ export function WelcomeScreen() {
         {t('welcome.legal2')}
         <Text
           className="font-semibold text-accent-800"
+          suppressHighlighting
           style={{ fontSize: 13 }}
           onPress={() =>
             router.push({ pathname: '/(onboarding)/terms', params: { doc: 'privacy' } })

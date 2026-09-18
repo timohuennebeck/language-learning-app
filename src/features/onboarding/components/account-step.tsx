@@ -16,6 +16,7 @@ export function AccountStep() {
   const link = (label: string, doc?: 'privacy') => (
     <Text
       className="font-semibold text-accent-800"
+      suppressHighlighting
       style={{ fontSize: 13.5 }}
       onPress={() => router.push({ pathname: '/(onboarding)/terms', params: doc ? { doc } : {} })}
     >
