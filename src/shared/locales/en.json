@@ -41,7 +41,7 @@
     "levelName": {
       "A1": "Beginner",
       "A2": "Basics",
-      "B1": "Independent",
+      "B1": "Intermediate",
       "B2": "Advanced"
     },
     "back": "Back",
@@ -176,40 +176,6 @@
       ],
       "secondsLeft": "{{n}} seconds left"
     },
-    "levelResult": {
-      "title": "Your level",
-      "kicker": "Placement",
-      "kickerSub": "2 minute conversation",
-      "blurb": {
-        "A1": "Single words and set phrases. Yori starts with pronunciation and first sentences.",
-        "A2": "You build simple sentences about daily life and weekends. Tenses and politeness are still shaky.",
-        "B1": "You tell coherent stories and correct yourself. Next up: connectors and nuance.",
-        "B2": "You discuss fluently. Next up: register, idioms and written style."
-      },
-      "fromTalk": "From your conversation",
-      "spots": "3 spots",
-      "items": [
-        {
-          "text": "Le week-end je vois des amis",
-          "sub": "Structure and articles are solid",
-          "status": "solid",
-          "pct": 88
-        },
-        {
-          "text": "je prends un café → j’ai pris",
-          "sub": "Base form instead of past tense",
-          "status": "practice",
-          "pct": 41
-        },
-        {
-          "text": "hier je regarde → j’ai regardé",
-          "sub": "Time marker and tense",
-          "status": "practice",
-          "pct": 33
-        }
-      ],
-      "cta": "Save result"
-    },
     "targetLevel": {
       "title": "Which level do you want to reach?",
       "sub": "Pip tunes your exercises to this goal. Change it any time.",
@@ -336,6 +302,87 @@
         ],
         "cta": "Start role-play · 2 min"
       }
+    },
+    "levelSkill": {
+      "skillOf": "Skill {{n}} of 2",
+      "canLabel": "What you can do already",
+      "workLabel": "What we will work on",
+      "reading": {
+        "headline": "You read at {{level}}.",
+        "pill": "Reading",
+        "pillSub": "2 short texts",
+        "cta": "On to speaking",
+        "A1": {
+          "can": [
+            "You recognise single words and signs.",
+            "Short simple sentences work with context."
+          ],
+          "work": ["Whole paragraphs still lose you.", "You do not spot tenses in a text yet."]
+        },
+        "A2": {
+          "can": ["You get the gist of short everyday texts.", "Known words come back quickly."],
+          "work": ["Longer sentences still break down.", "Past tenses are still shaky."]
+        },
+        "B1": {
+          "can": ["Menus and descriptions need no help.", "You spot the passé composé in a text."],
+          "work": [
+            "Long sentences with clauses still lose you.",
+            "Irony and slang often pass you by."
+          ]
+        },
+        "B2": {
+          "can": ["Longer texts read fluently.", "Clauses and tenses are solid."],
+          "work": [
+            "Nuance and register are rarely distinguished yet.",
+            "Idioms still need a lookup."
+          ]
+        }
+      },
+      "speaking": {
+        "headline": "You speak at {{level}}.",
+        "pill": "Speaking",
+        "pillSub": "2-minute role-play",
+        "cta": "Next",
+        "A1": {
+          "can": ["You introduced yourself and greeted.", "Single words came out confidently."],
+          "work": ["Full sentences still take time.", "Questions are not always understood."]
+        },
+        "A2": {
+          "can": [
+            "You ordered and asked for an alternative.",
+            "Your sentences were short but clear."
+          ],
+          "work": [
+            "Polite forms were forgotten twice.",
+            "Follow-up questions still stall the talk."
+          ]
+        },
+        "B1": {
+          "can": [
+            "You led the conversation yourself.",
+            "Follow-ups were answered without pausing."
+          ],
+          "work": [
+            "Past tenses still get mixed up.",
+            "Connectors are missing; sentences stand alone."
+          ]
+        },
+        "B2": {
+          "can": ["You speak fluently and self-correct.", "Politeness and register fit."],
+          "work": ["Idioms still sound translated.", "Quick answers lack nuance."]
+        }
+      }
+    },
+    "prognosis": {
+      "kicker": "In {{n}} months",
+      "title": "{{min}} minutes a day and this is where you stand.",
+      "speaking": "Speaking",
+      "reading": "Reading",
+      "inMonths": "in about {{n}} months",
+      "today": "today",
+      "note": "Estimate based on your placement and daily practice with Pip.",
+      "cta": "Start exercises",
+      "change": "Change study time"
     }
   },
   "home": {

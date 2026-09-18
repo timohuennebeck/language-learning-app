@@ -7,9 +7,17 @@ import { useBack } from '@/shared/hooks/use-back';
 import { Screen } from '@/shared/ui/screen';
 import { ProgressTopBar } from '@/shared/ui/top-bar';
 
-export const ONBOARDING_STEPS = 15;
-/** Step numbers of the placement screens that sit between the intro (7) and the target level (11). */
-export const PLACEMENT_STEPS = { intro: 7, result1: 8, result2: 9, cafe: 10 } as const;
+export const ONBOARDING_STEPS = 17;
+/** Step numbers of the screens that carry the bar without an OnboardingFrame. */
+export const PLACEMENT_STEPS = {
+  intro: 7,
+  result1: 8,
+  result2: 9,
+  cafe: 10,
+  readingResult: 11,
+  speakingResult: 12,
+  prognosis: 15,
+} as const;
 
 type Props = {
   step: number;

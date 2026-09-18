@@ -23,7 +23,7 @@ export function TargetLevelStep() {
   const next = () => router.push('/(onboarding)/daily-goal');
   return (
     <OnboardingFrame
-      step={11}
+      step={13}
       title={t('onboarding.targetLevel.title')}
       sub={t('onboarding.targetLevel.sub')}
       footer={

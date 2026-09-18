@@ -108,9 +108,21 @@
     "h": 874
   },
   {
-    "name": "09-level-result",
-    "ref": "09_Level-Ergebnis.png",
+    "name": "62i-level-reading",
+    "ref": "62I_Fertigkeiten.png",
     "route": "/level-result",
+    "h": 874
+  },
+  {
+    "name": "62i-level-speaking",
+    "ref": "62I_Fertigkeiten.png",
+    "route": "/level-speaking",
+    "h": 874
+  },
+  {
+    "name": "62k-prognosis",
+    "ref": "62K_Prognose.png",
+    "route": "/prognosis",
     "h": 874
   },
   {
