@@ -8,8 +8,6 @@ export default function OnboardingLayout() {
         contentStyle: { backgroundColor: '#f3f5fe' },
         animation: 'slide_from_right',
       }}
-    >
-      <Stack.Screen name="terms" options={{ presentation: 'modal' }} />
-    </Stack>
+    />
   );
 }
