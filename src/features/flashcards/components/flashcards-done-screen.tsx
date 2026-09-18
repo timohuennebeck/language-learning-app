@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { demoResult } from '@/features/flashcards/data/content';
@@ -8,6 +8,7 @@ import { useDeck } from '@/features/flashcards/hooks/use-deck';
 import { useBack } from '@/shared/hooks/use-back';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
+import { Gradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { NavCircle } from '@/shared/ui/nav-circle';
@@ -89,32 +90,7 @@ export function FlashcardsDoneScreen() {
   const progress = result.total ? result.known / result.total : 0;
 
   return (
-    <Screen
-      top={0}
-      bottom={-10}
-      className="px-[22px]"
-      footer={
-        <View style={{ rowGap: 6 }}>
-          {againCount ? (
-            <Button
-              height={58}
-              size={17}
-              label={t('flashcards.result.retry', { n: againCount })}
-              onPress={() =>
-                router.replace({ pathname: '/(app)/flashcards', params: { ids: againIds } })
-              }
-            />
-          ) : null}
-          <TextButton
-            className="h-[44px]"
-            label={t('flashcards.result.finish')}
-            color="text-sub"
-            size={16}
-            onPress={back}
-          />
-        </View>
-      }
-    >
+    <Screen top={0} bottom={-10} className="px-[22px]">
       <View className="h-[40px] justify-center">
         <NavCircle icon="close" onPress={back} />
       </View>
@@ -156,14 +132,47 @@ export function FlashcardsDoneScreen() {
       </View>
       {result.again.length ? (
         <View
-          className="mt-[30px] rounded-[28px] bg-white p-[16px]"
-          style={{ boxShadow: `0 0 0 1.5px ${colors.line2}`, marginBottom: 12 }}
+          className="mt-[30px] flex-1 overflow-hidden rounded-[28px] bg-white"
+          style={{ boxShadow: `0 0 0 1.5px ${colors.line2}`, minHeight: 120 }}
         >
-          {groups.map(([title, cards], i) => (
-            <Group key={title} title={title} cards={cards} first={i === 0} />
-          ))}
+          <ScrollView
+            contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {groups.map(([title, cards], i) => (
+              <Group key={title} title={title} cards={cards} first={i === 0} />
+            ))}
+          </ScrollView>
+          {/* Fade the list out towards the button so it reads as scrollable. */}
+          <Gradient
+            pointerEvents="none"
+            colors={['rgba(255,255,255,0)', '#ffffff']}
+            className="absolute bottom-0 left-0 right-0"
+            style={{ height: 56 }}
+          />
         </View>
-      ) : null}
+      ) : (
+        <View className="flex-1" />
+      )}
+      <View className="mt-[16px]" style={{ rowGap: 6 }}>
+        {againCount ? (
+          <Button
+            height={58}
+            size={17}
+            label={t('flashcards.result.retry', { n: againCount })}
+            onPress={() =>
+              router.replace({ pathname: '/(app)/flashcards', params: { ids: againIds } })
+            }
+          />
+        ) : null}
+        <TextButton
+          className="h-[44px]"
+          label={t('flashcards.result.finish')}
+          color="text-sub"
+          size={16}
+          onPress={back}
+        />
+      </View>
     </Screen>
   );
 }
