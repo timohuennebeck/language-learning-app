@@ -17,10 +17,7 @@ export default function TabsLayout() {
       labelStyle={{ fontFamily: 'Inter-Medium', fontSize: 11 }}
     >
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon
-          sf={{ default: 'dumbbell', selected: 'dumbbell.fill' }}
-          md="fitness_center"
-        />
+        <NativeTabs.Trigger.Icon sf="asterisk" md="emergency" />
         <NativeTabs.Trigger.Label>{t('tabs.learn')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="course">
