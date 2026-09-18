@@ -704,8 +704,6 @@
   "tabs": {
     "learn": "Lernen",
     "course": "Kurs",
-    "profile": "Profil",
-    "startTalk": "Gespräch starten",
-    "startTalkShort": "Sprechen"
+    "profile": "Profil"
   }
 }

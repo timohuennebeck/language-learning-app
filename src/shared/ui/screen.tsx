@@ -4,8 +4,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
-import { StartTalkFab } from '@/shared/components/start-talk-bar';
-import { HAS_TAB_ACCESSORY } from '@/shared/lib/platform';
 import { Gradient } from '@/shared/ui/gradient';
 
 /** Gap between the status bar and the pinned tab header. */
@@ -88,7 +86,6 @@ export function Screen({
           ) : null}
         </View>
         {footer}
-        {tabRoot && !HAS_TAB_ACCESSORY ? <StartTalkFab /> : null}
       </View>
     );
   } else if (scroll) {
