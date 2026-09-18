@@ -398,6 +398,11 @@
       "note": "Schätzung auf Basis deiner Einstufung und täglicher Übung mit Pip.",
       "cta": "Übungen starten",
       "change": "Lernzeit ändern"
+    },
+    "login": {
+      "title": "Willkommen zurück.",
+      "sub": "Melde dich an und mach da weiter, wo du aufgehört hast.",
+      "cta": "Einloggen"
     }
   },
   "home": {

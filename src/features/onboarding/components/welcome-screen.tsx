@@ -68,7 +68,9 @@ export function WelcomeScreen() {
           haptic="light"
           hitSlop={8}
           className="active:opacity-60"
-          onPress={() => router.push('/(onboarding)/account-email')}
+          onPress={() =>
+            router.push({ pathname: '/(onboarding)/account-email', params: { mode: 'login' } })
+          }
         >
           <Text className="font-semibold text-accent-800" style={{ fontSize: 16 }}>
             {t('common.login')}

@@ -383,6 +383,11 @@
       "note": "Estimate based on your placement and daily practice with Pip.",
       "cta": "Start exercises",
       "change": "Change study time"
+    },
+    "login": {
+      "title": "Welcome back.",
+      "sub": "Sign in and pick up right where you left off.",
+      "cta": "Log in"
     }
   },
   "home": {

@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -14,10 +14,12 @@ import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-/** 12b · E-Mail und Passwort (10 von 13). Also used as the "Einloggen" entry from Welcome. */
+/** 12b · E-Mail und Passwort (16 von 17). With `?mode=login` it is the "Einloggen" page from Welcome. */
 export function AccountEmailStep() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { mode } = useLocalSearchParams<{ mode?: string }>();
+  const login = mode === 'login';
   const { completeOnboarding } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,27 +39,31 @@ export function AccountEmailStep() {
   });
   return (
     <OnboardingFrame
-      step={16}
-      title={t('onboarding.account.title')}
-      sub={t('onboarding.account.sub')}
+      step={login ? undefined : 16}
+      title={t(login ? 'onboarding.login.title' : 'onboarding.account.title')}
+      sub={t(login ? 'onboarding.login.sub' : 'onboarding.account.sub')}
       footer={
         <>
           <Button
             height={60}
             size={17}
-            label={t('onboarding.accountEmail.cta')}
-            onPress={() => router.push('/(onboarding)/plus-active')}
+            label={t(login ? 'onboarding.login.cta' : 'onboarding.accountEmail.cta')}
+            onPress={() =>
+              login ? completeOnboarding() : router.push('/(onboarding)/plus-active')
+            }
           />
-          <View className="mt-[14px] flex-row items-center justify-center">
-            <Text className="text-ink2" style={{ fontSize: 15 }}>
-              {t('common.alreadyMember')}{' '}
-            </Text>
-            <Tap haptic="light" onPress={() => completeOnboarding()}>
-              <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
-                {t('common.signIn')}
+          {login ? null : (
+            <View className="mt-[14px] flex-row items-center justify-center">
+              <Text className="text-ink2" style={{ fontSize: 15 }}>
+                {t('common.alreadyMember')}{' '}
               </Text>
-            </Tap>
-          </View>
+              <Tap haptic="light" onPress={() => completeOnboarding()}>
+                <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
+                  {t('common.signIn')}
+                </Text>
+              </Tap>
+            </View>
+          )}
         </>
       }
     >
@@ -115,23 +121,25 @@ export function AccountEmailStep() {
               <Eye />
             </Tap>
           </View>
-          <View className="mt-[10px]" style={{ rowGap: 6 }}>
-            {rules.map((r) => (
-              <View key={r.key} className="flex-row items-center" style={{ columnGap: 8 }}>
-                {r.ok ? (
-                  <CheckCircle size={18} bg={colors.accent[700]} stroke={2.6} iconSize={10} />
-                ) : (
-                  <View
-                    className="h-[18px] w-[18px] rounded-full"
-                    style={{ boxShadow: `inset 0 0 0 1.5px ${colors.ring}` }}
-                  />
-                )}
-                <Text className={r.ok ? 'text-ink' : 'text-muted'} style={{ fontSize: 13.5 }}>
-                  {t(`onboarding.accountEmail.rules.${r.key}`)}
-                </Text>
-              </View>
-            ))}
-          </View>
+          {login ? null : (
+            <View className="mt-[10px]" style={{ rowGap: 6 }}>
+              {rules.map((r) => (
+                <View key={r.key} className="flex-row items-center" style={{ columnGap: 8 }}>
+                  {r.ok ? (
+                    <CheckCircle size={18} bg={colors.accent[700]} stroke={2.6} iconSize={10} />
+                  ) : (
+                    <View
+                      className="h-[18px] w-[18px] rounded-full"
+                      style={{ boxShadow: `inset 0 0 0 1.5px ${colors.ring}` }}
+                    />
+                  )}
+                  <Text className={r.ok ? 'text-ink' : 'text-muted'} style={{ fontSize: 13.5 }}>
+                    {t(`onboarding.accountEmail.rules.${r.key}`)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </View>
     </OnboardingFrame>
