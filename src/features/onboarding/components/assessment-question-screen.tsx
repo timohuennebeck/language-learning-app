@@ -1,9 +1,9 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { PlacementTop } from '@/features/onboarding/components/placement-top';
-import { usePlacement } from '@/features/onboarding/lib/placement-store';
+import { roundParam, usePlacement } from '@/features/onboarding/lib/placement-store';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
@@ -16,11 +16,24 @@ export function AssessmentQuestionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const p = usePlacement();
-  const question = p.text.questions[p.qIndex];
+  const params = useLocalSearchParams<{ round?: string; q?: string }>();
+  const round = roundParam(params.round);
+  const q = Math.max(0, Number(params.q) || 0);
+  const text = p.textFor(round);
+  const question = text.questions[Math.min(q, text.questions.length - 1)];
 
   const answer = (value: boolean) => {
-    if (p.answer(value) === 'question') router.push('/(onboarding)/assessment-question');
-    else router.push('/(onboarding)/assessment-result');
+    p.setAnswer(round, q, value);
+    if (q + 1 < text.questions.length)
+      router.push({
+        pathname: '/(onboarding)/assessment-question',
+        params: { round: String(round), q: String(q + 1) },
+      });
+    else
+      router.push({
+        pathname: '/(onboarding)/assessment-result',
+        params: { round: String(round) },
+      });
   };
 
   return (
@@ -52,7 +65,7 @@ export function AssessmentQuestionScreen() {
         </View>
       }
     >
-      <PlacementTop round={p.round} />
+      <PlacementTop round={round} />
       <View className="flex-1 justify-center" style={{ paddingBottom: 40 }}>
         <Kicker tracking={0.1} className="text-accent-700">
           {t('onboarding.placement.questionKicker')}

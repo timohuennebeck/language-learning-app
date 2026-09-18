@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,7 @@ import {
   ONBOARDING_STEPS,
   PLACEMENT_STEPS,
 } from '@/features/onboarding/components/onboarding-frame';
-import { usePlacement } from '@/features/onboarding/lib/placement-store';
+import { roundParam, usePlacement } from '@/features/onboarding/lib/placement-store';
 import { Button } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
@@ -21,13 +21,18 @@ export function AssessmentResultScreen() {
   const router = useRouter();
   const { update } = useSession();
   const p = usePlacement();
-  const step = p.round === 1 ? PLACEMENT_STEPS.result1 : PLACEMENT_STEPS.result2;
+  const params = useLocalSearchParams<{ round?: string; demo?: string }>();
+  const round = roundParam(params.round);
+  const step = round === 1 ? PLACEMENT_STEPS.result1 : PLACEMENT_STEPS.result2;
+  const played = p.answersFor(round).length > 0;
   // Design sample when the screen is opened directly (dev index) without a played round.
-  const result = p.result ?? { knownPct: 96, cards: ['a', 'b', 'c'], correct: 2, total: 3 };
+  const result = played
+    ? p.statsFor(round)
+    : { knownPct: 96, cards: ['a', 'b', 'c'], correct: 2, total: 3 };
 
   const onNext = () => {
-    if (p.nextRound() === 'round2') {
-      router.push('/(onboarding)/assessment-reading');
+    if (round === 1) {
+      router.push({ pathname: '/(onboarding)/assessment-reading', params: { round: '2' } });
     } else {
       update({ readingLevel: p.readingLevel });
       router.push('/(onboarding)/assessment-call-intro');
@@ -51,7 +56,7 @@ export function AssessmentResultScreen() {
         style={{ minHeight: 172 }}
       >
         <Kicker size={11} tracking={0.1}>
-          {t('onboarding.placement.textOf', { n: p.round })}
+          {t('onboarding.placement.textOf', { n: round })}
         </Kicker>
         <Text
           className="mt-[6px] font-semibold text-accent-800"

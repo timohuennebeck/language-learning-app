@@ -55,10 +55,12 @@ function CallBackdrop() {
 type Props = {
   /** Where "Beenden" goes. Defaults to the in-app review; onboarding passes the evaluation step. */
   onEnd?: () => void;
+  /** Placement call: no way back, but the header keeps its layout. */
+  hideBack?: boolean;
 };
 
 /** 02c · Live-Gespräch · Vollbild-Call (also used as the placement call in onboarding). */
-export function LiveCallScreen({ onEnd }: Props) {
+export function LiveCallScreen({ onEnd, hideBack = false }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
   return (
@@ -70,7 +72,11 @@ export function LiveCallScreen({ onEnd }: Props) {
     >
       <CallBackdrop />
       <View className="h-[40px] flex-row items-center justify-between">
-        <NavCircle icon={<ChevronDown size={18} strokeWidth={2.2} />} size={40} />
+        {hideBack ? (
+          <View style={{ width: 40, height: 40 }} />
+        ) : (
+          <NavCircle icon={<ChevronDown size={18} strokeWidth={2.2} />} size={40} />
+        )}
         <View
           className="flex-row items-center rounded-pill bg-surface px-[14px] py-[8px]"
           style={{ columnGap: 8 }}

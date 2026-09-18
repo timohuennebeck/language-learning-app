@@ -49,6 +49,7 @@ export function AssessmentCallIntroScreen() {
           progress={PLACEMENT_STEPS.cafe / ONBOARDING_STEPS}
           label={t('common.stepOf', { step: PLACEMENT_STEPS.cafe, total: ONBOARDING_STEPS })}
           onBack={() => router.back()}
+          backBg="#fff"
         />
         <Illustration name="pip-barista" size={150} style={{ marginTop: 22 }} />
       </Gradient>

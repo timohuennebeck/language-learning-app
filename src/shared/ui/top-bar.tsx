@@ -60,6 +60,8 @@ type ProgressTopBarProps = {
   className?: string;
   labelSize?: number;
   trackColor?: string;
+  /** Background of the back circle (white on gradient headers). */
+  backBg?: string;
 };
 
 /** Back circle + 6px progress bar + trailing counter ("3 von 13", "3 / 8"). */
@@ -71,10 +73,15 @@ export function ProgressTopBar({
   className,
   labelSize = 14.5,
   trackColor = colors.track,
+  backBg,
 }: ProgressTopBarProps) {
   return (
     <View className={cn('flex-row items-center', className)} style={{ height, columnGap: 12 }}>
-      <NavCircle icon="back" onPress={onBack} />
+      <NavCircle
+        icon="back"
+        onPress={onBack}
+        style={backBg ? { backgroundColor: backBg } : undefined}
+      />
       <ProgressBar progress={progress} className="flex-1" trackColor={trackColor} />
       <Text className="text-muted" style={{ fontSize: labelSize, fontVariant: ['tabular-nums'] }}>
         {label}
