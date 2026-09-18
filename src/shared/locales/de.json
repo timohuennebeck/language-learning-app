@@ -247,10 +247,11 @@
       "hidePassword": "Passwort verbergen",
       "emailPlaceholder": "name@mail.de",
       "passwordPlaceholder": "Passwort",
-      "rules": {
-        "length": "Mindestens 8 Zeichen",
-        "number": "Eine Zahl",
-        "special": "Ein Sonderzeichen"
+      "strength": {
+        "weak": "Schwaches Passwort",
+        "okay": "Geht so",
+        "good": "Gutes Passwort",
+        "strong": "Starkes Passwort"
       }
     },
     "plusActive": {

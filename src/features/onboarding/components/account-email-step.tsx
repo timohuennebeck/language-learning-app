@@ -9,10 +9,30 @@ import { NO_OUTLINE } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Eye } from '@/shared/ui/icons';
-import { CheckCircle } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
+
+const STRENGTH = ['weak', 'okay', 'good', 'strong'] as const;
+const STRENGTH_COLOR = [
+  colors.line2,
+  colors.danger,
+  colors.warn,
+  colors.accent[700],
+  colors.ok.icon,
+];
+
+/** 1–4: length carries most weight; digits, mixed case and symbols each add a point. */
+function passwordStrength(password: string) {
+  if (!password) return 0;
+  let score = 0;
+  if (password.length >= 8) score += 1;
+  if (password.length >= 12) score += 1;
+  if (/\d/.test(password)) score += 1;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+  if (/[^\p{L}\p{N}\s]/u.test(password)) score += 1;
+  return Math.max(1, Math.min(4, score)) as 1 | 2 | 3 | 4;
+}
 
 /** 12b · E-Mail und Passwort (16 von 17). With `?mode=login` it is the "Einloggen" page from Welcome. */
 export function AccountEmailStep() {
@@ -23,11 +43,7 @@ export function AccountEmailStep() {
   const { completeOnboarding } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const rules = [
-    { key: 'length', ok: password.length >= 8 },
-    { key: 'number', ok: /\d/.test(password) },
-    { key: 'special', ok: /[^\p{L}\p{N}\s]/u.test(password) },
-  ] as const;
+  const strength = passwordStrength(password);
   const [show, setShow] = useState(false);
   const [focus, setFocus] = useState<'email' | 'password'>('email');
   const field = (focused: boolean) => ({
@@ -121,23 +137,22 @@ export function AccountEmailStep() {
               <Eye />
             </Tap>
           </View>
-          {login ? null : (
-            <View className="mt-[10px]" style={{ rowGap: 6 }}>
-              {rules.map((r) => (
-                <View key={r.key} className="flex-row items-center" style={{ columnGap: 8 }}>
-                  {r.ok ? (
-                    <CheckCircle size={18} bg={colors.accent[700]} stroke={2.6} iconSize={10} />
-                  ) : (
-                    <View
-                      className="h-[18px] w-[18px] rounded-full"
-                      style={{ boxShadow: `inset 0 0 0 1.5px ${colors.ring}` }}
-                    />
-                  )}
-                  <Text className={r.ok ? 'text-ink' : 'text-muted'} style={{ fontSize: 13.5 }}>
-                    {t(`onboarding.accountEmail.rules.${r.key}`)}
-                  </Text>
-                </View>
-              ))}
+          {login || !password ? null : (
+            <View className="mt-[10px]">
+              <View className="flex-row" style={{ columnGap: 6 }}>
+                {STRENGTH.map((step, i) => (
+                  <View
+                    key={step}
+                    className="h-[5px] flex-1 rounded-pill"
+                    style={{
+                      backgroundColor: i < strength ? STRENGTH_COLOR[strength] : colors.line2,
+                    }}
+                  />
+                ))}
+              </View>
+              <Text className="mt-[6px] text-muted" style={{ fontSize: 13 }}>
+                {t(`onboarding.accountEmail.strength.${STRENGTH[strength - 1]}`)}
+              </Text>
             </View>
           )}
         </View>
