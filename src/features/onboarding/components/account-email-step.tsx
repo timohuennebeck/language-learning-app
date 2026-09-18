@@ -31,7 +31,8 @@ function passwordStrength(password: string) {
   if (/\d/.test(password)) score += 1;
   if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
   if (/[^\p{L}\p{N}\s]/u.test(password)) score += 1;
-  return Math.min(4, score) as 1 | 2 | 3 | 4;
+  // Strong is reserved for 12+ characters, whatever else is in it.
+  return Math.min(password.length >= 12 ? 4 : 3, score) as 1 | 2 | 3 | 4;
 }
 
 /** 12b · E-Mail und Passwort (16 von 17). With `?mode=login` it is the "Einloggen" page from Welcome. */
