@@ -43,7 +43,7 @@ export function ReadingScreen() {
 
   return (
     <Screen top={0} bottom={0} className="relative px-[22px]">
-      <TopBar left="close" title={t('reading.title')} titleSize={20} />
+      <TopBar left="back" title={t('reading.title')} titleSize={20} />
       {section === 1 ? (
         <View className="mt-[20px]">
           <Kicker tracking={0.1} className="text-accent-700">

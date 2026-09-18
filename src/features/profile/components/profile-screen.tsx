@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import { ProfileRow } from '@/features/profile/components/profile-row';
 import { LevelCard } from '@/features/profile/components/level-card';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/features/profile/components/streak-card';
@@ -12,6 +11,7 @@ import { HomeHeader } from '@/shared/components/home-header';
 import { Avatar } from '@/shared/ui/illustration';
 import { CogIcon } from '@/shared/ui/icons';
 import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
 /** Design values shown while the progress query is loading. */
@@ -57,7 +57,18 @@ export function ProfileScreen() {
   return (
     <Screen top={TAB_TOP} bottom={6} scroll>
       <View className="flex-1 px-[22px]">
-        <HomeHeader />
+        <HomeHeader
+          right={
+            <Tap
+              haptic="light"
+              hitSlop={8}
+              accessibilityLabel={t('profile.settings.title')}
+              onPress={() => router.push('/(app)/profile/settings')}
+            >
+              <CogIcon size={24} />
+            </Tap>
+          }
+        />
         <View className="mt-[20px] flex-row items-center" style={{ columnGap: 14 }}>
           <Avatar size={62} />
           <View>
@@ -102,14 +113,6 @@ export function ProfileScreen() {
           ]}
         />
 
-        <View className="mt-[14px] rounded-[24px] bg-surface2">
-          <ProfileRow
-            label={t('profile.settings.title')}
-            left={<CogIcon />}
-            onPress={() => router.push('/(app)/profile/settings')}
-            last
-          />
-        </View>
         <View className="flex-1" />
       </View>
     </Screen>
