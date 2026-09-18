@@ -400,8 +400,8 @@
       "change": "Lernzeit ändern"
     },
     "login": {
-      "title": "Willkommen zurück.",
-      "sub": "Melde dich an und mach da weiter, wo du aufgehört hast.",
+      "title": "Pip hat auf dich gewartet.",
+      "sub": "Logge dich ein und mach da weiter, wo du aufgehört hast.",
       "cta": "Einloggen"
     }
   },
