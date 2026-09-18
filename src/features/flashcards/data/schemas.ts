@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const FlashcardSchema = z.object({
+const FlashcardSchema = z.object({
   id: z.string(),
   front: z.string(),
   example: z.string(),

@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { AppProviders } from '@/shared/components/app-providers';
 import { useAppFonts } from '@/shared/hooks/use-app-fonts';
+import { colors } from '@/shared/theme/tokens';
 
 import '@/shared/theme/global.css';
 
@@ -29,7 +30,7 @@ function RootNavigator() {
   const onboarded = session.onboardingComplete;
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#f3f5fe' } }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
       <Stack.Screen name="index" />
       {/* Onboarding is only reachable until it has been completed. */}
       <Stack.Protected guard={!onboarded}>

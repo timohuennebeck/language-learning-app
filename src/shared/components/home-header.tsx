@@ -3,10 +3,9 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared/lib/cn';
+import { DropdownPill } from '@/shared/ui/dropdown-pill';
 import { Avatar } from '@/shared/ui/illustration';
-import { ChevronDown } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
-import { Text } from '@/shared/ui/text';
 
 type Props = { className?: string };
 
@@ -23,17 +22,10 @@ export function HomeHeader({ className }: Props) {
       >
         <Avatar size={34} />
       </Tap>
-      <Tap
-        haptic="light"
+      <DropdownPill
+        label={t('common.languagePill')}
         onPress={() => router.push('/(app)/languages')}
-        className="flex-row items-center rounded-pill bg-surface px-[12px] py-[6px]"
-        style={{ columnGap: 6 }}
-      >
-        <Text className="text-accent-900" style={{ fontSize: 15 }}>
-          {t('common.languagePill')}
-        </Text>
-        <ChevronDown size={14} strokeWidth={2.4} />
-      </Tap>
+      />
     </View>
   );
 }

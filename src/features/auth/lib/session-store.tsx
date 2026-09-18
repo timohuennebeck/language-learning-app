@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { DEFAULT_SESSION, SessionSchema, type Session } from '@/features/auth/data/schemas';
 import { detectLanguage, setAppLanguage } from '@/shared/lib/i18n';
@@ -14,7 +6,7 @@ import { readJson, writeJson } from '@/shared/lib/storage';
 
 const SESSION_STORAGE_KEY = 'yori.session.v1';
 
-type SessionContextValue = {
+export type SessionContextValue = {
   status: 'loading' | 'ready';
   session: Session;
   update: (patch: Partial<Session>) => void;
@@ -23,7 +15,8 @@ type SessionContextValue = {
   reset: () => void;
 };
 
-const SessionContext = createContext<SessionContextValue | null>(null);
+/** Read through `useSession()` (features/auth/hooks). */
+export const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<'loading' | 'ready'>('loading');
@@ -74,10 +67,4 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
-}
-
-export function useSession(): SessionContextValue {
-  const ctx = useContext(SessionContext);
-  if (!ctx) throw new Error('useSession must be used inside <SessionProvider>');
-  return ctx;
 }

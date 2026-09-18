@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MarkedHeadline } from '@/shared/components/marked-headline';
-import { Button } from '@/shared/ui/button';
+import { Button, TextButton } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { Star } from '@/shared/ui/icons';
-import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
 /** 02b · Welcome (full-bleed Pip, headline with highlighted phrase, rating, CTA, legal). */
@@ -64,11 +63,11 @@ export function WelcomeScreen() {
         <Text className="text-ink2" style={{ fontSize: 16 }}>
           {t('common.alreadyMember')}{' '}
         </Text>
-        <Tap haptic="light" onPress={() => router.push('/(onboarding)/account-email')}>
-          <Text className="font-semibold text-accent-800" style={{ fontSize: 16 }}>
-            {t('common.login')}
-          </Text>
-        </Tap>
+        <TextButton
+          color="text-accent-800"
+          label={t('common.login')}
+          onPress={() => router.push('/(onboarding)/account-email')}
+        />
       </View>
       <Text
         className="mt-[14px] px-[4px] text-center text-faint"

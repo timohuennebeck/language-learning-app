@@ -7,6 +7,7 @@ import { demoResult } from '@/features/flashcards/data/content';
 import type { DeckResult } from '@/features/flashcards/data/schemas';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
 import { useBack } from '@/shared/hooks/use-back';
+import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
@@ -28,7 +29,10 @@ function Chip({ card }: { card: RepeatCard }) {
   const strong = card.misses >= EMPHASIS_AT;
   return (
     <View
-      className={`flex-row items-center rounded-pill px-[14px] ${strong ? 'bg-accent-800' : 'bg-surface'}`}
+      className={cn(
+        'flex-row items-center rounded-pill px-[14px]',
+        strong ? 'bg-accent-800' : 'bg-surface',
+      )}
       style={{ height: 40, columnGap: 5 }}
     >
       <Text className={strong ? 'text-accent-100' : 'text-ink'} style={{ fontSize: 17 }}>

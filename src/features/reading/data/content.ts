@@ -1,13 +1,8 @@
 /** Reading text "Mardi matin" with tappable segments; tier drives highlight strength (0 = strong). */
 type Segment = {
-  id: string;
   word: string;
   trans: string;
-  tag: string;
-  why: string;
-  from?: string;
   tier: 0 | 1 | 2;
-  reps: string;
   stats: { right: number; total: number };
   /** `deMarks`: the phrase(s) inside `de` that translate the word, highlighted on the word screen. */
   sentence: { pre: string; post: string; de: string; deMarks: string[] };
@@ -15,13 +10,9 @@ type Segment = {
 
 export const segments: Record<string, Segment> = {
   allee: {
-    id: 'allee',
     word: 'je suis allée',
     trans: 'ich bin gegangen',
-    tag: 'Passé composé',
     tier: 1,
-    reps: '1× wiederholt',
-    why: 'Passé composé mit être, nicht mit avoir. Das Partizip richtet sich nach dem Subjekt: allée mit -e, weil Maja über sich selbst spricht.',
     stats: { right: 5, total: 11 },
     sentence: {
       pre: 'Hier, ',
@@ -31,13 +22,9 @@ export const segments: Record<string, Segment> = {
     },
   },
   pres: {
-    id: 'pres',
     word: 'près du canal',
     trans: 'in der Nähe des Kanals',
-    tag: 'Präposition',
     tier: 2,
-    reps: '4× wiederholt',
-    why: 'près de + le canal zieht sich zu près du canal zusammen.',
     stats: { right: 7, total: 10 },
     sentence: {
       pre: 'Hier, je suis allée dans un petit café ',
@@ -47,14 +34,9 @@ export const segments: Record<string, Segment> = {
     },
   },
   demande: {
-    id: 'demande',
     word: 'm’a demandé',
     trans: 'hat mich gefragt',
-    tag: 'Pronomen',
     tier: 1,
-    reps: '2× wiederholt',
-    why: 'Das Pronomen steht vor dem Verb: m’a demandé. Vor einem Vokal wird me zu m’.',
-    from: 'Du hast das am Dienstag gebraucht.',
     stats: { right: 6, total: 11 },
     sentence: {
       pre: 'Le serveur ',
@@ -64,13 +46,9 @@ export const segments: Record<string, Segment> = {
     },
   },
   voulais: {
-    id: 'voulais',
     word: 'si je voulais',
     trans: 'ob ich wollte',
-    tag: 'Indirekte Rede',
     tier: 0,
-    reps: 'noch nie wiederholt',
-    why: 'si heißt hier ob, nicht wenn. In der indirekten Rede steht das Imparfait: voulais.',
     stats: { right: 2, total: 9 },
     sentence: {
       pre: 'Le serveur m’a demandé ',
@@ -80,14 +58,9 @@ export const segments: Record<string, Segment> = {
     },
   },
   creme: {
-    id: 'creme',
     word: 'un crème',
     trans: 'ein Milchkaffee',
-    tag: 'Café-Sprache',
     tier: 0,
-    reps: 'noch nie wiederholt',
-    why: 'Im Café die Kurzform von un café crème. Deshalb männlich, obwohl la crème weiblich ist.',
-    from: 'Kam in deinem Gespräch „Café in Paris“ vor.',
     stats: { right: 8, total: 13 },
     sentence: {
       pre: 'Le serveur m’a demandé si je voulais ',
@@ -97,13 +70,9 @@ export const segments: Record<string, Segment> = {
     },
   },
   suite: {
-    id: 'suite',
     word: 'tout de suite',
     trans: 'sofort',
-    tag: 'Wendung',
     tier: 2,
-    reps: '5× wiederholt',
-    why: 'Feste Wendung, Wort für Wort nicht übersetzbar. Als Ganzes lernen.',
     stats: { right: 12, total: 15 },
     sentence: {
       pre: 'Je n’ai pas compris ',
@@ -113,13 +82,9 @@ export const segments: Record<string, Segment> = {
     },
   },
   pain: {
-    id: 'pain',
     word: 'un pain au chocolat',
     trans: 'ein Schokobrötchen',
-    tag: 'Präposition',
     tier: 1,
-    reps: '2× wiederholt',
-    why: 'au = à + le. Die Füllung hängt mit au am Gebäck: pain au chocolat, glace au café.',
     stats: { right: 4, total: 11 },
     sentence: {
       pre: 'J’ai commandé un allongé et ',

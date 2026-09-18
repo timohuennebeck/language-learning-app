@@ -1,11 +1,13 @@
 import { Stack } from 'expo-router';
 
+import { colors } from '@/shared/theme/tokens';
+
 export default function AppLayout() {
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#f3f5fe' },
+        contentStyle: { backgroundColor: colors.bg },
         animation: 'slide_from_right',
       }}
     />

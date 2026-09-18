@@ -88,8 +88,8 @@ export function StreakScreen() {
         </View>
       </View>
       <Text
-        className="mt-[18px] text-center"
-        style={{ fontSize: 15.5, lineHeight: 22.5, color: '#3f4250' }}
+        className="mt-[18px] text-center text-ink2"
+        style={{ fontSize: 15.5, lineHeight: 22.5 }}
       >
         {t('streak.note')}
       </Text>

@@ -10,15 +10,10 @@ import Animated, {
 
 import { colors } from '@/shared/theme/tokens';
 
-type Props = { size?: number; stroke?: number; trackColor?: string; color?: string };
+const SIZE = 26;
 
 /** Rotating ring spinner (design: 26px, 2.5px border, accent top). */
-export function Spinner({
-  size = 26,
-  stroke = 2.5,
-  trackColor = colors.line2,
-  color = colors.accent[700],
-}: Props) {
+export function Spinner() {
   const rot = useSharedValue(0);
   useEffect(() => {
     rot.value = withRepeat(withTiming(360, { duration: 800, easing: Easing.linear }), -1, false);
@@ -29,12 +24,12 @@ export function Spinner({
     <Animated.View
       style={[
         {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          borderWidth: stroke,
-          borderColor: trackColor,
-          borderTopColor: color,
+          width: SIZE,
+          height: SIZE,
+          borderRadius: SIZE / 2,
+          borderWidth: 2.5,
+          borderColor: colors.line2,
+          borderTopColor: colors.accent[700],
         },
         anim,
       ]}

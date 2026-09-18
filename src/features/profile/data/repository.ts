@@ -6,15 +6,7 @@ import {
 } from '@/features/profile/data/schemas';
 import { delay } from '@/shared/lib/time';
 
-let profile: Profile = ProfileSchema.parse({
-  name: 'Maja',
-  email: 'maja@mail.de',
-  plusActive: true,
-  learningLanguage: 'fr',
-  appLanguage: 'de',
-  dailyGoalMinutes: 15,
-  reminderTime: '20:30',
-});
+let profile: Profile = ProfileSchema.parse({ email: 'maja@mail.de', dailyGoalMinutes: 15 });
 
 export async function getProfile(): Promise<Profile> {
   await delay();
@@ -36,7 +28,6 @@ export const DESIGN_PROGRESS: Progress = ProgressSchema.parse({
   wordsSaved: 86,
   wordsGoal: 100,
   talks: 19,
-  talksLast30: 6,
 });
 
 export async function getProgress(): Promise<Progress> {

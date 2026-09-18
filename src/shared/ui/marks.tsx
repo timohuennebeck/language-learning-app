@@ -49,7 +49,6 @@ type RadioProps = {
   checkStroke?: number;
   /** Check glyph size; defaults to 54% of the circle. */
   checkSize?: number;
-  className?: string;
 };
 
 /** Radio indicator: empty inset ring, or filled circle with a check. */
@@ -62,51 +61,32 @@ export function RadioMark({
   checkColor = '#fff',
   checkStroke = 2.6,
   checkSize,
-  className,
 }: RadioProps) {
   if (!selected) {
     return (
       <View
-        className={cn('rounded-full', className)}
+        className="rounded-full"
         style={{ width: size, height: size, boxShadow: insetRing(ringWidth, ringColor) }}
       />
     );
   }
   return (
-    <CheckCircle
-      size={size}
-      bg={bg}
-      color={checkColor}
-      stroke={checkStroke}
-      iconSize={checkSize}
-      className={className}
-    />
+    <CheckCircle size={size} bg={bg} color={checkColor} stroke={checkStroke} iconSize={checkSize} />
   );
 }
 
 type CheckboxProps = {
   checked: boolean;
-  size?: number;
-  radius?: number;
   bg?: string;
   className?: string;
 };
 
-/** 26px rounded-square checkbox from the recap / wizard lists. */
-export function Checkbox({
-  checked,
-  size = 26,
-  radius = 7,
-  bg = colors.accent[800],
-  className,
-}: CheckboxProps) {
+/** 26px rounded-square (7px) checkbox from the recap / wizard lists. */
+export function Checkbox({ checked, bg = colors.accent[800], className }: CheckboxProps) {
   return (
     <View
-      className={cn('items-center justify-center', className)}
+      className={cn('h-[26px] w-[26px] items-center justify-center rounded-[7px]', className)}
       style={{
-        width: size,
-        height: size,
-        borderRadius: radius,
         borderWidth: 1.5,
         borderColor: checked ? bg : colors.faint,
         backgroundColor: checked ? bg : 'transparent',

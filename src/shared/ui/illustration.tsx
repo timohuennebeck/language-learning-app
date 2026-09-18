@@ -50,7 +50,6 @@ type Props = Omit<ImageProps, 'source'> & {
   size?: number;
   width?: number;
   height?: number;
-  className?: string;
 };
 
 /** Renders a bundled illustration at a fixed size with `contain` fit. */

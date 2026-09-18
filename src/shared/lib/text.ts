@@ -1,4 +1,4 @@
-export type MarkedRun = { text: string; marked: boolean };
+type MarkedRun = { text: string; marked: boolean };
 
 /**
  * Splits `text` into plain and marked runs for every occurrence of the given phrases

@@ -17,7 +17,7 @@ function StepsList({ steps }: { steps: { label: string; state: StepState }[] }) 
       {steps.map((s) => (
         <View key={s.label} className="flex-row items-center" style={{ columnGap: 12 }}>
           {s.state === 'done' ? (
-            <CheckCircle size={26} bg={colors.accent[700]} stroke={2.6} iconSize={14} />
+            <CheckCircle size={26} />
           ) : s.state === 'active' ? (
             <Spinner />
           ) : (

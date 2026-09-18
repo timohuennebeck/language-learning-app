@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /** A run of text with an optional highlight ("mark") and footnote number, used in feedback lines. */
-export const RunSchema = z.object({
+const RunSchema = z.object({
   text: z.string(),
   mark: z.enum(['ok', 'err']).optional(),
   sup: z.number().int().optional(),
@@ -17,7 +17,7 @@ const Base = z.object({
   rightLine: z.array(RunSchema),
 });
 
-export const ExerciseStepSchema = z.discriminatedUnion('kind', [
+const ExerciseStepSchema = z.discriminatedUnion('kind', [
   Base.extend({
     kind: z.literal('fill-options'),
     pre: z.string(),

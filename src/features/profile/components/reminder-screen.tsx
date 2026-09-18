@@ -4,13 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useReminderDraft } from '@/features/auth/hooks/use-reminder-draft';
 import { useSession } from '@/features/auth/hooks/use-session';
-import { Headline } from '@/shared/components/headline';
 import { PipTip, Strong } from '@/shared/components/pip-tip';
 import { RepeatSegments, TimePicker } from '@/shared/components/time-picker';
+import { TitledFrame } from '@/shared/components/titled-frame';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Kicker } from '@/shared/ui/kicker';
-import { Screen } from '@/shared/ui/screen';
-import { TopBar } from '@/shared/ui/top-bar';
 
 /** 09f · Profil · Erinnerung ändern. */
 export function ReminderScreen() {
@@ -21,14 +19,34 @@ export function ReminderScreen() {
   const freq = t('profile.reminderScreen.freq', { returnObjects: true }) as string[];
   const tail = t('profile.reminderScreen.tail', { returnObjects: true }) as string[];
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
-      <TopBar left="back" title={t('profile.reminderScreen.title')} />
-      <Headline
-        size={30}
-        titleMarginTop={20}
-        title={t('profile.reminderScreen.headline')}
-        sub={t('profile.reminderScreen.sub')}
-      />
+    <TitledFrame
+      title={t('profile.reminderScreen.title')}
+      headline={t('profile.reminderScreen.headline')}
+      sub={t('profile.reminderScreen.sub')}
+      footer={
+        <View style={{ rowGap: 10 }}>
+          <Button
+            height={60}
+            size={17.5}
+            label={t('profile.reminderScreen.save', { time: draft.label })}
+            onPress={() => {
+              update({ reminder: draft.value });
+              router.back();
+            }}
+          />
+          <TextButton
+            className="h-[52px]"
+            label={t('profile.reminderScreen.off')}
+            color="text-muted"
+            labelClassName="font-regular"
+            onPress={() => {
+              update({ reminder: null });
+              router.back();
+            }}
+          />
+        </View>
+      }
+    >
       <TimePicker
         className="mt-[16px]"
         hour={draft.time.hour}
@@ -45,28 +63,6 @@ export function ReminderScreen() {
         <Strong>{draft.label}</Strong>
         {tail[draft.repeat]}
       </PipTip>
-      <View className="flex-1" />
-      <View style={{ rowGap: 10 }}>
-        <Button
-          height={60}
-          size={17.5}
-          label={t('profile.reminderScreen.save', { time: draft.label })}
-          onPress={() => {
-            update({ reminder: draft.value });
-            router.back();
-          }}
-        />
-        <TextButton
-          className="h-[52px]"
-          label={t('profile.reminderScreen.off')}
-          color="text-muted"
-          labelClassName="font-regular"
-          onPress={() => {
-            update({ reminder: null });
-            router.back();
-          }}
-        />
-      </View>
-    </Screen>
+    </TitledFrame>
   );
 }

@@ -71,9 +71,7 @@ export function LanguagesScreen() {
                   {t(`languages.${c.sub}`)}
                 </Text>
               </View>
-              {active ? (
-                <CheckCircle size={24} bg={colors.accent[700]} stroke={2.6} iconSize={13} />
-              ) : null}
+              {active ? <CheckCircle /> : null}
             </View>
             <View style={{ rowGap: 7 }}>
               <View className="flex-row justify-between">

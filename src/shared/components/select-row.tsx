@@ -45,9 +45,7 @@ export function SelectRow({ flag, label, sub, selected, onPress, disabled }: Pro
           </Text>
         ) : null}
       </View>
-      {selected ? (
-        <CheckCircle size={24} bg={colors.accent[700]} stroke={2.6} iconSize={13} />
-      ) : null}
+      {selected ? <CheckCircle /> : null}
     </Tap>
   );
 }

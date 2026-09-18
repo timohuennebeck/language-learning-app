@@ -7,7 +7,7 @@ import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { NO_OUTLINE, ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { Button } from '@/shared/ui/button';
+import { Button, TextButton } from '@/shared/ui/button';
 import { Eye } from '@/shared/ui/icons';
 import { RadioMark } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
@@ -52,11 +52,12 @@ export function AccountEmailStep() {
             <Text className="text-ink2" style={{ fontSize: 15 }}>
               {t('common.alreadyMember')}{' '}
             </Text>
-            <Tap haptic="light" onPress={() => completeOnboarding()}>
-              <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
-                {t('common.signIn')}
-              </Text>
-            </Tap>
+            <TextButton
+              size={15}
+              color="text-accent-800"
+              label={t('common.signIn')}
+              onPress={completeOnboarding}
+            />
           </View>
         </>
       }

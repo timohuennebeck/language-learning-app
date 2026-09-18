@@ -7,9 +7,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBack } from '@/shared/hooks/use-back';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
+import { DropdownPill } from '@/shared/ui/dropdown-pill';
 import { Gradient } from '@/shared/ui/gradient';
 import { NavCircle } from '@/shared/ui/nav-circle';
-import { ChevronDown, ChevronUp, CheckIcon } from '@/shared/ui/icons';
+import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -31,21 +32,7 @@ export function TermsScreen() {
       <View className="bg-bg px-[20px] pb-[14px]" style={{ paddingTop: insets.top - 4 }}>
         <View className="h-[40px] flex-row items-center justify-between">
           <NavCircle icon="back" />
-          <Tap
-            haptic="light"
-            onPress={() => setOpen((o) => !o)}
-            className="flex-row items-center rounded-pill bg-surface px-[12px] py-[6px]"
-            style={{ columnGap: 6 }}
-          >
-            <Text className="text-accent-900" style={{ fontSize: 15 }}>
-              {docLabel}
-            </Text>
-            {open ? (
-              <ChevronUp size={14} strokeWidth={2.4} />
-            ) : (
-              <ChevronDown size={14} strokeWidth={2.4} />
-            )}
-          </Tap>
+          <DropdownPill label={docLabel} open={open} onPress={() => setOpen((o) => !o)} />
         </View>
       </View>
       <View className="flex-1 overflow-hidden px-[22px] pt-[20px]" style={{ rowGap: 18 }}>

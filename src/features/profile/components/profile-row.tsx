@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
-import { colors } from '@/shared/theme/tokens';
 import { ChevronRight } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
@@ -45,7 +44,7 @@ export function ProfileRow({ label, sub, value, right, left, onPress, last }: Pr
           </Text>
         ) : null}
         {right}
-        <ChevronRight size={12} color={colors.faint} strokeWidth={3.6} />
+        <ChevronRight />
       </Tap>
       {!last ? <View className="mx-[18px] h-[1px] bg-line" /> : null}
     </>

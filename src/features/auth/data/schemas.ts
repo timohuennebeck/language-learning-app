@@ -9,7 +9,7 @@ export const UPCOMING_LEARNING_LANGUAGES = ['en', 'es', 'de'] as const;
 export type LearningLanguage = z.infer<typeof LearningLanguageSchema>;
 
 /** The app covers A1–B2 only; C1/C2 are out of scope everywhere. */
-export const LevelSchema = z.enum(['A1', 'A2', 'B1', 'B2']);
+const LevelSchema = z.enum(['A1', 'A2', 'B1', 'B2']);
 export const LEVELS = LevelSchema.options;
 export type Level = z.infer<typeof LevelSchema>;
 

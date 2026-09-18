@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
@@ -21,7 +22,10 @@ export function StreakCard({ streakDays, minutesToday, goalMinutes, week, classN
   const days = t('common.weekdayLetters', { returnObjects: true }) as string[];
   return (
     <View
-      className={`relative overflow-hidden rounded-[28px] bg-surface px-[22px] py-[20px] ${className ?? ''}`}
+      className={cn(
+        'relative overflow-hidden rounded-[28px] bg-surface px-[22px] py-[20px]',
+        className,
+      )}
     >
       <Kicker>{t('profile.streak')}</Kicker>
       <Text

@@ -68,14 +68,7 @@ export function GoalStep() {
               }}
             >
               {on ? (
-                <CheckCircle
-                  size={22}
-                  bg={colors.accent[700]}
-                  stroke={2.8}
-                  iconSize={12}
-                  className="absolute right-[10px] top-[10px]"
-                  style={{ position: 'absolute' }}
-                />
+                <CheckCircle size={22} stroke={2.8} className="absolute right-[10px] top-[10px]" />
               ) : null}
               <Illustration name={g.pip} size={76} />
               <Text

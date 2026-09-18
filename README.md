@@ -39,11 +39,12 @@ src/
     grammar, review, live, progress, paywall, dev
   shared/
     ui/                  primitives: Text, Tap, Button, Screen, TopBar, Kicker, Marks, Ring,
-                         Gradient (CardGradient), RecommendedBadge, Illustration, icons…
+                         DropdownPill, Gradient (CardGradient), RecommendedBadge, Illustration, icons…
     components/          composed pieces used by several features: HomeHeader, HeroCarousel,
                          Previews, DailyGoal, OptionRow, TimePicker, Hint, PipTip, SelectRow,
                          InlineFlow / InlineMark / MarkedHeadline (inline highlighted words),
-                         ProgressChecklist, AppLanguageList, LearningLanguageList…
+                         TitledFrame (TopBar + Headline + footer scaffold), ProgressChecklist,
+                         AppLanguageList, LearningLanguageList…
     hooks/               useAppFonts, useBack / useGoHome / useGoToCourse
     lib/                 cn, haptics, i18n, storage, styles (ring helpers), text, time, query client
     data/                query key registry
