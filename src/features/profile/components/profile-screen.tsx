@@ -10,7 +10,7 @@ import { useProfile, useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
 import { Avatar } from '@/shared/ui/illustration';
 import { CogIcon } from '@/shared/ui/icons';
-import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -55,7 +55,7 @@ export function ProfileScreen() {
   const p = useProgress().data ?? FALLBACK;
 
   return (
-    <Screen top={TAB_TOP} bottom={6} scroll>
+    <Screen tabRoot bottom={6} scroll>
       <View className="flex-1 px-[22px]">
         <HomeHeader
           right={

@@ -4,9 +4,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
 
-/** Top offset shared by the three tab roots so the header never jumps when switching tabs. */
-export const TAB_TOP = -16;
-
 type ScreenProps = ViewProps & {
   className?: string;
   /** Extra top padding added to the safe-area inset (design screens use 56–60px on a 60px inset). */
@@ -17,6 +14,11 @@ type ScreenProps = ViewProps & {
   scroll?: boolean;
   /** Skip the safe-area top padding (screens that paint their own header area). */
   edgeToEdgeTop?: boolean;
+  /**
+   * Root of a bottom tab. The native tab container already insets its content below the status
+   * bar, so no top padding is added on device; the web preview keeps a simulated inset.
+   */
+  tabRoot?: boolean;
   /** Keep the footer above the keyboard (screens with text inputs). */
   keyboard?: boolean;
   /**
@@ -34,13 +36,20 @@ export function Screen({
   bottom = 0,
   scroll = false,
   edgeToEdgeTop = false,
+  tabRoot = false,
   keyboard = false,
   footer,
   children,
   ...props
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
-  const paddingTop = edgeToEdgeTop ? 0 : insets.top + top;
+  const paddingTop = edgeToEdgeTop
+    ? 0
+    : tabRoot
+      ? Platform.OS === 'web'
+        ? insets.top - 16
+        : 0
+      : insets.top + top;
   const paddingBottom = insets.bottom + bottom;
   let body: ReactNode;
   if (footer) {
