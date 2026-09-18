@@ -695,6 +695,8 @@
   "tabs": {
     "learn": "Learn",
     "course": "Course",
-    "profile": "Profile"
+    "profile": "Profile",
+    "startTalk": "Start a conversation",
+    "startTalkShort": "Talk"
   }
 }

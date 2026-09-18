@@ -1,6 +1,8 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useTranslation } from 'react-i18next';
 
+import { StartTalkAccessory } from '@/shared/components/start-talk-bar';
+import { HAS_TAB_ACCESSORY } from '@/shared/lib/platform';
 import { colors } from '@/shared/theme/tokens';
 
 /**
@@ -16,6 +18,11 @@ export default function TabsLayout() {
       // No custom label font: the bar's own SF metrics keep the platform spacing between icon and label.
       minimizeBehavior="onScrollDown"
     >
+      {HAS_TAB_ACCESSORY ? (
+        <NativeTabs.BottomAccessory>
+          <StartTalkAccessory />
+        </NativeTabs.BottomAccessory>
+      ) : null}
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Icon sf="book.pages.fill" md="menu_book" />
         <NativeTabs.Trigger.Label>{t('tabs.learn')}</NativeTabs.Trigger.Label>
