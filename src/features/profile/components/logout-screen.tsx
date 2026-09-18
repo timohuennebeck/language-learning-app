@@ -75,19 +75,6 @@ export function LogoutScreen() {
           </Text>
         </View>
       </View>
-      <View
-        className="mt-[12px] flex-row items-start rounded-[18px] bg-surface px-[14px] py-[14px]"
-        style={{ columnGap: 10 }}
-      >
-        <View className="mt-[1px] h-[20px] w-[20px] items-center justify-center rounded-full bg-accent-800">
-          <Text className="font-semibold text-accent-100" style={{ fontSize: 12 }}>
-            i
-          </Text>
-        </View>
-        <Text className="flex-1 text-sub" style={{ fontSize: 14, lineHeight: 20.3 }}>
-          {t('profile.logout.info')}
-        </Text>
-      </View>
     </Screen>
   );
 }
