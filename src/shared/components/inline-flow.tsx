@@ -38,11 +38,23 @@ export function InlineFlow({ pieces, textStyle, textClassName, className, style 
     // Keep each word with its trailing space so the row wraps at the same points as a paragraph.
     const words = piece.match(/\S+\s*|\s+/g) ?? [];
     words.forEach((w, j) => {
-      items.push(
+      const text = (
         <Text key={`${i}-${j}`} className={textClassName} style={textStyle}>
           {w}
-        </Text>,
+        </Text>
       );
+      const prev = items[items.length - 1];
+      if (j === 0 && !w.trim() && prev && typeof pieces[i - 1] !== 'string') {
+        // A space right after a box: glue it to the box so it can never start a wrapped line.
+        items[items.length - 1] = (
+          <View key={`${i}-${j}-glued`} style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {prev}
+            {text}
+          </View>
+        );
+        return;
+      }
+      items.push(text);
     });
   });
   return (

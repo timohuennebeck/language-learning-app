@@ -28,7 +28,11 @@ export const SessionSchema = z.object({
   readingLevel: LevelSchema.nullable().default(null),
   dailyGoalMinutes: z.number().int().default(15),
   reminder: z
-    .object({ hour: z.number().int(), minute: z.number().int(), repeat: z.number().int() })
+    .object({
+      hour: z.number().int(),
+      minute: z.number().int(),
+      repeat: z.number().int().min(0).max(2),
+    })
     .nullable()
     .default({ hour: 20, minute: 30, repeat: 0 }),
   goal: z.string().nullable().default('media'),

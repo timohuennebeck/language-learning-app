@@ -13,6 +13,8 @@ import { Text } from '@/shared/ui/text';
 const PIP = 128;
 /** How far Pip stands above the card (the rest overlaps the card). */
 const PIP_ABOVE = 84;
+/** Space between the content above and the card; Pip's head reaches into it. */
+const CARD_TOP = 62;
 
 type Props = {
   correct: boolean;
@@ -28,7 +30,14 @@ export function FeedbackCard({ correct, why, wrongWhy, youLine, rightLine }: Pro
   const c = correct ? colors.ok : colors.err;
   return (
     // Pip lives in a wrapper that includes the space above the card, so no platform clips him.
-    <View style={{ paddingTop: PIP_ABOVE, marginHorizontal: -6, paddingHorizontal: 6 }}>
+    <View
+      style={{
+        paddingTop: PIP_ABOVE,
+        marginTop: CARD_TOP - PIP_ABOVE,
+        marginHorizontal: -6,
+        paddingHorizontal: 6,
+      }}
+    >
       <View
         className="rounded-[26px] px-[20px] pb-[20px] pt-[18px]"
         style={{ backgroundColor: c.bg }}

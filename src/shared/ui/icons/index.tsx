@@ -1,7 +1,7 @@
 /**
  * Icon set. Generic glyphs come from Heroicons (react-native-heroicons), sized and
  * stroked to match the design. Bespoke shapes that Heroicons doesn't carry
- * (drag handle, waveforms, call controls, Google mark) are drawn with react-native-svg
+ * (waveforms, call controls, Google mark) are drawn with react-native-svg
  * using the design's own paths.
  */
 import {

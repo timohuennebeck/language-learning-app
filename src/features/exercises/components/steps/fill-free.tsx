@@ -1,4 +1,5 @@
-import { View } from 'react-native';
+import { useRef } from 'react';
+import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AnswerChip } from '@/features/exercises/components/answer-chip';
@@ -11,6 +12,7 @@ import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Caret } from '@/shared/ui/caret';
 import { Kicker } from '@/shared/ui/kicker';
+import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
 /** 19b3 / 25c / 25d · Lücke frei getippt. */
@@ -23,6 +25,7 @@ export function FillFree({
 }: StepProps<'fill-free'> & { onSubmit?: () => void }) {
   const { t } = useTranslation();
   const task = phase === 'task';
+  const input = useRef<TextInput>(null);
   return (
     <>
       <Kicker size={12} style={{ marginTop: STEP_TOP }}>
@@ -36,7 +39,10 @@ export function FillFree({
           {
             key: 'gap',
             node: task ? (
-              <View
+              <Tap
+                haptic="none"
+                accessibilityRole="none"
+                onPress={() => input.current?.focus()}
                 style={{
                   minWidth: 130,
                   height: 46,
@@ -49,6 +55,7 @@ export function FillFree({
                 }}
               >
                 <AutoWidthInput
+                  ref={input}
                   value={answer}
                   onChangeText={setAnswer}
                   fontSize={SENTENCE.fontSize - 2}
@@ -57,7 +64,7 @@ export function FillFree({
                   onSubmitEditing={onSubmit}
                 />
                 <Caret height={24} style={{ marginLeft: 2 }} />
-              </View>
+              </Tap>
             ) : (
               <AnswerChip text={answer} ok={phase === 'correct'} size={SENTENCE.fontSize} />
             ),

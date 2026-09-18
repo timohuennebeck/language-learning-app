@@ -1,3 +1,5 @@
+import { View } from 'react-native';
+
 import type { Run } from '@/features/exercises/data/schemas';
 import { InlineFlow, type FlowPiece } from '@/shared/components/inline-flow';
 import { InlineMark } from '@/shared/components/inline-mark';
@@ -19,29 +21,24 @@ type Props = {
  */
 export function MarkedRuns({ runs, color, size = 17, markColor }: Props) {
   const lineHeight = size * 1.45;
-  const pieces: FlowPiece[] = [];
-  runs.forEach((r, i) => {
-    if (r.mark) {
-      const ok = r.mark === 'ok';
-      pieces.push({
-        key: `m${i}`,
-        node: (
-          <InlineMark
-            size={size}
-            color={markColor ?? (ok ? colors.ok.text : colors.err.text)}
-            bg={ok ? colors.ok.chip : colors.err.mark}
-          >
-            {r.text}
-          </InlineMark>
-        ),
-      });
-    } else {
-      pieces.push(r.text);
-    }
-    if (r.sup) {
-      pieces.push({
-        key: `s${i}`,
-        node: (
+  const pieces: FlowPiece[] = runs.map((r, i) => {
+    if (!r.mark) return r.text;
+    const ok = r.mark === 'ok';
+    const mark = (
+      <InlineMark
+        size={size}
+        color={markColor ?? (ok ? colors.ok.text : colors.err.text)}
+        bg={ok ? colors.ok.chip : colors.err.mark}
+      >
+        {r.text}
+      </InlineMark>
+    );
+    // The footnote number shares one wrap item with its mark so it can never wrap alone.
+    return {
+      key: `m${i}`,
+      node: r.sup ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {mark}
           <Text
             className="font-semibold"
             style={{
@@ -55,9 +52,11 @@ export function MarkedRuns({ runs, color, size = 17, markColor }: Props) {
           >
             {r.sup}
           </Text>
-        ),
-      });
-    }
+        </View>
+      ) : (
+        mark
+      ),
+    };
   });
   return <InlineFlow pieces={pieces} textStyle={{ fontSize: size, lineHeight, color }} />;
 }
