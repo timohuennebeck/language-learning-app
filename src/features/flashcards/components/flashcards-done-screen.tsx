@@ -135,12 +135,9 @@ export function FlashcardsDoneScreen() {
         </Text>
       </View>
       {result.again.length ? (
-        <View
-          className="mt-[30px] flex-1 overflow-hidden rounded-[28px] bg-white"
-          style={{ boxShadow: `0 0 0 1.5px ${colors.line2}`, minHeight: 120 }}
-        >
+        <View className="mt-[30px] flex-1 overflow-hidden" style={{ minHeight: 120 }}>
           <ScrollView
-            contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+            contentContainerStyle={{ paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
           >
             {groups.map(([title, cards], i) => (
@@ -150,7 +147,7 @@ export function FlashcardsDoneScreen() {
           {/* Fade the list out towards the button so it reads as scrollable. */}
           <Gradient
             pointerEvents="none"
-            colors={['rgba(255,255,255,0)', '#ffffff']}
+            colors={['rgba(243,245,254,0)', colors.bg]}
             className="absolute bottom-0 left-0 right-0"
             style={{ height: 56 }}
           />
