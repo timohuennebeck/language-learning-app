@@ -9,7 +9,8 @@ type Segment = {
   tier: 0 | 1 | 2;
   reps: string;
   stats: { right: number; total: number };
-  sentence: { pre: string; post: string; de: string };
+  /** `deMarks`: the phrase(s) inside `de` that translate the word, highlighted on the word screen. */
+  sentence: { pre: string; post: string; de: string; deMarks: string[] };
 };
 
 export const segments: Record<string, Segment> = {
@@ -26,6 +27,7 @@ export const segments: Record<string, Segment> = {
       pre: 'Hier, ',
       post: ' dans un petit café près du canal.',
       de: 'Gestern bin ich in ein kleines Café am Kanal gegangen.',
+      deMarks: ['bin ich', 'gegangen'],
     },
   },
   pres: {
@@ -41,6 +43,7 @@ export const segments: Record<string, Segment> = {
       pre: 'Hier, je suis allée dans un petit café ',
       post: '.',
       de: 'Gestern bin ich in ein kleines Café am Kanal gegangen.',
+      deMarks: ['am Kanal'],
     },
   },
   demande: {
@@ -57,6 +60,7 @@ export const segments: Record<string, Segment> = {
       pre: 'Le serveur ',
       post: ' si je voulais un crème ou un allongé.',
       de: 'Der Kellner hat mich gefragt, ob ich einen Milchkaffee oder einen verlängerten Espresso möchte.',
+      deMarks: ['hat mich gefragt'],
     },
   },
   voulais: {
@@ -72,6 +76,7 @@ export const segments: Record<string, Segment> = {
       pre: 'Le serveur m’a demandé ',
       post: ' un crème ou un allongé.',
       de: 'Der Kellner hat mich gefragt, ob ich einen Milchkaffee oder einen verlängerten Espresso möchte.',
+      deMarks: ['ob ich', 'möchte'],
     },
   },
   creme: {
@@ -88,6 +93,7 @@ export const segments: Record<string, Segment> = {
       pre: 'Le serveur m’a demandé si je voulais ',
       post: '.',
       de: 'Der Kellner hat mich gefragt, ob ich einen Milchkaffee möchte.',
+      deMarks: ['einen Milchkaffee'],
     },
   },
   suite: {
@@ -103,6 +109,7 @@ export const segments: Record<string, Segment> = {
       pre: 'Je n’ai pas compris ',
       post: ', alors il a souri.',
       de: 'Ich habe es nicht sofort verstanden, da hat er gelächelt.',
+      deMarks: ['sofort'],
     },
   },
   pain: {
@@ -118,6 +125,7 @@ export const segments: Record<string, Segment> = {
       pre: 'J’ai commandé un allongé et ',
       post: '.',
       de: 'Ich habe einen verlängerten Espresso und ein Schokobrötchen bestellt.',
+      deMarks: ['ein Schokobrötchen'],
     },
   },
 };

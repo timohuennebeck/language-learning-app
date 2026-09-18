@@ -12,6 +12,25 @@ import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 import { TopBar } from '@/shared/ui/top-bar';
 
+/** Splits `text` into plain runs and `{ mark }` runs for every occurrence of the given phrases. */
+function markPieces(text: string, marks: string[]): (string | { mark: string })[] {
+  const out: (string | { mark: string })[] = [];
+  let rest = text;
+  while (rest) {
+    let best: { at: number; mark: string } | null = null;
+    for (const m of marks) {
+      const at = rest.indexOf(m);
+      if (at >= 0 && (!best || at < best.at)) best = { at, mark: m };
+    }
+    if (!best) break;
+    if (best.at > 0) out.push(rest.slice(0, best.at));
+    out.push({ mark: best.mark });
+    rest = rest.slice(best.at + best.mark.length);
+  }
+  if (rest) out.push(rest);
+  return out;
+}
+
 /** 16a · Worterklärung aus dem Lesetext. */
 export function WordScreen() {
   const { t } = useTranslation();
@@ -73,9 +92,30 @@ export function WordScreen() {
             s.sentence.post,
           ]}
         />
-        <Text className="text-muted" style={{ fontSize: 14.5, lineHeight: 21 }}>
-          {s.sentence.de}
-        </Text>
+        <InlineFlow
+          textStyle={{ fontSize: 14.5, lineHeight: 21, color: colors.muted }}
+          pieces={markPieces(s.sentence.de, s.sentence.deMarks).map((piece, i) =>
+            typeof piece === 'string'
+              ? piece
+              : {
+                  key: `de-${i}`,
+                  node: (
+                    <View
+                      style={{
+                        borderRadius: 5,
+                        paddingHorizontal: 3,
+                        paddingVertical: 1,
+                        backgroundColor: colors.track,
+                      }}
+                    >
+                      <Text style={{ fontSize: 14.5, lineHeight: 18, color: colors.accent[900] }}>
+                        {piece.mark}
+                      </Text>
+                    </View>
+                  ),
+                },
+          )}
+        />
       </View>
       <View className="flex-1" />
       <View style={{ rowGap: 10 }}>
