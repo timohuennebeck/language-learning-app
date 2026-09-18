@@ -46,7 +46,7 @@ export function PrognosisStep() {
     art: IllustrationName;
   }[] = [
     { skill: 'reading', from: session.readingLevel ?? 'B1', art: 'pip-magnifier' },
-    { skill: 'speaking', from: session.level, art: 'pip-clock' },
+    { skill: 'speaking', from: session.level, art: 'pip-glasses-book' },
   ];
 
   return (
