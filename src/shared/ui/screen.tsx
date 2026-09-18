@@ -4,8 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { cn } from '@/shared/lib/cn';
 
-/** Breathing room above the tab header on device (the native tab container handles the status bar). */
-const TAB_ROOT_TOP = 8;
+/** Gap between the status bar and the pinned tab header. */
+const TAB_ROOT_TOP = 0;
 
 type ScreenProps = ViewProps & {
   className?: string;
@@ -18,8 +18,7 @@ type ScreenProps = ViewProps & {
   /** Skip the safe-area top padding (screens that paint their own header area). */
   edgeToEdgeTop?: boolean;
   /**
-   * Root of a bottom tab. The native tab container already insets its content below the status
-   * bar, so only a small gap is added on device; the web preview keeps a simulated inset.
+   * Root of a bottom tab: safe-area top plus a fixed small gap, identical on every tab.
    */
   tabRoot?: boolean;
   /** Keep the footer above the keyboard (screens with text inputs). */
@@ -49,13 +48,7 @@ export function Screen({
   ...props
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
-  const paddingTop = edgeToEdgeTop
-    ? 0
-    : tabRoot
-      ? Platform.OS === 'web'
-        ? insets.top - 8
-        : TAB_ROOT_TOP
-      : insets.top + top;
+  const paddingTop = edgeToEdgeTop ? 0 : insets.top + (tabRoot ? TAB_ROOT_TOP : top);
   const paddingBottom = insets.bottom + bottom;
   let body: ReactNode;
   if (footer || header) {
@@ -71,6 +64,7 @@ export function Screen({
           // Bleed the scroll area past the horizontal padding so shadows/rings are not clipped.
           style={{ marginHorizontal: -24 }}
           contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
+          contentInsetAdjustmentBehavior="never"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -84,6 +78,7 @@ export function Screen({
       <ScrollView
         className="flex-1 bg-bg"
         contentContainerStyle={{ flexGrow: 1, paddingTop, paddingBottom }}
+        contentInsetAdjustmentBehavior="never"
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
