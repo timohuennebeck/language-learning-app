@@ -24,7 +24,7 @@ export function AccountStep() {
   );
   return (
     <OnboardingFrame
-      step={10}
+      step={13}
       title={t('onboarding.account.title')}
       sub={t('onboarding.account.sub')}
       footer={

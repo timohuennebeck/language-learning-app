@@ -2,20 +2,27 @@ import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { GradientHeader } from '@/shared/components/gradient-header';
+import {
+  ONBOARDING_STEPS,
+  PLACEMENT_STEPS,
+} from '@/features/onboarding/components/onboarding-frame';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
+import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { MicSmall } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { CheckCircle } from '@/shared/ui/marks';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
+import { ProgressTopBar } from '@/shared/ui/top-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /** 60c · Einstufung · Rollenspiel-Briefing "Im Café" before the placement call. */
 export function AssessmentCallIntroScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const tasks = t('onboarding.placement.call.tasks', { returnObjects: true }) as string[];
   return (
     <Screen
@@ -32,15 +39,19 @@ export function AssessmentCallIntroScreen() {
         />
       }
     >
-      <GradientHeader
-        left="close"
-        title={t('onboarding.placement.screenTitle')}
-        className="-mx-[22px]"
-        paddingBottom={18}
-        onLeftPress={() => router.back()}
+      <Gradient
+        {...HEADER_GRADIENT}
+        className="-mx-[22px] items-center overflow-hidden px-[22px]"
+        style={{ paddingTop: insets.top - 4, paddingBottom: 18 }}
       >
-        <Illustration name="pip-barista" size={150} style={{ marginTop: 26 }} />
-      </GradientHeader>
+        <ProgressTopBar
+          className="self-stretch"
+          progress={PLACEMENT_STEPS.cafe / ONBOARDING_STEPS}
+          label={t('common.stepOf', { step: PLACEMENT_STEPS.cafe, total: ONBOARDING_STEPS })}
+          onBack={() => router.back()}
+        />
+        <Illustration name="pip-barista" size={150} style={{ marginTop: 22 }} />
+      </Gradient>
       <Kicker tracking={0.1} className="mt-[22px] text-accent-700">
         {t('onboarding.placement.call.kicker')}
       </Kicker>

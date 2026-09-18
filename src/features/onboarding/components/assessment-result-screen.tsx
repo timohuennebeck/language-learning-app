@@ -3,13 +3,17 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import { PlacementTop } from '@/features/onboarding/components/placement-top';
+import {
+  ONBOARDING_STEPS,
+  PLACEMENT_STEPS,
+} from '@/features/onboarding/components/onboarding-frame';
 import { usePlacement } from '@/features/onboarding/lib/placement-store';
 import { Button } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
+import { ProgressTopBar } from '@/shared/ui/top-bar';
 
 /** 60d · Einstufung · result of one reading round. */
 export function AssessmentResultScreen() {
@@ -17,6 +21,7 @@ export function AssessmentResultScreen() {
   const router = useRouter();
   const { update } = useSession();
   const p = usePlacement();
+  const step = p.round === 1 ? PLACEMENT_STEPS.result1 : PLACEMENT_STEPS.result2;
   // Design sample when the screen is opened directly (dev index) without a played round.
   const result = p.result ?? { knownPct: 96, cards: ['a', 'b', 'c'], correct: 2, total: 3 };
 
@@ -36,7 +41,11 @@ export function AssessmentResultScreen() {
       className="px-[22px]"
       footer={<Button height={58} size={17} label={t('common.next')} onPress={onNext} />}
     >
-      <PlacementTop round={p.round} progress={false} />
+      <ProgressTopBar
+        progress={step / ONBOARDING_STEPS}
+        label={t('common.stepOf', { step, total: ONBOARDING_STEPS })}
+        onBack={() => router.dismissTo('/(onboarding)/assessment-intro')}
+      />
       <View
         className="relative mt-[14px] overflow-hidden rounded-[26px] bg-surface px-[20px] py-[18px]"
         style={{ minHeight: 172 }}

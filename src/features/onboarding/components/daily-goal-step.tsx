@@ -15,7 +15,7 @@ export function DailyGoalStep() {
   const next = () => router.push('/(onboarding)/paywall');
   return (
     <OnboardingFrame
-      step={9}
+      step={12}
       title={t('onboarding.dailyGoal.title', { name: session.name })}
       sub={t('onboarding.dailyGoal.sub')}
       footer={
