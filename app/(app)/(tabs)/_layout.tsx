@@ -13,8 +13,8 @@ export default function TabsLayout() {
   return (
     <NativeTabs
       tintColor={colors.accent[800]}
+      // No custom label font: the bar's own SF metrics keep the platform spacing between icon and label.
       minimizeBehavior="onScrollDown"
-      labelStyle={{ fontFamily: 'Inter-Medium', fontSize: 11 }}
     >
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Icon sf="book.pages.fill" md="menu_book" />
