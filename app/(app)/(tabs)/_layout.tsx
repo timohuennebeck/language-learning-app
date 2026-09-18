@@ -17,14 +17,14 @@ export default function TabsLayout() {
       labelStyle={{ fontFamily: 'Inter-Medium', fontSize: 11 }}
     >
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'dumbbell', selected: 'dumbbell.fill' }}
+          md="fitness_center"
+        />
         <NativeTabs.Trigger.Label>{t('tabs.learn')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="course">
-        <NativeTabs.Trigger.Icon
-          sf={{ default: 'graduationcap', selected: 'graduationcap.fill' }}
-          md="school"
-        />
+        <NativeTabs.Trigger.Icon sf="book.pages.fill" md="menu_book" />
         <NativeTabs.Trigger.Label>{t('tabs.course')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
