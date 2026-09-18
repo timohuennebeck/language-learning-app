@@ -46,15 +46,7 @@
     },
     "back": "Zurück",
     "close": "Schließen",
-    "weekdayLetters": [
-      "M",
-      "D",
-      "M",
-      "D",
-      "F",
-      "S",
-      "S"
-    ],
+    "weekdayLetters": ["M", "D", "M", "D", "F", "S", "S"],
     "languagePill": "Französisch · A2",
     "reset": "Zurücksetzen"
   },
@@ -150,13 +142,7 @@
       "question": "Qu’est-ce que tu fais le week-end ?",
       "stage": "Stufe 1 · Präsens",
       "stagesLabel": "Die fünf Stufen",
-      "stages": [
-        "Heute",
-        "Gestern",
-        "Morgen",
-        "Eventuell",
-        "Träume"
-      ],
+      "stages": ["Heute", "Gestern", "Morgen", "Eventuell", "Träume"],
       "cta": "Konversation starten · 2 Min"
     },
     "levelSelf": {
@@ -313,11 +299,16 @@
     "accountEmail": {
       "email": "E-Mail",
       "password": "Passwort",
-      "emailValue": "maya.k@mail.de",
-      "hint": "Mindestens 8 Zeichen",
       "cta": "Konto anlegen",
       "showPassword": "Passwort anzeigen",
-      "hidePassword": "Passwort verbergen"
+      "hidePassword": "Passwort verbergen",
+      "emailPlaceholder": "name@mail.de",
+      "passwordPlaceholder": "Passwort",
+      "rules": {
+        "length": "Mindestens 8 Zeichen",
+        "number": "Eine Zahl",
+        "special": "Ein Sonderzeichen"
+      }
     },
     "plusActive": {
       "title": "Pip ist bereit, {{name}}.",
@@ -366,12 +357,7 @@
         "cta": "Üben"
       }
     },
-    "filters": [
-      "Für dich",
-      "Alltag",
-      "Reisen",
-      "Freunde"
-    ]
+    "filters": ["Für dich", "Alltag", "Reisen", "Freunde"]
   },
   "languages": {
     "title": "Sprachen",
@@ -409,11 +395,7 @@
     }
   },
   "chapter": {
-    "chapters": [
-      "Kapitel 1",
-      "Kapitel 2 · Im Café",
-      "Kapitel 3"
-    ],
+    "chapters": ["Kapitel 1", "Kapitel 2 · Im Café", "Kapitel 3"],
     "title": "Im Café",
     "station": "Station {{n}} von 5 · aus deiner Konversation vom Dienstag",
     "next": "Weiter",
@@ -647,11 +629,7 @@
       "sub": "Eine Erinnerung am Tag. Tippe auf eine Zahl, um sie zu wählen.",
       "preview1": "Pip meldet sich ",
       "previewAt": " um ",
-      "freq": [
-        "jeden Tag",
-        "montags bis freitags",
-        "samstags und sonntags"
-      ],
+      "freq": ["jeden Tag", "montags bis freitags", "samstags und sonntags"],
       "tail": [
         " mit einer Lücke aus deinem letzten Konversation.",
         ". Am Wochenende bleibt es still.",

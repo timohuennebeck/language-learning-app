@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
+import { NO_OUTLINE } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
-import { CheckIcon, Eye } from '@/shared/ui/icons';
+import { Eye } from '@/shared/ui/icons';
+import { CheckCircle } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
@@ -17,8 +19,13 @@ export function AccountEmailStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const { completeOnboarding } = useSession();
-  const [email, setEmail] = useState(t('onboarding.accountEmail.emailValue'));
-  const [password, setPassword] = useState('12345678');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const rules = [
+    { key: 'length', ok: password.length >= 8 },
+    { key: 'number', ok: /\d/.test(password) },
+    { key: 'special', ok: /[^\p{L}\p{N}\s]/u.test(password) },
+  ] as const;
   const [show, setShow] = useState(false);
   const [focus, setFocus] = useState<'email' | 'password'>('email');
   const field = (focused: boolean) => ({
@@ -64,10 +71,14 @@ export function AccountEmailStep() {
               value={email}
               onChangeText={setEmail}
               onFocus={() => setFocus('email')}
+              autoFocus
+              placeholder={t('onboarding.accountEmail.emailPlaceholder')}
+              placeholderTextColor={colors.faint}
+              autoCorrect={false}
               autoCapitalize="none"
               keyboardType="email-address"
               className="flex-1 font-regular text-ink"
-              style={{ fontSize: 17, padding: 0 }}
+              style={[{ fontSize: 17, padding: 0 }, NO_OUTLINE]}
             />
           </View>
         </View>
@@ -84,8 +95,13 @@ export function AccountEmailStep() {
               onChangeText={setPassword}
               onFocus={() => setFocus('password')}
               secureTextEntry={!show}
+              placeholder={t('onboarding.accountEmail.passwordPlaceholder')}
+              placeholderTextColor={colors.faint}
               className="flex-1 font-regular text-ink"
-              style={{ fontSize: 17, padding: 0, letterSpacing: show ? 0 : 3.74 }}
+              style={[
+                { fontSize: 17, padding: 0, letterSpacing: show || !password ? 0 : 3.74 },
+                NO_OUTLINE,
+              ]}
             />
             <Tap
               haptic="light"
@@ -99,11 +115,22 @@ export function AccountEmailStep() {
               <Eye />
             </Tap>
           </View>
-          <View className="mt-[8px] flex-row items-center" style={{ columnGap: 7 }}>
-            <CheckIcon size={15} color={colors.accent[700]} strokeWidth={2.4} />
-            <Text className="text-muted" style={{ fontSize: 13.5 }}>
-              {t('onboarding.accountEmail.hint')}
-            </Text>
+          <View className="mt-[10px]" style={{ rowGap: 6 }}>
+            {rules.map((r) => (
+              <View key={r.key} className="flex-row items-center" style={{ columnGap: 8 }}>
+                {r.ok ? (
+                  <CheckCircle size={18} bg={colors.accent[700]} stroke={2.6} iconSize={10} />
+                ) : (
+                  <View
+                    className="h-[18px] w-[18px] rounded-full"
+                    style={{ boxShadow: `inset 0 0 0 1.5px ${colors.ring}` }}
+                  />
+                )}
+                <Text className={r.ok ? 'text-ink' : 'text-muted'} style={{ fontSize: 13.5 }}>
+                  {t(`onboarding.accountEmail.rules.${r.key}`)}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
       </View>
