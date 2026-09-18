@@ -1,1 +1,1 @@
-export { AssessmentIntroStep as default } from '@/features/onboarding/components/AssessmentIntroStep';
+export { AssessmentIntroStep as default } from '@/features/onboarding/components/assessment-intro-step';

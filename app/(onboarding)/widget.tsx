@@ -1,1 +1,1 @@
-export { WidgetStep as default } from '@/features/onboarding/components/WidgetStep';
+export { WidgetStep as default } from '@/features/onboarding/components/widget-step';

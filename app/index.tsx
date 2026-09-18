@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 
-import { useSession } from '@/features/auth/hooks/useSession';
-import { SplashScreen } from '@/features/onboarding/components/SplashScreen';
+import { useSession } from '@/features/auth/hooks/use-session';
+import { SplashScreen } from '@/features/onboarding/components/splash-screen';
 
 /** Entry: shows the branded splash briefly, then hands off to onboarding or the app. */
 export default function Index() {

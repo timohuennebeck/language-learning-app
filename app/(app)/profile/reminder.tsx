@@ -1,1 +1,1 @@
-export { ReminderScreen as default } from '@/features/profile/components/ReminderScreen';
+export { ReminderScreen as default } from '@/features/profile/components/reminder-screen';

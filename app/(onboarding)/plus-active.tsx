@@ -1,1 +1,1 @@
-export { PlusActiveStep as default } from '@/features/onboarding/components/PlusActiveStep';
+export { PlusActiveStep as default } from '@/features/onboarding/components/plus-active-step';

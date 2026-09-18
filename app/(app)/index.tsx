@@ -1,1 +1,1 @@
-export { HomeScreen as default } from '@/features/lessons/components/HomeScreen';
+export { HomeScreen as default } from '@/features/lessons/components/home-screen';

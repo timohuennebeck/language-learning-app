@@ -1,1 +1,1 @@
-export { NotificationsStep as default } from '@/features/onboarding/components/NotificationsStep';
+export { NotificationsStep as default } from '@/features/onboarding/components/notifications-step';

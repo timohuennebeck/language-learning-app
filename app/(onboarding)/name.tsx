@@ -1,1 +1,1 @@
-export { NameStep as default } from '@/features/onboarding/components/NameStep';
+export { NameStep as default } from '@/features/onboarding/components/name-step';

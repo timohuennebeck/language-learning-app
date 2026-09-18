@@ -1,1 +1,1 @@
-export { PaywallScreen as default } from '@/features/onboarding/components/PaywallScreen';
+export { PaywallScreen as default } from '@/features/onboarding/components/paywall-screen';

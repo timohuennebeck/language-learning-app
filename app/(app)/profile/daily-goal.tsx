@@ -1,1 +1,1 @@
-export { DailyGoalScreen as default } from '@/features/profile/components/DailyGoalScreen';
+export { DailyGoalScreen as default } from '@/features/profile/components/daily-goal-screen';

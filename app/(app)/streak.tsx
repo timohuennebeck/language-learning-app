@@ -1,1 +1,1 @@
-export { StreakScreen as default } from '@/features/progress/components/StreakScreen';
+export { StreakScreen as default } from '@/features/progress/components/streak-screen';

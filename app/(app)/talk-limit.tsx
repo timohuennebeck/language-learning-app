@@ -1,1 +1,1 @@
-export { TalkLimitScreen as default } from '@/features/paywall/components/TalkLimitScreen';
+export { TalkLimitScreen as default } from '@/features/paywall/components/talk-limit-screen';

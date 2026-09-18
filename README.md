@@ -52,6 +52,12 @@ design/reference/        one PNG per design screen, captured from the Claude Des
 design/screens.json      route + reference mapping used by the verification scripts and dev index
 ```
 
+File naming: every file and folder is kebab-case (`profile-screen.tsx`, `use-swipe-deck.ts`,
+`pip-wave.webp`), matching the current Expo template; exported identifiers stay PascalCase for
+components and camelCase for hooks (`profile-screen.tsx` exports `ProfileScreen`). Route files in
+`app/` are the URL segments. Screens end in `-screen`, onboarding steps in `-step`, hooks start
+with `use-`; each feature's `data/` holds `schemas.ts`, `repository.ts`, `keys.ts`, `content.ts`.
+
 Conventions: every tappable element is a `Tap` (haptics + button role); uppercase micro-labels are
 `Kicker`; pill CTAs are `Button` variants; screens never import from another feature's
 `components` folder, shared pieces live in `src/shared`.
@@ -96,4 +102,4 @@ fallback), so headings look wider there; the app uses the real Inter faces.
 - Supabase: replace `features/auth/lib/session-store.tsx` and the `data/repository.ts` mocks;
   the query keys and hooks stay.
 - RevenueCat: feed `PaywallScreen` / `TalkLimitScreen` plans from offerings.
-- PostHog: add the provider in `shared/components/AppProviders.tsx`.
+- PostHog: add the provider in `shared/components/app-providers.tsx`.

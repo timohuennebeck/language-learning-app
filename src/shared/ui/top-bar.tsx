@@ -1,0 +1,84 @@
+import type { ReactNode } from 'react';
+import { View } from 'react-native';
+
+import { cn } from '@/shared/lib/cn';
+import { colors } from '@/shared/theme/tokens';
+import { NavCircle } from '@/shared/ui/nav-circle';
+import { ProgressBar } from '@/shared/ui/progress-bar';
+import { Text } from '@/shared/ui/text';
+
+type TopBarProps = {
+  title?: string;
+  left?: 'back' | 'close' | ReactNode | null;
+  right?: ReactNode;
+  onLeftPress?: () => void;
+  /** Title font size: 20 (large, "Lesen") or 16 (compact, "Profil"). */
+  titleSize?: 16 | 20;
+  className?: string;
+};
+
+/** 40px tall bar: 40px left slot, centered title, 40px right slot. */
+export function TopBar({
+  title,
+  left = 'back',
+  right,
+  onLeftPress,
+  titleSize = 16,
+  className,
+}: TopBarProps) {
+  return (
+    <View className={cn('h-[40px] flex-row items-center', className)}>
+      <View className="w-[40px] items-start">
+        {left === 'back' || left === 'close' ? (
+          <NavCircle icon={left} onPress={onLeftPress} />
+        ) : (
+          left
+        )}
+      </View>
+      <View className="flex-1 items-center">
+        {title ? (
+          <Text
+            className="font-medium text-accent-900"
+            style={{ fontSize: titleSize }}
+            numberOfLines={1}
+          >
+            {title}
+          </Text>
+        ) : null}
+      </View>
+      <View className="w-[40px] items-end">{right}</View>
+    </View>
+  );
+}
+
+type ProgressTopBarProps = {
+  /** 0..1 */
+  progress: number;
+  label: string;
+  onBack?: () => void;
+  height?: number;
+  className?: string;
+  labelSize?: number;
+  trackColor?: string;
+};
+
+/** Back circle + 6px progress bar + trailing counter ("3 von 13", "3 / 8"). */
+export function ProgressTopBar({
+  progress,
+  label,
+  onBack,
+  height = 34,
+  className,
+  labelSize = 14.5,
+  trackColor = colors.track,
+}: ProgressTopBarProps) {
+  return (
+    <View className={cn('flex-row items-center', className)} style={{ height, columnGap: 12 }}>
+      <NavCircle icon="back" onPress={onBack} />
+      <ProgressBar progress={progress} className="flex-1" trackColor={trackColor} />
+      <Text className="text-muted" style={{ fontSize: labelSize, fontVariant: ['tabular-nums'] }}>
+        {label}
+      </Text>
+    </View>
+  );
+}

@@ -1,1 +1,1 @@
-export { PreparingScreen as default } from '@/features/exercises/components/PreparingScreen';
+export { PreparingScreen as default } from '@/features/exercises/components/preparing-screen';

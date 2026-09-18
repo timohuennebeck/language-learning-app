@@ -3,9 +3,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
-import { useSession } from '@/features/auth/hooks/useSession';
-import { AppProviders } from '@/shared/components/AppProviders';
-import { useAppFonts } from '@/shared/hooks/useAppFonts';
+import { useSession } from '@/features/auth/hooks/use-session';
+import { AppProviders } from '@/shared/components/app-providers';
+import { useAppFonts } from '@/shared/hooks/use-app-fonts';
 
 import '@/shared/theme/global.css';
 

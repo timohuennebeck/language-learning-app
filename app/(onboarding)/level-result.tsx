@@ -1,1 +1,1 @@
-export { LevelResultStep as default } from '@/features/onboarding/components/LevelResultStep';
+export { LevelResultStep as default } from '@/features/onboarding/components/level-result-step';

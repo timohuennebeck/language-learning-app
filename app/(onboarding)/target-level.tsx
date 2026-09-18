@@ -1,1 +1,1 @@
-export { TargetLevelStep as default } from '@/features/onboarding/components/TargetLevelStep';
+export { TargetLevelStep as default } from '@/features/onboarding/components/target-level-step';

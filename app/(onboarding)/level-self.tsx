@@ -1,1 +1,1 @@
-export { LevelSelfStep as default } from '@/features/onboarding/components/LevelSelfStep';
+export { LevelSelfStep as default } from '@/features/onboarding/components/level-self-step';

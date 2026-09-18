@@ -1,1 +1,1 @@
-export { ReviewScreen as default } from '@/features/review/components/ReviewScreen';
+export { ReviewScreen as default } from '@/features/review/components/review-screen';

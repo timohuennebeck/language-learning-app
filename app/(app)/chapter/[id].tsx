@@ -1,1 +1,1 @@
-export { ChapterScreen as default } from '@/features/lessons/components/ChapterScreen';
+export { ChapterScreen as default } from '@/features/lessons/components/chapter-screen';

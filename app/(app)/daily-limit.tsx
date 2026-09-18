@@ -1,1 +1,1 @@
-export { DailyLimitScreen as default } from '@/features/progress/components/DailyLimitScreen';
+export { DailyLimitScreen as default } from '@/features/progress/components/daily-limit-screen';

@@ -1,1 +1,1 @@
-export { LessonStartScreen as default } from '@/features/lessons/components/LessonStartScreen';
+export { LessonStartScreen as default } from '@/features/lessons/components/lesson-start-screen';
