@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { TextInput, View, type TextInputProps } from 'react-native';
+import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { NO_OUTLINE } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
@@ -14,8 +13,10 @@ type Props = Pick<TextInputProps, 'autoCapitalize' | 'onSubmitEditing' | 'return
 };
 
 /**
- * Text input whose width follows its content (an invisible twin Text measures it).
- * The native caret is hidden so the design's blinking `Caret` can sit right after the text.
+ * Single-line text input whose width follows its content. The value is drawn by a regular Text
+ * (which sizes the box in the same layout pass, so nothing jumps) and the real input is a
+ * transparent overlay on top of it. The native caret is hidden so the design's blinking `Caret`
+ * can sit right after the text.
  */
 export function AutoWidthInput({
   value,
@@ -26,14 +27,9 @@ export function AutoWidthInput({
   autoCapitalize = 'none',
   ...props
 }: Props) {
-  const [w, setW] = useState(20);
   return (
     <View style={{ maxWidth: '100%' }}>
-      <Text
-        className="font-regular"
-        style={{ fontSize, lineHeight, position: 'absolute', opacity: 0 }}
-        onLayout={(e) => setW(Math.max(20, Math.ceil(e.nativeEvent.layout.width) + 2))}
-      >
+      <Text numberOfLines={1} style={{ fontSize, lineHeight, color }}>
         {value || ' '}
       </Text>
       <TextInput
@@ -45,7 +41,8 @@ export function AutoWidthInput({
         caretHidden
         className="font-regular"
         style={[
-          { fontSize, lineHeight, padding: 0, width: w, maxWidth: '100%', color },
+          StyleSheet.absoluteFill,
+          { fontSize, lineHeight, padding: 0, color: 'transparent' },
           NO_OUTLINE,
         ]}
         {...props}

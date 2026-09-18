@@ -19,7 +19,7 @@ import {
 } from 'react-native-heroicons/outline';
 import { LockClosedIcon, PlayIcon, StarIcon as HiStar } from 'react-native-heroicons/solid';
 import { View } from 'react-native';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import Svg, { Path, Rect } from 'react-native-svg';
 
 import { colors } from '@/shared/theme/tokens';
 
@@ -95,32 +95,12 @@ export function Lock({ size = 12, color = colors.dim3 }: IconProps) {
   return <LockClosedIcon size={size} color={color} />;
 }
 
-/** Six-dot drag handle on word chips. */
-export function DragHandle({
-  color = colors.dim4,
-  height = 14,
-}: {
-  color?: string;
-  height?: number;
-}) {
-  const w = (height * 8) / 14;
-  return (
-    <Svg width={w} height={height} viewBox="0 0 8 14" fill={color}>
-      <Circle cx="2" cy="2" r="1.4" />
-      <Circle cx="6" cy="2" r="1.4" />
-      <Circle cx="2" cy="7" r="1.4" />
-      <Circle cx="6" cy="7" r="1.4" />
-      <Circle cx="2" cy="12" r="1.4" />
-      <Circle cx="6" cy="12" r="1.4" />
-    </Svg>
-  );
-}
-
-/** Three-dot overflow glyph inside a nav circle. */
+/** Settings cog inside a nav circle. */
 export function CogIcon({ size = 20, color = colors.glyph, strokeWidth = 1.8 }: IconProps) {
   return <Cog6ToothIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
+/** Three-dot overflow glyph inside a nav circle. */
 export function Ellipsis({ color = colors.glyph }: { color?: string }) {
   return (
     <View style={{ flexDirection: 'row', columnGap: 3 }}>

@@ -6,7 +6,7 @@ import { Text } from '@/shared/ui/text';
 
 /**
  * Inline answer chip inside a sentence (green when correct, red + strikethrough when wrong).
- * Rendered as a View inside the sentence Text: native Text cannot draw a rounded background.
+ * A real View so the rounded background renders on native; place it as an `InlineFlow` piece.
  */
 export function AnswerChip({ text, ok, size }: { text: string; ok: boolean; size: number }) {
   return (
@@ -16,7 +16,6 @@ export function AnswerChip({ text, ok, size }: { text: string; ok: boolean; size
         paddingHorizontal: 12,
         paddingVertical: 2,
         backgroundColor: ok ? colors.ok.chip : colors.err.chip,
-        transform: [{ translateY: size * 0.16 }],
       }}
     >
       <Text

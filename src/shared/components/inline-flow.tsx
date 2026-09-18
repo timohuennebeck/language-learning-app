@@ -14,16 +14,20 @@ type Props = {
 };
 
 /**
- * A paragraph that mixes plain words with inline boxes (highlighted words, chips).
+ * A paragraph that mixes plain words with inline boxes (highlighted words, chips, inputs).
  * Native `Text` cannot draw padding or rounded corners on a nested span, so the text is laid out
  * as a wrapping row of words and the boxes are real Views. Spaces are kept at the end of each word.
+ * A box taller than the line height makes its own line taller; the words on it stay centred.
  */
 export function InlineFlow({ pieces, textStyle, className, style }: Props) {
   const items: ReactNode[] = [];
   pieces.forEach((piece, i) => {
     if (typeof piece !== 'string') {
       items.push(
-        <View key={piece.key} style={{ height: textStyle.lineHeight, justifyContent: 'center' }}>
+        <View
+          key={piece.key}
+          style={{ minHeight: textStyle.lineHeight, maxWidth: '100%', justifyContent: 'center' }}
+        >
           {piece.node}
         </View>,
       );
@@ -40,7 +44,10 @@ export function InlineFlow({ pieces, textStyle, className, style }: Props) {
     });
   });
   return (
-    <View className={className} style={[{ flexDirection: 'row', flexWrap: 'wrap' }, style]}>
+    <View
+      className={className}
+      style={[{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }, style]}
+    >
       {items}
     </View>
   );

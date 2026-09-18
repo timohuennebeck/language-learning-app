@@ -29,7 +29,6 @@ export function ExerciseScreen() {
   const task = s.phase === 'task';
   const typed = s.step.kind === 'fill-free' || s.step.kind === 'translate-free';
   const keyboard = task && typed;
-  const px = task && s.step.kind === 'fill-options' ? 26 : 22;
   const submit = () => {
     if (s.canCheck) s.check();
   };
@@ -38,7 +37,7 @@ export function ExerciseScreen() {
   };
 
   return (
-    <Screen top={0} bottom={keyboard ? -34 : 0} style={{ paddingHorizontal: px }} keyboard={typed}>
+    <Screen top={0} bottom={keyboard ? -34 : 0} className="px-[22px]" keyboard={typed}>
       <ProgressTopBar
         height={32}
         progress={(s.index + 1) / s.total}
@@ -88,7 +87,7 @@ export function ExerciseScreen() {
               haptic="light"
               onPress={s.reset}
               accessibilityLabel={t('common.reset')}
-              className="h-[58px] w-[58px] items-center justify-center rounded-full bg-surface2"
+              className="h-[56px] w-[56px] items-center justify-center rounded-full bg-surface2"
             >
               <ResetGlyph />
             </Tap>
@@ -96,7 +95,7 @@ export function ExerciseScreen() {
           <Button
             className="flex-1"
             variant="strong"
-            height={s.step.kind === 'fill-options' || s.step.kind === 'build' ? 58 : 56}
+            height={56}
             label={t('common.check')}
             disabled={!s.canCheck}
             onPress={s.check}
