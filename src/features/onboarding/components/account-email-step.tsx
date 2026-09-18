@@ -22,16 +22,16 @@ const STRENGTH_COLOR = [
   colors.ok.icon,
 ];
 
-/** 1–4: length carries most weight; digits, mixed case and symbols each add a point. */
+/** 1–4: under 8 characters is weak, 8+ starts at okay; length, digits, mixed case and symbols add. */
 function passwordStrength(password: string) {
   if (!password) return 0;
-  let score = 0;
-  if (password.length >= 8) score += 1;
+  if (password.length < 8) return 1;
+  let score = 2;
   if (password.length >= 12) score += 1;
   if (/\d/.test(password)) score += 1;
   if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
   if (/[^\p{L}\p{N}\s]/u.test(password)) score += 1;
-  return Math.max(1, Math.min(4, score)) as 1 | 2 | 3 | 4;
+  return Math.min(4, score) as 1 | 2 | 3 | 4;
 }
 
 /** 12b · E-Mail und Passwort (16 von 17). With `?mode=login` it is the "Einloggen" page from Welcome. */
