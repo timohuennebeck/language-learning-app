@@ -2,13 +2,18 @@ import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { LEVELS, type Level } from '@/features/auth/data/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { OptionCard } from '@/features/onboarding/components/option-card';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Text } from '@/shared/ui/text';
 
-const OPTIONS = ['B1', 'B2', 'C1'] as const;
+/** Reachable targets: every level above the current one, capped at B2 (the app's ceiling). */
+function targetsFor(level: Level): Level[] {
+  const above = LEVELS.slice(LEVELS.indexOf(level) + 1);
+  return above.length ? above : [LEVELS[LEVELS.length - 1]];
+}
 
 /** 09g · Ziel-Level (8 von 13). */
 export function TargetLevelStep() {
@@ -47,7 +52,7 @@ export function TargetLevelStep() {
         </Text>
       </View>
       <View className="mt-[16px]" style={{ rowGap: 10 }}>
-        {OPTIONS.map((lvl) => (
+        {targetsFor(session.level).map((lvl) => (
           <OptionCard
             key={lvl}
             badge={lvl}

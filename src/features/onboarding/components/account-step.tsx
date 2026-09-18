@@ -13,11 +13,11 @@ import { Text } from '@/shared/ui/text';
 export function AccountStep() {
   const { t } = useTranslation();
   const router = useRouter();
-  const link = (label: string) => (
+  const link = (label: string, doc?: 'privacy') => (
     <Text
-      className="text-accent-700 underline"
+      className="font-semibold text-accent-800"
       style={{ fontSize: 13.5 }}
-      onPress={() => router.push('/(onboarding)/terms')}
+      onPress={() => router.push({ pathname: '/(onboarding)/terms', params: doc ? { doc } : {} })}
     >
       {label}
     </Text>
@@ -32,7 +32,7 @@ export function AccountStep() {
           {t('onboarding.account.legal1')}
           {link(t('common.terms'))}
           {t('onboarding.account.legal2')}
-          {link(t('common.privacy'))}
+          {link(t('common.privacy'), 'privacy')}
           {t('onboarding.account.legal3')}
         </Text>
       }

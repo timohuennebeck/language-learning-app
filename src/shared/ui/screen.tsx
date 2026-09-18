@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -15,6 +16,11 @@ type ScreenProps = ViewProps & {
   edgeToEdgeTop?: boolean;
   /** Keep the footer above the keyboard (screens with text inputs). */
   keyboard?: boolean;
+  /**
+   * Pinned bottom actions. When set, `children` scroll and the footer always stays in view,
+   * so a primary button is never pushed off small screens.
+   */
+  footer?: ReactNode;
 };
 
 /** Full-height screen container with the app background and safe-area aware padding. */
@@ -26,34 +32,58 @@ export function Screen({
   scroll = false,
   edgeToEdgeTop = false,
   keyboard = false,
+  footer,
   children,
   ...props
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
-  const padding = {
-    paddingTop: edgeToEdgeTop ? 0 : insets.top + top,
-    paddingBottom: insets.bottom + bottom,
-  };
-  const body = scroll ? (
-    <ScrollView
-      className="flex-1 bg-bg"
-      contentContainerStyle={[{ flexGrow: 1 }, padding]}
-      showsVerticalScrollIndicator={false}
-      bounces={false}
-    >
-      <View className={cn('flex-1', className)} style={style} {...props}>
+  const paddingTop = edgeToEdgeTop ? 0 : insets.top + top;
+  const paddingBottom = insets.bottom + bottom;
+  let body: ReactNode;
+  if (footer) {
+    body = (
+      <View
+        className={cn('flex-1 bg-bg', className)}
+        style={[{ paddingTop, paddingBottom }, style]}
+        {...props}
+      >
+        <ScrollView
+          className="flex-1"
+          // Bleed the scroll area past the horizontal padding so shadows/rings are not clipped.
+          style={{ marginHorizontal: -24 }}
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {children}
+        </ScrollView>
+        {footer}
+      </View>
+    );
+  } else if (scroll) {
+    body = (
+      <ScrollView
+        className="flex-1 bg-bg"
+        contentContainerStyle={{ flexGrow: 1, paddingTop, paddingBottom }}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        <View className={cn('flex-1', className)} style={style} {...props}>
+          {children}
+        </View>
+      </ScrollView>
+    );
+  } else {
+    body = (
+      <View
+        className={cn('flex-1 overflow-hidden bg-bg', className)}
+        style={[{ paddingTop, paddingBottom }, style]}
+        {...props}
+      >
         {children}
       </View>
-    </ScrollView>
-  ) : (
-    <View
-      className={cn('flex-1 overflow-hidden bg-bg', className)}
-      style={[padding, style]}
-      {...props}
-    >
-      {children}
-    </View>
-  );
+    );
+  }
   if (!keyboard) return body;
   return (
     <KeyboardAvoidingView

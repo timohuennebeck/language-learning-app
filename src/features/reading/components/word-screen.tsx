@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { segments } from '@/features/reading/data/content';
+import { InlineFlow } from '@/shared/components/inline-flow';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Screen } from '@/shared/ui/screen';
@@ -48,22 +49,30 @@ export function WordScreen() {
         <Kicker tracking={0.1} className="text-accent-700">
           {t('word.inSentence')}
         </Kicker>
-        <Text style={{ fontSize: 19, lineHeight: 28.9, color: colors.accent[900] }}>
-          {s.sentence.pre}
-          <Text
-            style={{
-              fontSize: 19,
-              borderRadius: 6,
-              paddingHorizontal: 4,
-              paddingVertical: 1,
-              backgroundColor: colors.track,
-              color: colors.accent[900],
-            }}
-          >
-            {s.word}
-          </Text>
-          {s.sentence.post}
-        </Text>
+        <InlineFlow
+          textStyle={{ fontSize: 19, lineHeight: 28.9, color: colors.accent[900] }}
+          pieces={[
+            s.sentence.pre,
+            {
+              key: 'word',
+              node: (
+                <View
+                  style={{
+                    borderRadius: 6,
+                    paddingHorizontal: 4,
+                    paddingVertical: 1,
+                    backgroundColor: colors.track,
+                  }}
+                >
+                  <Text style={{ fontSize: 19, lineHeight: 24.7, color: colors.accent[900] }}>
+                    {s.word}
+                  </Text>
+                </View>
+              ),
+            },
+            s.sentence.post,
+          ]}
+        />
         <Text className="text-muted" style={{ fontSize: 14.5, lineHeight: 21 }}>
           {s.sentence.de}
         </Text>

@@ -6,7 +6,8 @@ import { initReactI18next } from 'react-i18next';
 import de from '@/shared/locales/de.json';
 import en from '@/shared/locales/en.json';
 
-export const SUPPORTED_APP_LANGUAGES = ['de', 'en'] as const;
+/** Interface languages users can pick. `en.json` exists but stays hidden until the app is final. */
+export const SUPPORTED_APP_LANGUAGES = ['de'] as const;
 export type AppLanguage = (typeof SUPPORTED_APP_LANGUAGES)[number];
 
 const resources = {

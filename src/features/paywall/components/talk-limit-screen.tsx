@@ -85,6 +85,8 @@ export function TalkLimitScreen() {
                 style={{
                   columnGap: 13,
                   boxShadow: on ? `0 0 0 1.8px ${colors.accent[800]}` : '0 0 0 1px #e4e7f5',
+                  // The badge hangs above the card; lift the card over its siblings so it is not covered.
+                  zIndex: p.recommended ? 2 : 1,
                 }}
               >
                 {p.recommended ? <RecommendedBadge style={{ right: 18, top: -11 }} /> : null}

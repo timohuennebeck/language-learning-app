@@ -246,10 +246,6 @@
           "name": "Speak freely",
           "sub": "Argue your opinion, shows without subtitles",
           "tag": "Fits “Shows and music”"
-        },
-        "C1": {
-          "name": "Confident at work",
-          "sub": "Negotiate, present, hit the nuances"
         }
       },
       "cta": "Set goal {{level}}"

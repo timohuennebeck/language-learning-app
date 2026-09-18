@@ -11,7 +11,7 @@ import {
   swapPairs,
   swapSection,
 } from '@/features/reading/data/content';
-import { haptic } from '@/shared/lib/haptics';
+import { InlineFlow } from '@/shared/components/inline-flow';
 import { colors } from '@/shared/theme/tokens';
 import { ArrowLeft, ArrowRight } from '@/shared/ui/icons';
 import { ProgressBar } from '@/shared/ui/progress-bar';
@@ -71,91 +71,98 @@ export function ReadingScreen() {
       ) : null}
 
       {section === 1 ? (
-        <Text className="mt-[20px]" style={BODY}>
-          {section1.map((p, i) =>
-            typeof p === 'string' ? (
-              <Text key={i} style={BODY}>
-                {p}
-              </Text>
-            ) : (
-              <Text
-                key={i}
-                onPress={() => {
-                  haptic('selection');
-                  setSelected(p.seg);
-                  router.push({ pathname: '/(app)/reading/word', params: { seg: p.seg } });
-                }}
-                style={{
-                  ...BODY,
-                  borderRadius: 6,
-                  paddingHorizontal: 3,
-                  paddingVertical: 1,
-                  backgroundColor: TIER_BG[segments[p.seg].tier],
-                  boxShadow:
-                    selected === p.seg ? `inset 0 0 0 2px ${colors.accent[700]}` : undefined,
-                }}
-              >
-                {segments[p.seg].word}
-              </Text>
-            ),
+        <InlineFlow
+          className="mt-[20px]"
+          textStyle={BODY}
+          pieces={section1.map((p, i) =>
+            typeof p === 'string'
+              ? p
+              : {
+                  key: `${p.seg}-${i}`,
+                  node: (
+                    <Tap
+                      haptic="selection"
+                      onPress={() => {
+                        setSelected(p.seg);
+                        router.push({ pathname: '/(app)/reading/word', params: { seg: p.seg } });
+                      }}
+                      style={{
+                        borderRadius: 6,
+                        paddingHorizontal: 3,
+                        paddingVertical: 1,
+                        backgroundColor: TIER_BG[segments[p.seg].tier],
+                        boxShadow:
+                          selected === p.seg ? `inset 0 0 0 2px ${colors.accent[700]}` : undefined,
+                      }}
+                    >
+                      <Text style={{ ...BODY, lineHeight: BODY.fontSize * 1.3 }}>
+                        {segments[p.seg].word}
+                      </Text>
+                    </Tap>
+                  ),
+                },
           )}
-        </Text>
+        />
       ) : swap ? (
-        <Text className="mt-[16px]" style={BODY_SWAP}>
-          {swapSection.map((p, i) => {
-            if (typeof p === 'string')
-              return (
-                <Text key={i} style={BODY_SWAP}>
-                  {p}
-                </Text>
-              );
+        <InlineFlow
+          className="mt-[16px]"
+          textStyle={BODY_SWAP}
+          pieces={swapSection.map((p, i) => {
+            if (typeof p === 'string') return p;
             const open = !!revealed[p.swap];
-            return (
-              <Text
-                key={i}
-                onPress={() => {
-                  haptic('selection');
-                  setRevealed((r) => ({ ...r, [p.swap]: !r[p.swap] }));
-                }}
-                style={{
-                  ...BODY,
-                  lineHeight: 36.9,
-                  borderRadius: 6,
-                  paddingHorizontal: 6,
-                  paddingVertical: 2,
-                  backgroundColor: open ? colors.accent[300] : 'transparent',
-                  boxShadow: open ? undefined : `inset 0 0 0 1.5px ${colors.ring5}`,
-                  color: open ? colors.accent[900] : colors.accent[700],
-                }}
-              >
-                {open ? swapPairs[p.swap][1] : swapPairs[p.swap][0]}
-              </Text>
-            );
+            return {
+              key: `${p.swap}-${i}`,
+              node: (
+                <Tap
+                  haptic="selection"
+                  onPress={() => setRevealed((r) => ({ ...r, [p.swap]: !r[p.swap] }))}
+                  accessibilityState={{ expanded: open }}
+                  style={{
+                    borderRadius: 6,
+                    paddingHorizontal: 6,
+                    paddingVertical: 2,
+                    backgroundColor: open ? colors.accent[300] : 'transparent',
+                    boxShadow: open ? undefined : `inset 0 0 0 1.5px ${colors.ring5}`,
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...BODY,
+                      lineHeight: BODY.fontSize * 1.3,
+                      color: open ? colors.accent[900] : colors.accent[700],
+                    }}
+                  >
+                    {open ? swapPairs[p.swap][1] : swapPairs[p.swap][0]}
+                  </Text>
+                </Tap>
+              ),
+            };
           })}
-        </Text>
+        />
       ) : (
-        <Text className="mt-[20px]" style={BODY}>
-          {section2.map((p, i) =>
-            typeof p === 'string' ? (
-              <Text key={i} style={BODY}>
-                {p}
-              </Text>
-            ) : (
-              <Text
-                key={i}
-                style={{
-                  ...BODY,
-                  borderRadius: 6,
-                  paddingHorizontal: 3,
-                  paddingVertical: 1,
-                  backgroundColor: TIER_BG[p.tier],
-                }}
-              >
-                {p.text}
-              </Text>
-            ),
+        <InlineFlow
+          className="mt-[20px]"
+          textStyle={BODY}
+          pieces={section2.map((p, i) =>
+            typeof p === 'string'
+              ? p
+              : {
+                  key: `${p.text}-${i}`,
+                  node: (
+                    <View
+                      style={{
+                        borderRadius: 6,
+                        paddingHorizontal: 3,
+                        paddingVertical: 1,
+                        backgroundColor: TIER_BG[p.tier],
+                      }}
+                    >
+                      <Text style={{ ...BODY, lineHeight: BODY.fontSize * 1.3 }}>{p.text}</Text>
+                    </View>
+                  ),
+                },
           )}
-        </Text>
+        />
       )}
       {swap ? (
         <View className="mt-[16px] flex-row items-center" style={{ columnGap: 9 }}>

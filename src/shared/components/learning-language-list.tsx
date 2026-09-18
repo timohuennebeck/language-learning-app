@@ -1,13 +1,17 @@
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import type { LearningLanguage } from '@/features/auth/data/schemas';
+import {
+  LearningLanguageSchema,
+  UPCOMING_LEARNING_LANGUAGES,
+  type LearningLanguage,
+} from '@/features/auth/data/schemas';
 import { SelectRow } from '@/shared/components/select-row';
 import { Flag } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-const LANGS: LearningLanguage[] = ['fr', 'en', 'es'];
+const LANGS = LearningLanguageSchema.options;
 
 /** Language list shared by 03a (onboarding) and 09c (profile). */
 export function LearningLanguageList({
@@ -36,13 +40,18 @@ export function LearningLanguageList({
         {t('common.soon')}
       </Kicker>
       <View className="flex-row flex-wrap" style={{ gap: 8 }}>
-        <View
-          className="flex-row items-center rounded-pill py-[8px] pl-[8px] pr-[14px]"
-          style={{ backgroundColor: '#efedf7', columnGap: 9 }}
-        >
-          <Flag code="de" size={26} opacity={0.7} />
-          <Text style={{ fontSize: 15, color: '#5c6070' }}>{t('common.languageNative.de')}</Text>
-        </View>
+        {UPCOMING_LEARNING_LANGUAGES.map((code) => (
+          <View
+            key={code}
+            className="flex-row items-center rounded-pill py-[8px] pl-[8px] pr-[14px]"
+            style={{ backgroundColor: '#efedf7', columnGap: 9 }}
+          >
+            <Flag code={code} size={26} opacity={0.7} />
+            <Text style={{ fontSize: 15, color: '#5c6070' }}>
+              {t(`common.languageNative.${code}`)}
+            </Text>
+          </View>
+        ))}
       </View>
     </View>
   );

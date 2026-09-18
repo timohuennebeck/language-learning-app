@@ -42,7 +42,7 @@ export function HeroCarousel({ cards, className, dotsClassName = 'mt-[12px]' }: 
     if (i !== index) setIndex(Math.max(0, Math.min(cards.length - 1, i)));
   };
   return (
-    <View className={cn(className)}>
+    <View className={cn(className)} style={{ marginHorizontal: -SIDE }}>
       <ScrollView
         ref={ref}
         horizontal

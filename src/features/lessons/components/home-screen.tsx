@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -30,10 +31,12 @@ export function HomeScreen() {
   const goal = feed.data?.goalMinutes ?? 10;
   const due = feed.data?.dueCards ?? 12;
   const lessons = feed.data?.lessons ?? [];
+  // Filters are visual for now; the lesson list is filtered once course content exists.
+  const [filter, setFilter] = useState(0);
 
   return (
-    <Screen top={0} bottom={-34} className="overflow-hidden">
-      <View className="flex-1 overflow-hidden px-[22px]" style={{ minHeight: 0 }}>
+    <Screen top={0} bottom={6} scroll>
+      <View className="flex-1 px-[22px]">
         <HomeHeader />
         <Text
           className="mb-[4px] mt-[20px] font-medium text-accent-900"
@@ -108,13 +111,15 @@ export function HomeScreen() {
             <Tap
               key={f}
               haptic="selection"
+              onPress={() => setFilter(i)}
+              accessibilityState={{ selected: i === filter }}
               className={cn(
                 'rounded-pill px-[18px] py-[10px]',
-                i === 0 ? 'bg-accent-800' : 'bg-surface2',
+                i === filter ? 'bg-accent-800' : 'bg-surface2',
               )}
             >
               <Text
-                className={cn('font-medium', i === 0 ? 'text-accent-100' : 'text-accent-900')}
+                className={cn('font-medium', i === filter ? 'text-accent-100' : 'text-accent-900')}
                 style={{ fontSize: 15 }}
                 numberOfLines={1}
               >
@@ -123,10 +128,7 @@ export function HomeScreen() {
             </Tap>
           ))}
         </View>
-        <View
-          className="mt-[14px] flex-1 flex-row flex-wrap content-start overflow-hidden"
-          style={{ gap: 12, minHeight: 0 }}
-        >
+        <View className="mt-[14px] flex-row flex-wrap content-start" style={{ gap: 12 }}>
           {lessons.map((l) => (
             <Tap
               key={l.id}

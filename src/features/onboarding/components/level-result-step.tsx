@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { LEVELS } from '@/features/auth/data/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
@@ -28,7 +29,21 @@ export function LevelResultStep() {
     pct: number;
   }[];
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen
+      top={0}
+      bottom={6}
+      className="px-[22px]"
+      footer={
+        <Button
+          className="mt-[10px]"
+          height={62}
+          size={18}
+          labelClassName="font-medium"
+          label={t('onboarding.levelResult.cta')}
+          onPress={() => router.push('/(onboarding)/target-level')}
+        />
+      }
+    >
       <TopBar
         left="close"
         title={t('onboarding.levelResult.title')}
@@ -48,7 +63,8 @@ export function LevelResultStep() {
         <View className="mt-[14px] flex-row items-end" style={{ columnGap: 10 }}>
           <Text
             className="font-medium text-accent-900"
-            style={{ fontSize: 52, lineHeight: 47, letterSpacing: -2.08 }}
+            // lineHeight below the font size clips the glyphs on iOS; keep the row height with a negative margin.
+            style={{ fontSize: 52, lineHeight: 52, letterSpacing: -2.08, marginTop: -5 }}
           >
             {level}
           </Text>
@@ -74,7 +90,7 @@ export function LevelResultStep() {
             />
           </View>
           <View className="mt-[7px] flex-row justify-between">
-            {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((l) => (
+            {LEVELS.map((l) => (
               <Text key={l} className="text-muted" style={{ fontSize: 11.5 }}>
                 {l}
               </Text>
@@ -98,7 +114,7 @@ export function LevelResultStep() {
           {t('onboarding.levelResult.spots')}
         </Text>
       </View>
-      <View className="mt-[4px] flex-1 overflow-hidden">
+      <View className="mt-[4px] flex-1">
         {items.map((it) => (
           <View key={it.text} className="flex-row items-center py-[12px]" style={{ columnGap: 16 }}>
             <Ring
@@ -127,14 +143,6 @@ export function LevelResultStep() {
           </View>
         ))}
       </View>
-      <Button
-        className="mt-[10px]"
-        height={62}
-        size={18}
-        labelClassName="font-medium"
-        label={t('onboarding.levelResult.cta')}
-        onPress={() => router.push('/(onboarding)/target-level')}
-      />
     </Screen>
   );
 }

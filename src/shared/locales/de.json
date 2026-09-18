@@ -246,10 +246,6 @@
           "name": "Frei sprechen",
           "sub": "Meinung begründen, Serien ohne Untertitel",
           "tag": "Passt zu „Serien und Musik“"
-        },
-        "C1": {
-          "name": "Beruflich sicher",
-          "sub": "Verhandeln, präsentieren, Feinheiten treffen"
         }
       },
       "cta": "Ziel {{level}} setzen"

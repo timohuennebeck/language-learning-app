@@ -30,13 +30,15 @@ export function FlashcardsScreen() {
   const deck = useDeck('cafe');
   const cards = deck.data?.cards ?? [];
   const d = useSwipeDeck(cards);
+  // Worklets copy every captured value to the UI thread; capturing `d` would copy the gesture too.
+  const { dx } = d;
   const finished = !deck.isPending && !d.card;
 
   const leftHint = useAnimatedStyle(() => ({
-    color: d.dx.value < -40 ? colors.sub : colors.neutral[400],
+    color: dx.value < -40 ? colors.sub : colors.neutral[400],
   }));
   const rightHint = useAnimatedStyle(() => ({
-    color: d.dx.value > 40 ? colors.accent[700] : colors.neutral[400],
+    color: dx.value > 40 ? colors.accent[700] : colors.neutral[400],
   }));
 
   return (

@@ -17,14 +17,13 @@ type Props = {
   children?: ReactNode;
   /** Bottom actions (primary button + optional text button). */
   footer?: ReactNode;
-  scroll?: boolean;
   onBack?: () => void;
   /** Horizontal padding (design: 20 for onboarding steps, 22 for detail screens). */
   px?: number;
   titleMarginTop?: number;
 };
 
-/** Onboarding step chrome: progress bar top, headline, content, footer. Padding 56/20/34. */
+/** Onboarding step chrome: progress bar, headline, scrolling content, pinned footer. Padding 56/20/34. */
 export function OnboardingFrame({
   step,
   title,
@@ -32,7 +31,6 @@ export function OnboardingFrame({
   kicker,
   children,
   footer,
-  scroll,
   onBack,
   px = 20,
   titleMarginTop = 22,
@@ -40,7 +38,12 @@ export function OnboardingFrame({
   const { t } = useTranslation();
   const back = useBack('/(onboarding)/welcome');
   return (
-    <Screen top={-4} bottom={0} scroll={scroll} style={{ paddingHorizontal: px }}>
+    <Screen
+      top={-4}
+      bottom={0}
+      style={{ paddingHorizontal: px }}
+      footer={footer ? <View className="pt-[12px]">{footer}</View> : undefined}
+    >
       <ProgressTopBar
         progress={step / ONBOARDING_STEPS}
         label={t('common.stepOf', { step, total: ONBOARDING_STEPS })}
@@ -49,8 +52,7 @@ export function OnboardingFrame({
       {kicker}
       <Headline title={title} sub={sub} titleMarginTop={kicker ? 6 : titleMarginTop} />
       {children}
-      <View className="flex-1" />
-      {footer}
+      <View className="flex-1" style={{ minHeight: 12 }} />
     </Screen>
   );
 }

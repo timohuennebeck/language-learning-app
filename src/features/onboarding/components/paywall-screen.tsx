@@ -94,6 +94,7 @@ export function PaywallScreen() {
                   paddingBottom: 15,
                   paddingHorizontal: 14,
                   boxShadow: on ? `0 0 0 2px ${colors.accent[700]}` : `0 0 0 1.5px ${colors.line2}`,
+                  zIndex: 'recommended' in p && p.recommended ? 2 : 1,
                 }}
               >
                 {'recommended' in p && p.recommended ? (

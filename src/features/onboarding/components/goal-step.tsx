@@ -31,7 +31,6 @@ export function GoalStep() {
   return (
     <OnboardingFrame
       step={3}
-      scroll
       title={t('onboarding.goal.title')}
       sub={t('onboarding.goal.sub')}
       footer={

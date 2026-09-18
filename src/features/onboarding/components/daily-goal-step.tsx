@@ -16,7 +16,6 @@ export function DailyGoalStep() {
   return (
     <OnboardingFrame
       step={9}
-      scroll
       title={t('onboarding.dailyGoal.title', { name: session.name })}
       sub={t('onboarding.dailyGoal.sub')}
       footer={

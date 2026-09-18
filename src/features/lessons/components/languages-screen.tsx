@@ -23,11 +23,7 @@ const CARDS: {
   level: string;
   to: string;
   pct: number;
-}[] = [
-  { code: 'fr', sub: 'active', level: 'A2', words: '86', to: 'toB1', pct: 0.64 },
-  { code: 'en', sub: 'enSub', level: 'B1', words: '240', to: 'toB2', pct: 0.33 },
-  { code: 'es', sub: 'esSub', level: 'A1', words: '31', to: 'toA2', pct: 0.15 },
-];
+}[] = [{ code: 'fr', sub: 'active', level: 'A2', words: '86', to: 'toB1', pct: 0.64 }];
 
 /** 01a · Sprache wechseln. */
 export function LanguagesScreen() {
