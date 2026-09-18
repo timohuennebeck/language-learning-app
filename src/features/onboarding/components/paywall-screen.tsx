@@ -31,7 +31,42 @@ export function PaywallScreen() {
   const perks = t('onboarding.paywall.perks', { returnObjects: true }) as string[];
   const selected = PLANS.find((p) => p.id === plan) ?? PLANS[1];
   return (
-    <Screen edgeToEdgeTop bottom={-8}>
+    <Screen
+      edgeToEdgeTop
+      bottom={-8}
+      footer={
+        <View className="px-[20px] pt-[10px]">
+          <Button
+            height={58}
+            size={18}
+            label={t('onboarding.paywall.cta')}
+            onPress={() => router.push('/(onboarding)/account')}
+          />
+          <Text
+            className="mt-[10px] self-center text-center text-muted"
+            style={{ fontSize: 13.5, lineHeight: 18.2, maxWidth: 250 }}
+          >
+            {t('onboarding.paywall.legal', { price: selected.price })}
+          </Text>
+          <View
+            className="mt-[10px] flex-row items-center justify-center"
+            style={{ columnGap: 10 }}
+          >
+            <Tap haptic="light" onPress={() => router.push('/(onboarding)/redeem-code')}>
+              <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
+                {t('onboarding.paywall.inviteCode')}
+              </Text>
+            </Tap>
+            <View className="h-[4px] w-[4px] rounded-full bg-ring4" />
+            <Tap haptic="light">
+              <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
+                {t('onboarding.paywall.restore')}
+              </Text>
+            </Tap>
+          </View>
+        </View>
+      }
+    >
       <Gradient
         {...HEADER_GRADIENT}
         className="relative items-center justify-end overflow-hidden"
@@ -50,7 +85,7 @@ export function PaywallScreen() {
         />
         <Illustration name="pip-baguette" size={118} />
       </Gradient>
-      <View className="flex-1 px-[20px] pt-[18px]" style={{ minHeight: 0 }}>
+      <View className="px-[20px] pb-[8px] pt-[18px]">
         <View className="flex-row items-center" style={{ columnGap: 6 }}>
           <Text className="font-semibold text-accent-800" style={{ fontSize: 14 }}>
             {t('onboarding.paywall.brand')}
@@ -80,7 +115,7 @@ export function PaywallScreen() {
         <Text className="mt-[8px] text-muted" style={{ fontSize: 15.5, lineHeight: 22 }}>
           {t('onboarding.paywall.sub')}
         </Text>
-        <View className="mt-[22px] flex-row" style={{ columnGap: 10 }}>
+        <View className="mt-[22px] flex-row" style={{ columnGap: 10, zIndex: 1 }}>
           {PLANS.map((p) => {
             const on = p.id === plan;
             return (
@@ -148,32 +183,6 @@ export function PaywallScreen() {
               </Text>
             </View>
           ))}
-        </View>
-        <View className="flex-1" style={{ minHeight: 12 }} />
-        <Button
-          height={58}
-          size={18}
-          label={t('onboarding.paywall.cta')}
-          onPress={() => router.push('/(onboarding)/account')}
-        />
-        <Text
-          className="mt-[10px] self-center text-center text-muted"
-          style={{ fontSize: 13.5, lineHeight: 18.2, maxWidth: 250 }}
-        >
-          {t('onboarding.paywall.legal', { price: selected.price })}
-        </Text>
-        <View className="mt-[10px] flex-row items-center justify-center" style={{ columnGap: 10 }}>
-          <Tap haptic="light" onPress={() => router.push('/(onboarding)/redeem-code')}>
-            <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
-              {t('onboarding.paywall.inviteCode')}
-            </Text>
-          </Tap>
-          <View className="h-[4px] w-[4px] rounded-full bg-ring4" />
-          <Tap haptic="light">
-            <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
-              {t('onboarding.paywall.restore')}
-            </Text>
-          </Tap>
         </View>
       </View>
     </Screen>
