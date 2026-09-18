@@ -14,7 +14,7 @@ export function EvaluatingStep() {
     return () => clearTimeout(id);
   }, [router]);
   return (
-    <Screen top={-4} bottom={0} className="px-[20px]">
+    <Screen bottom={0} className="px-[20px]">
       <ProgressChecklist
         progress={0.68}
         label="68 %"

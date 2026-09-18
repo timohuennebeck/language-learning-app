@@ -39,14 +39,16 @@
     "levelName": {
       "A1": "Beginner",
       "A2": "Basics",
-      "B1": "Independent",
+      "B1": "Intermediate",
       "B2": "Advanced"
     },
     "back": "Back",
     "close": "Close",
     "weekdayLetters": ["M", "T", "W", "T", "F", "S", "S"],
     "languagePill": "French · A2",
-    "reset": "Reset"
+    "reset": "Reset",
+    "yes": "Yes",
+    "no": "No"
   },
   "splash": {
     "brand": "Yori"
@@ -132,16 +134,6 @@
       "pm": "pm",
       "cta": "Use {{time}}"
     },
-    "assessmentIntro": {
-      "kicker": "Placement conversation",
-      "title": "Five questions, then Pip knows your level.",
-      "sub": "One stage after the other. Answer in French, German or a mix.",
-      "question": "Qu’est-ce que tu fais le week-end ?",
-      "stage": "Stage 1 · Present",
-      "stagesLabel": "The five stages",
-      "stages": ["Today", "Yesterday", "Tomorrow", "Maybe", "Dreams"],
-      "cta": "Start conversation · 2 min"
-    },
     "levelSelf": {
       "title": "How good is your French?",
       "sub": "Roughly is fine. Yori adjusts after your first conversation.",
@@ -171,18 +163,6 @@
       "precise": "Prefer precision? ",
       "preciseCta": "Talk for 2 minutes."
     },
-    "assessmentCall": {
-      "title": "Placement · French",
-      "question": "Question 1 of 5",
-      "sub": "Mistakes are welcome here.",
-      "partner": "Pip · your partner",
-      "live": "Live",
-      "prompt": "Qu’est-ce que tu fais le week-end ?",
-      "captions": "Live captions",
-      "you": "You",
-      "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live conversation"
-    },
     "evaluating": {
       "title": "Pip is listening again.",
       "steps": [
@@ -192,40 +172,6 @@
         "Determining level"
       ],
       "secondsLeft": "{{n}} seconds left"
-    },
-    "levelResult": {
-      "title": "Your level",
-      "kicker": "Placement",
-      "kickerSub": "2 minute conversation",
-      "blurb": {
-        "A1": "Single words and set phrases. Yori starts with pronunciation and first sentences.",
-        "A2": "You build simple sentences about daily life and weekends. Tenses and politeness are still shaky.",
-        "B1": "You tell coherent stories and correct yourself. Next up: connectors and nuance.",
-        "B2": "You discuss fluently. Next up: register, idioms and written style."
-      },
-      "fromTalk": "From your conversation",
-      "spots": "3 spots",
-      "items": [
-        {
-          "text": "Le week-end je vois des amis",
-          "sub": "Structure and articles are solid",
-          "status": "solid",
-          "pct": 88
-        },
-        {
-          "text": "je prends un café → j’ai pris",
-          "sub": "Base form instead of past tense",
-          "status": "practice",
-          "pct": 41
-        },
-        {
-          "text": "hier je regarde → j’ai regardé",
-          "sub": "Time marker and tense",
-          "status": "practice",
-          "pct": 33
-        }
-      ],
-      "cta": "Save result"
     },
     "targetLevel": {
       "title": "Which level do you want to reach?",
@@ -302,10 +248,11 @@
       "hidePassword": "Hide password",
       "emailPlaceholder": "name@mail.com",
       "passwordPlaceholder": "Password",
-      "rules": {
-        "length": "At least 8 characters",
-        "number": "A number",
-        "special": "A special character"
+      "strength": {
+        "weak": "Weak password",
+        "okay": "Okay",
+        "good": "Good password",
+        "strong": "Strong password"
       }
     },
     "plusActive": {
@@ -321,6 +268,127 @@
       "opt1": "j’ai pris",
       "opt2": "prendre",
       "cta": "Add widget"
+    },
+    "placement": {
+      "kicker": "Placement",
+      "title": "Let’s find\nyour level.",
+      "sub": "A short test, then the exercises fit you. Under 5 minutes.",
+      "cta": "Let’s go",
+      "self": "Choose level myself",
+      "read": {
+        "title": "Reading",
+        "sub": "Read two short texts. Tap what you don’t know."
+      },
+      "speak": {
+        "title": "Speaking",
+        "sub": "A two-minute role-play with Pip."
+      },
+      "screenTitle": "Placement",
+      "roundOf": "{{n}} of 2",
+      "readKicker": "Reading · Text {{n}}",
+      "tapHint": "Tap every word you don’t know.",
+      "questionKicker": "True or false?",
+      "textOf": "Text {{n}} of 2",
+      "known": "were already familiar",
+      "cardsMade": "Flashcards created",
+      "questionsRight": "Questions right",
+      "call": {
+        "kicker": "Speaking · 2 minutes",
+        "title": "At the café",
+        "sub": "You are in a café in Paris. You wanted a cappuccino, but the machine is broken today.",
+        "tasksLabel": "Your tasks",
+        "tasks": [
+          "Address the waiter and order a drink.",
+          "Ask what they have instead.",
+          "Pick an alternative and say it clearly."
+        ],
+        "cta": "Start role-play · 2 min"
+      }
+    },
+    "levelSkill": {
+      "skillOf": "Skill {{n}} of 2",
+      "canLabel": "What you can do already",
+      "workLabel": "What we will work on",
+      "reading": {
+        "headline": "You read at {{level}}.",
+        "pill": "Reading",
+        "pillSub": "2 short texts",
+        "cta": "On to speaking",
+        "A1": {
+          "can": [
+            "You recognise single words and signs.",
+            "Short simple sentences work with context."
+          ],
+          "work": ["Whole paragraphs still lose you.", "You do not spot tenses in a text yet."]
+        },
+        "A2": {
+          "can": ["You get the gist of short everyday texts.", "Known words come back quickly."],
+          "work": ["Longer sentences still break down.", "Past tenses are still shaky."]
+        },
+        "B1": {
+          "can": ["Menus and descriptions need no help.", "You spot the passé composé in a text."],
+          "work": [
+            "Long sentences with clauses still lose you.",
+            "Irony and slang often pass you by."
+          ]
+        },
+        "B2": {
+          "can": ["Longer texts read fluently.", "Clauses and tenses are solid."],
+          "work": [
+            "Nuance and register are rarely distinguished yet.",
+            "Idioms still need a lookup."
+          ]
+        }
+      },
+      "speaking": {
+        "headline": "You speak at {{level}}.",
+        "pill": "Speaking",
+        "pillSub": "2-minute role-play",
+        "cta": "Next",
+        "A1": {
+          "can": ["You introduced yourself and greeted.", "Single words came out confidently."],
+          "work": ["Full sentences still take time.", "Questions are not always understood."]
+        },
+        "A2": {
+          "can": [
+            "You ordered and asked for an alternative.",
+            "Your sentences were short but clear."
+          ],
+          "work": [
+            "Polite forms were forgotten twice.",
+            "Follow-up questions still stall the talk."
+          ]
+        },
+        "B1": {
+          "can": [
+            "You led the conversation yourself.",
+            "Follow-ups were answered without pausing."
+          ],
+          "work": [
+            "Past tenses still get mixed up.",
+            "Connectors are missing; sentences stand alone."
+          ]
+        },
+        "B2": {
+          "can": ["You speak fluently and self-correct.", "Politeness and register fit."],
+          "work": ["Idioms still sound translated.", "Quick answers lack nuance."]
+        }
+      }
+    },
+    "prognosis": {
+      "kicker": "In {{n}} months",
+      "title": "{{min}} minutes a day and this is where you stand.",
+      "speaking": "Speaking",
+      "reading": "Reading",
+      "inMonths": "in about {{n}} months",
+      "today": "today",
+      "note": "Estimate based on your placement and daily practice with Pip.",
+      "change": "Change study time"
+    },
+    "login": {
+      "title": "Pip has been waiting for you.",
+      "sub": "Log in and pick up right where you left off.",
+      "cta": "Log in"
     }
   },
   "home": {
@@ -364,7 +432,7 @@
     "toB2": "38 % to B2",
     "toA2": "15 % to A2",
     "words": "{{level}} · {{n}} words",
-    "new": "New language"
+    "new": "Add a language"
   },
   "lesson": {
     "kicker": "French · Easy · 12 words",

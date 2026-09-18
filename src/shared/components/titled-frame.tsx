@@ -30,13 +30,13 @@ export function TitledFrame({ title, headline, sub, children, footer, scroll = f
   );
   if (scroll) {
     return (
-      <Screen top={0} bottom={6} scroll>
+      <Screen bottom={6} scroll>
         <View className="flex-1 px-[22px]">{body}</View>
       </Screen>
     );
   }
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       {body}
     </Screen>
   );

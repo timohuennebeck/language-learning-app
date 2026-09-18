@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MarkedHeadline } from '@/shared/components/marked-headline';
-import { Button, TextButton } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { Star } from '@/shared/ui/icons';
+import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
+import { TextLink } from '@/shared/ui/text-link';
 
 /** 02b · Welcome (full-bleed Pip, headline with highlighted phrase, rating, CTA, legal). */
 export function WelcomeScreen() {
@@ -63,34 +65,36 @@ export function WelcomeScreen() {
         <Text className="text-ink2" style={{ fontSize: 16 }}>
           {t('common.alreadyMember')}{' '}
         </Text>
-        <TextButton
-          color="text-accent-800"
-          label={t('common.login')}
-          onPress={() => router.push('/(onboarding)/account-email')}
-        />
+        <Tap
+          haptic="light"
+          hitSlop={8}
+          className="active:opacity-60"
+          onPress={() =>
+            router.push({ pathname: '/(onboarding)/account-email', params: { mode: 'login' } })
+          }
+        >
+          <Text className="font-semibold text-accent-800" style={{ fontSize: 16 }}>
+            {t('common.login')}
+          </Text>
+        </Tap>
       </View>
       <Text
         className="mt-[14px] px-[4px] text-center text-faint"
         style={{ fontSize: 13, lineHeight: 19.5 }}
       >
         {t('welcome.legal1')}
-        <Text
-          className="font-semibold text-accent-800"
-          style={{ fontSize: 13 }}
-          onPress={() => router.push('/(onboarding)/terms')}
-        >
+        <TextLink style={{ fontSize: 13 }} onPress={() => router.push('/(onboarding)/terms')}>
           {t('common.terms')}
-        </Text>
+        </TextLink>
         {t('welcome.legal2')}
-        <Text
-          className="font-semibold text-accent-800"
+        <TextLink
           style={{ fontSize: 13 }}
           onPress={() =>
             router.push({ pathname: '/(onboarding)/terms', params: { doc: 'privacy' } })
           }
         >
           {t('common.privacy')}
-        </Text>
+        </TextLink>
         {t('welcome.legal3')}
       </Text>
     </Gradient>

@@ -15,7 +15,7 @@ export function PreparingScreen() {
     return () => clearTimeout(id);
   }, [router]);
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="close" title={t('preparing.title')} titleSize={20} />
       <ProgressChecklist
         progress={0.62}

@@ -10,7 +10,6 @@ import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Flag } from '@/shared/ui/illustration';
 import { CheckCircle } from '@/shared/ui/marks';
-import { PlusIconSm } from '@/shared/ui/icons';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
@@ -32,7 +31,7 @@ export function LanguagesScreen() {
   const router = useRouter();
   const { session, update } = useSession();
   return (
-    <Screen top={0} bottom={6} className="px-[22px]" style={{ rowGap: 16 }}>
+    <Screen bottom={6} className="px-[22px]" style={{ rowGap: 16 }}>
       <TopBar left="back" title={t('languages.title')} />
       <View style={{ rowGap: 4 }}>
         <Text
@@ -98,8 +97,6 @@ export function LanguagesScreen() {
         height={56}
         size={16.5}
         label={t('languages.new')}
-        left={<PlusIconSm />}
-        className="[column-gap:-1px]"
         haptic="light"
         onPress={() => router.push('/(app)/profile/learning-language')}
       />

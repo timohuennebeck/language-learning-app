@@ -20,7 +20,6 @@ export function LogoutScreen() {
   const profile = useProfile();
   return (
     <Screen
-      top={0}
       bottom={6}
       className="px-[22px]"
       footer={

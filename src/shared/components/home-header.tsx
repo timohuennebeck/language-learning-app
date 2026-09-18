@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -7,10 +8,14 @@ import { DropdownPill } from '@/shared/ui/dropdown-pill';
 import { Avatar } from '@/shared/ui/illustration';
 import { Tap } from '@/shared/ui/tap';
 
-type Props = { className?: string };
+type Props = {
+  className?: string;
+  /** Extra control rendered after the language pill (e.g. the settings cog on Profil). */
+  right?: ReactNode;
+};
 
 /** Avatar (→ profile) on the left, "Französisch · A2" pill (→ languages) on the right. */
-export function HomeHeader({ className }: Props) {
+export function HomeHeader({ className, right }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
   return (
@@ -22,10 +27,13 @@ export function HomeHeader({ className }: Props) {
       >
         <Avatar size={34} />
       </Tap>
-      <DropdownPill
-        label={t('common.languagePill')}
-        onPress={() => router.push('/(app)/languages')}
-      />
+      <View className="flex-row items-center" style={{ columnGap: 10 }}>
+        <DropdownPill
+          label={t('common.languagePill')}
+          onPress={() => router.push('/(app)/languages')}
+        />
+        {right}
+      </View>
     </View>
   );
 }

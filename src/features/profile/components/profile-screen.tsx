@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { LevelCard } from '@/features/profile/components/level-card';
-import { ProfileRow } from '@/features/profile/components/profile-row';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/features/profile/components/streak-card';
 import { DESIGN_PROGRESS } from '@/features/profile/data/repository';
@@ -12,7 +11,8 @@ import { useProfile, useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
 import { Avatar } from '@/shared/ui/illustration';
 import { CogIcon } from '@/shared/ui/icons';
-import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Screen } from '@/shared/ui/screen';
+import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
 /** Talks tile ring: the design shows 60% for 19 talks; there is no goal for talks yet. */
@@ -44,9 +44,26 @@ export function ProfileScreen() {
   const p = useProgress().data ?? DESIGN_PROGRESS;
 
   return (
-    <Screen top={TAB_TOP} bottom={6} scroll>
-      <View className="flex-1 px-[22px]">
-        <HomeHeader />
+    <Screen
+      tabRoot
+      bottom={6}
+      className="px-[22px]"
+      header={
+        <HomeHeader
+          right={
+            <Tap
+              haptic="light"
+              hitSlop={8}
+              accessibilityLabel={t('profile.settings.title')}
+              onPress={() => router.push('/(app)/profile/settings')}
+            >
+              <CogIcon size={24} />
+            </Tap>
+          }
+        />
+      }
+    >
+      <View className="flex-1">
         <View className="mt-[20px] flex-row items-center" style={{ columnGap: 14 }}>
           <Avatar size={62} />
           <View>
@@ -91,14 +108,6 @@ export function ProfileScreen() {
           ]}
         />
 
-        <View className="mt-[14px] rounded-[24px] bg-surface2">
-          <ProfileRow
-            label={t('profile.settings.title')}
-            left={<CogIcon />}
-            onPress={() => router.push('/(app)/profile/settings')}
-            last
-          />
-        </View>
         <View className="flex-1" />
       </View>
     </Screen>

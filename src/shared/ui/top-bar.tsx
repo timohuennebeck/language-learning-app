@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
+import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { NavCircle } from '@/shared/ui/nav-circle';
 import { ProgressBar } from '@/shared/ui/progress-bar';
@@ -50,6 +51,9 @@ type ProgressTopBarProps = {
   height?: number;
   labelSize?: number;
   trackColor?: string;
+  /** Background of the back circle (white on gradient headers). */
+  backBg?: string;
+  className?: string;
 };
 
 /** Back circle + 6px progress bar + trailing counter ("3 von 13", "3 / 8"). */
@@ -60,10 +64,16 @@ export function ProgressTopBar({
   height = 34,
   labelSize = 14.5,
   trackColor = colors.track,
+  backBg,
+  className,
 }: ProgressTopBarProps) {
   return (
-    <View className="flex-row items-center" style={{ height, columnGap: 12 }}>
-      <NavCircle icon="back" onPress={onBack} />
+    <View className={cn('flex-row items-center', className)} style={{ height, columnGap: 12 }}>
+      <NavCircle
+        icon="back"
+        onPress={onBack}
+        style={backBg ? { backgroundColor: backBg } : undefined}
+      />
       <ProgressBar progress={progress} className="flex-1" trackColor={trackColor} />
       <Text className="text-muted" style={{ fontSize: labelSize, fontVariant: ['tabular-nums'] }}>
         {label}

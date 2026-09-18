@@ -4,61 +4,71 @@ import { useTranslation } from 'react-i18next';
 
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { Button, TextButton } from '@/shared/ui/button';
-import { CardGradient } from '@/shared/ui/gradient';
-import { Illustration } from '@/shared/ui/illustration';
-import { MicSmall } from '@/shared/ui/icons';
+import { Illustration, type IllustrationName } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-/** 06 · Einstufung Intro (7 von 13). */
+const STEPS: { key: 'read' | 'speak'; art: IllustrationName; size: number }[] = [
+  { key: 'read', art: 'pip-magnifier', size: 150 },
+  { key: 'speak', art: 'pip-barista', size: 150 },
+];
+
+/** 60a · Einstufung Intro (7 von 13): two tiles, reading test then role-play. */
 export function AssessmentIntroStep() {
   const { t } = useTranslation();
   const router = useRouter();
-  const stages = t('onboarding.assessmentIntro.stages', { returnObjects: true }) as string[];
   return (
     <OnboardingFrame
       step={7}
-      kicker={<Kicker className="mt-[22px]">{t('onboarding.assessmentIntro.kicker')}</Kicker>}
-      title={t('onboarding.assessmentIntro.title')}
-      sub={t('onboarding.assessmentIntro.sub')}
+      kicker={<Kicker className="mt-[22px]">{t('onboarding.placement.kicker')}</Kicker>}
+      title={t('onboarding.placement.title')}
+      sub={t('onboarding.placement.sub')}
       footer={
         <>
           <Button
             height={60}
             size={17.5}
-            label={t('onboarding.assessmentIntro.cta')}
-            left={<MicSmall />}
-            className="[column-gap:2px]"
-            onPress={() => router.push('/(onboarding)/assessment-call')}
+            label={t('onboarding.placement.cta')}
+            onPress={() => router.push('/(onboarding)/assessment-reading')}
           />
           <TextButton
             className="mt-[16px]"
-            label={t('common.skip')}
+            label={t('onboarding.placement.self')}
             onPress={() => router.push('/(onboarding)/level-self')}
           />
         </>
       }
     >
-      <CardGradient className="mt-[18px] items-center p-[18px]" style={{ rowGap: 14 }}>
-        <Illustration name="pip-glasses-book" size={168} />
-        <View className="w-full rounded-[18px] bg-white px-[16px] py-[14px]">
-          <Text className="text-accent-900" style={{ fontSize: 18 }}>
-            {t('onboarding.assessmentIntro.question')}
-          </Text>
-          <Text className="mt-[4px] text-muted" style={{ fontSize: 13.5 }}>
-            {t('onboarding.assessmentIntro.stage')}
-          </Text>
-        </View>
-      </CardGradient>
-      <Kicker tracking={0.1} className="mt-[18px] text-muted">
-        {t('onboarding.assessmentIntro.stagesLabel')}
-      </Kicker>
-      <View className="mt-[10px] flex-row flex-wrap" style={{ gap: 8 }}>
-        {stages.map((s) => (
-          <View key={s} className="rounded-pill bg-surface px-[14px] py-[8px]">
-            <Text className="text-accent-900" style={{ fontSize: 15 }}>
-              {s}
-            </Text>
+      <View className="mt-[18px]" style={{ rowGap: 12 }}>
+        {STEPS.map((s, i) => (
+          <View
+            key={s.key}
+            className="relative flex-row items-center overflow-hidden rounded-[26px] bg-surface"
+            style={{ height: 196, paddingLeft: 22, paddingRight: 150 }}
+          >
+            <View className="flex-1" style={{ rowGap: 8 }}>
+              <View className="flex-row items-center" style={{ columnGap: 10 }}>
+                <View className="h-[26px] w-[26px] items-center justify-center rounded-full bg-accent-800">
+                  <Text className="font-semibold text-accent-100" style={{ fontSize: 13 }}>
+                    {i + 1}
+                  </Text>
+                </View>
+                <Text
+                  className="font-semibold text-ink"
+                  style={{ fontSize: 23, letterSpacing: -0.46 }}
+                >
+                  {t(`onboarding.placement.${s.key}.title`)}
+                </Text>
+              </View>
+              <Text className="text-sub" style={{ fontSize: 15, lineHeight: 21 }}>
+                {t(`onboarding.placement.${s.key}.sub`)}
+              </Text>
+            </View>
+            <Illustration
+              name={s.art}
+              size={s.size}
+              style={{ position: 'absolute', right: 16, top: (196 - s.size) / 2 }}
+            />
           </View>
         ))}
       </View>

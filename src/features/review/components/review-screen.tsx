@@ -32,7 +32,7 @@ export function ReviewScreen() {
   ];
 
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="close" title={t('review.title')} titleSize={20} />
       <Text className="mt-[8px] text-center text-sub" style={{ fontSize: 17 }}>
         {t('review.meta')}

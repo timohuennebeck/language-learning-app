@@ -18,7 +18,7 @@ export function WidgetStep() {
   // Completing onboarding flips the protected-route guard, which swaps in the app stack.
   const { completeOnboarding: finish } = useSession();
   return (
-    <Screen top={-4} bottom={0} className="px-[20px]">
+    <Screen bottom={0} className="px-[20px]">
       <View className="h-[34px] justify-center">
         <NavCircle icon="close" onPress={finish} />
       </View>

@@ -15,7 +15,7 @@ import {
 import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
 import { HomeHeader } from '@/shared/components/home-header';
 import { cn } from '@/shared/lib/cn';
-import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -35,9 +35,8 @@ export function HomeScreen() {
   const [filter, setFilter] = useState(0);
 
   return (
-    <Screen top={TAB_TOP} bottom={6} scroll>
-      <View className="flex-1 px-[22px]">
-        <HomeHeader />
+    <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
+      <View className="flex-1">
         <Text
           className="mb-[4px] mt-[20px] font-medium text-accent-900"
           style={{ fontSize: 32, lineHeight: 32, letterSpacing: -0.96 }}

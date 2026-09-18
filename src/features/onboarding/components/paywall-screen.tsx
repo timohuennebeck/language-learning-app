@@ -13,7 +13,7 @@ import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { CheckCircle, RadioMark } from '@/shared/ui/marks';
 import { NavCircle } from '@/shared/ui/nav-circle';
-import { Screen } from '@/shared/ui/screen';
+import { PAGE_TOP, Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { RecommendedBadge } from '@/shared/ui/recommended-badge';
@@ -78,7 +78,7 @@ export function PaywallScreen() {
           color={colors.glyph}
           style={{
             position: 'absolute',
-            top: insets.top,
+            top: insets.top + PAGE_TOP,
             left: 20,
             backgroundColor: 'rgba(255,255,255,.7)',
           }}

@@ -1,0 +1,35 @@
+{
+  "id": "placement-reading-b2-half-marathon",
+  "level": "B2",
+  "role": "round2-harder",
+  "language": "fr",
+  "wordCount": 162,
+  "text": "Daniel s’était entraîné pendant quatre mois pour le semi-marathon, le plus souvent dans le noir, avant les cours. Il avait un plan pour chaque kilomètre, une playlist et un temps à battre dont il n’avait parlé à personne. Au quinzième kilomètre, son mollet gauche s’est bloqué et, après quelques centaines de mètres à faire comme si de rien n’était, il est sorti du parcours et s’est assis sur le trottoir. Il s’attendait à pleurer. Au lieu de cela, en regardant passer les autres coureurs, il a ressenti quelque chose qui ressemblait à du soulagement, puis, plus étrangement, à de la fierté. Pas pour la course, qu’il n’avait pas terminée, mais pour les quatre mois, qu’il avait tenus. Sur le chemin du retour, il a supprimé la playlist et gardé son carnet d’entraînement. Sa mère lui a demandé s’il réessaierait l’année prochaine. Daniel a répondu qu’il ne savait pas encore, et pour une fois, cela ressemblait à la vérité plutôt qu’à une excuse.",
+  "questions": [
+    {
+      "id": "q1",
+      "prompt": "Hat Daniel den Halbmarathon zu Ende gelaufen?",
+      "answer": false
+    },
+    {
+      "id": "q2",
+      "prompt": "War Daniel stolz auf die vier Monate Training?",
+      "answer": true
+    },
+    {
+      "id": "q3",
+      "prompt": "Hat Daniel seiner Mutter fest versprochen, nächstes Jahr wieder zu laufen?",
+      "answer": false
+    }
+  ],
+  "placement": {
+    "passIf": {
+      "maxTaps": 4,
+      "minCorrect": 3,
+      "readingLevel": "B2"
+    },
+    "otherwise": {
+      "readingLevel": "B1"
+    }
+  }
+}

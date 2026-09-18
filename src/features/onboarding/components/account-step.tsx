@@ -8,23 +8,23 @@ import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { GoogleLogo, PhoneDevice } from '@/shared/ui/icons';
 import { Text } from '@/shared/ui/text';
+import { TextLink } from '@/shared/ui/text-link';
 
 /** 12 · Konto (10 von 13). */
 export function AccountStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const link = (label: string, doc?: 'privacy') => (
-    <Text
-      className="font-semibold text-accent-800"
+    <TextLink
       style={{ fontSize: 13.5 }}
       onPress={() => router.push({ pathname: '/(onboarding)/terms', params: doc ? { doc } : {} })}
     >
       {label}
-    </Text>
+    </TextLink>
   );
   return (
     <OnboardingFrame
-      step={10}
+      step={16}
       title={t('onboarding.account.title')}
       sub={t('onboarding.account.sub')}
       footer={

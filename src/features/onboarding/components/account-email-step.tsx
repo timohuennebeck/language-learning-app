@@ -1,64 +1,86 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
-import { NO_OUTLINE, ring } from '@/shared/lib/styles';
+import { NO_OUTLINE } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { Button, TextButton } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/button';
 import { Eye } from '@/shared/ui/icons';
-import { RadioMark } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-/** 12b · E-Mail und Passwort (10 von 13). Also used as the "Einloggen" entry from Welcome. */
+const STRENGTH = ['weak', 'okay', 'good', 'strong'] as const;
+const STRENGTH_COLOR = [
+  colors.line2,
+  colors.danger,
+  colors.warn,
+  colors.accent[700],
+  colors.ok.icon,
+];
+
+/** 1–4: under 8 characters is weak, 8+ starts at okay; length, digits, mixed case and symbols add. */
+function passwordStrength(password: string) {
+  if (!password) return 0;
+  if (password.length < 8) return 1;
+  let score = 2;
+  if (password.length >= 12) score += 1;
+  if (/\d/.test(password)) score += 1;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+  if (/[^\p{L}\p{N}\s]/u.test(password)) score += 1;
+  // Strong is reserved for 12+ characters, whatever else is in it.
+  return Math.min(password.length >= 12 ? 4 : 3, score) as 1 | 2 | 3 | 4;
+}
+
+/** 12b · E-Mail und Passwort (16 von 17). With `?mode=login` it is the "Einloggen" page from Welcome. */
 export function AccountEmailStep() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { mode } = useLocalSearchParams<{ mode?: string }>();
+  const login = mode === 'login';
   const { completeOnboarding } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const rules = [
-    { key: 'length', ok: password.length >= 8 },
-    { key: 'number', ok: /\d/.test(password) },
-    { key: 'special', ok: /[^\p{L}\p{N}\s]/u.test(password) },
-  ] as const;
+  const strength = passwordStrength(password);
   const [show, setShow] = useState(false);
   const [focus, setFocus] = useState<'email' | 'password'>('email');
   const field = (focused: boolean) => ({
     height: 58,
     borderRadius: 20,
     backgroundColor: '#fff',
-    boxShadow: focused ? ring(2, colors.accent[700]) : ring(1.5, colors.line2),
+    boxShadow: focused ? `0 0 0 2px ${colors.accent[700]}` : `0 0 0 1.5px ${colors.line2}`,
     paddingHorizontal: 18,
   });
   return (
     <OnboardingFrame
-      step={10}
-      title={t('onboarding.account.title')}
-      sub={t('onboarding.account.sub')}
+      step={login ? undefined : 16}
+      title={t(login ? 'onboarding.login.title' : 'onboarding.account.title')}
+      sub={t(login ? 'onboarding.login.sub' : 'onboarding.account.sub')}
       footer={
         <>
           <Button
             height={60}
             size={17}
-            label={t('onboarding.accountEmail.cta')}
-            onPress={() => router.push('/(onboarding)/plus-active')}
+            label={t(login ? 'onboarding.login.cta' : 'onboarding.accountEmail.cta')}
+            onPress={() =>
+              login ? completeOnboarding() : router.push('/(onboarding)/plus-active')
+            }
           />
-          <View className="mt-[14px] flex-row items-center justify-center">
-            <Text className="text-ink2" style={{ fontSize: 15 }}>
-              {t('common.alreadyMember')}{' '}
-            </Text>
-            <TextButton
-              size={15}
-              color="text-accent-800"
-              label={t('common.signIn')}
-              onPress={completeOnboarding}
-            />
-          </View>
+          {login ? null : (
+            <View className="mt-[14px] flex-row items-center justify-center">
+              <Text className="text-ink2" style={{ fontSize: 15 }}>
+                {t('common.alreadyMember')}{' '}
+              </Text>
+              <Tap haptic="light" onPress={() => completeOnboarding()}>
+                <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
+                  {t('common.signIn')}
+                </Text>
+              </Tap>
+            </View>
+          )}
         </>
       }
     >
@@ -99,10 +121,7 @@ export function AccountEmailStep() {
               placeholder={t('onboarding.accountEmail.passwordPlaceholder')}
               placeholderTextColor={colors.faint}
               className="flex-1 font-regular text-ink"
-              style={[
-                { fontSize: 17, padding: 0, letterSpacing: show || !password ? 0 : 3.74 },
-                NO_OUTLINE,
-              ]}
+              style={[{ fontSize: 17, padding: 0 }, NO_OUTLINE]}
             />
             <Tap
               haptic="light"
@@ -116,16 +135,24 @@ export function AccountEmailStep() {
               <Eye />
             </Tap>
           </View>
-          <View className="mt-[10px]" style={{ rowGap: 6 }}>
-            {rules.map((r) => (
-              <View key={r.key} className="flex-row items-center" style={{ columnGap: 8 }}>
-                <RadioMark selected={r.ok} size={18} />
-                <Text className={r.ok ? 'text-ink' : 'text-muted'} style={{ fontSize: 13.5 }}>
-                  {t(`onboarding.accountEmail.rules.${r.key}`)}
-                </Text>
+          {login || !password ? null : (
+            <View className="mt-[10px]">
+              <View className="flex-row" style={{ columnGap: 6 }}>
+                {STRENGTH.map((step, i) => (
+                  <View
+                    key={step}
+                    className="h-[5px] flex-1 rounded-pill"
+                    style={{
+                      backgroundColor: i < strength ? STRENGTH_COLOR[strength] : colors.line2,
+                    }}
+                  />
+                ))}
               </View>
-            ))}
-          </View>
+              <Text className="mt-[6px] text-muted" style={{ fontSize: 13 }}>
+                {t(`onboarding.accountEmail.strength.${STRENGTH[strength - 1]}`)}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </OnboardingFrame>

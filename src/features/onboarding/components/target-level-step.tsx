@@ -29,7 +29,7 @@ export function TargetLevelStep() {
   };
   return (
     <OnboardingFrame
-      step={8}
+      step={13}
       title={t('onboarding.targetLevel.title')}
       sub={t('onboarding.targetLevel.sub')}
       footer={

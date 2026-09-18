@@ -37,16 +37,18 @@
       "pt": "Português"
     },
     "levelName": {
-      "A1": "Anfang",
+      "A1": "Anfänger",
       "A2": "Grundlagen",
-      "B1": "Selbstständig",
+      "B1": "Mittelstufe",
       "B2": "Fortgeschritten"
     },
     "back": "Zurück",
     "close": "Schließen",
     "weekdayLetters": ["M", "D", "M", "D", "F", "S", "S"],
     "languagePill": "Französisch · A2",
-    "reset": "Zurücksetzen"
+    "reset": "Zurücksetzen",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "splash": {
     "brand": "Yori"
@@ -132,16 +134,6 @@
       "pm": "nachm.",
       "cta": "{{time}} übernehmen"
     },
-    "assessmentIntro": {
-      "kicker": "Einstufungsgespräch",
-      "title": "Fünf Fragen, dann kennt Pip dein Level.",
-      "sub": "Eine Stufe nach der anderen. Antworte französisch, deutsch oder gemischt.",
-      "question": "Qu’est-ce que tu fais le week-end ?",
-      "stage": "Stufe 1 · Präsens",
-      "stagesLabel": "Die fünf Stufen",
-      "stages": ["Heute", "Gestern", "Morgen", "Eventuell", "Träume"],
-      "cta": "Gespräch starten · 2 Min"
-    },
     "levelSelf": {
       "title": "Wie gut ist dein Französisch?",
       "sub": "Grob reicht. Nach dem ersten Gespräch zieht Yori das nach.",
@@ -171,18 +163,6 @@
       "precise": "Lieber genau? ",
       "preciseCta": "2 Minuten reden."
     },
-    "assessmentCall": {
-      "title": "Einstufung · Französisch",
-      "question": "Frage 1 von 5",
-      "sub": "Fehler sind hier erwünscht.",
-      "partner": "Pip · dein Partner",
-      "live": "Live",
-      "prompt": "Qu’est-ce que tu fais le week-end ?",
-      "captions": "Live-Untertitel",
-      "you": "Du",
-      "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live-Gespräch"
-    },
     "evaluating": {
       "title": "Pip hört noch mal hin.",
       "steps": [
@@ -192,40 +172,6 @@
         "Level bestimmen"
       ],
       "secondsLeft": "{{n}} Sekunden übrig"
-    },
-    "levelResult": {
-      "title": "Dein Stand",
-      "kicker": "Einstufung",
-      "kickerSub": "2 Minuten Gespräch",
-      "blurb": {
-        "A1": "Einzelne Wörter und feste Wendungen. Yori startet bei Aussprache und ersten Sätzen.",
-        "A2": "Du baust einfache Sätze über Alltag und Wochenende. Zeitformen und Höflichkeit sind noch wackelig.",
-        "B1": "Du erzählst zusammenhängend und korrigierst dich selbst. Als Nächstes: Konnektoren und Nuancen.",
-        "B2": "Du diskutierst flüssig. Als Nächstes: Register, Redewendungen und schriftlicher Stil."
-      },
-      "fromTalk": "Aus deinem Gespräch",
-      "spots": "3 Stellen",
-      "items": [
-        {
-          "text": "Le week-end je vois des amis",
-          "sub": "Satzbau und Artikel sitzen",
-          "status": "sicher",
-          "pct": 88
-        },
-        {
-          "text": "je prends un café → j’ai pris",
-          "sub": "Grundform statt Vergangenheit",
-          "status": "üben",
-          "pct": 41
-        },
-        {
-          "text": "hier je regarde → j’ai regardé",
-          "sub": "Zeitangabe und Zeitform",
-          "status": "üben",
-          "pct": 33
-        }
-      ],
-      "cta": "Ergebnis sichern"
     },
     "targetLevel": {
       "title": "Welches Level willst du erreichen?",
@@ -302,10 +248,11 @@
       "hidePassword": "Passwort verbergen",
       "emailPlaceholder": "name@mail.de",
       "passwordPlaceholder": "Passwort",
-      "rules": {
-        "length": "Mindestens 8 Zeichen",
-        "number": "Eine Zahl",
-        "special": "Ein Sonderzeichen"
+      "strength": {
+        "weak": "Schwaches Passwort",
+        "okay": "Geht so",
+        "good": "Gutes Passwort",
+        "strong": "Starkes Passwort"
       }
     },
     "plusActive": {
@@ -321,6 +268,142 @@
       "opt1": "j’ai pris",
       "opt2": "prendre",
       "cta": "Widget hinzufügen"
+    },
+    "placement": {
+      "kicker": "Einstufung",
+      "title": "Lass uns dein\nLevel finden.",
+      "sub": "Ein kurzer Test, danach passen die Übungen zu dir. Keine 5 Minuten.",
+      "cta": "Los geht’s",
+      "self": "Level selbst wählen",
+      "read": {
+        "title": "Lesen",
+        "sub": "Lies zwei kurze Texte. Tippe an, was du nicht kennst."
+      },
+      "speak": {
+        "title": "Sprechen",
+        "sub": "Ein Rollenspiel von zwei Minuten mit Pip."
+      },
+      "screenTitle": "Einstufung",
+      "roundOf": "{{n}} von 2",
+      "readKicker": "Lesen · Text {{n}}",
+      "tapHint": "Tippe jedes Wort an, das du nicht kennst.",
+      "questionKicker": "Stimmt das?",
+      "textOf": "Text {{n}} von 2",
+      "known": "waren dir schon bekannt",
+      "cardsMade": "Karteikarten erstellt",
+      "questionsRight": "Fragen richtig",
+      "call": {
+        "kicker": "Sprechen · 2 Minuten",
+        "title": "Im Café",
+        "sub": "Du bist in einem Café in Paris. Du wolltest einen Cappuccino, aber die Maschine ist heute kaputt.",
+        "tasksLabel": "Deine Aufgaben",
+        "tasks": [
+          "Sprich den Serveur an und bestelle ein Getränk.",
+          "Frage nach, was es stattdessen gibt.",
+          "Entscheide dich für eine Alternative und sage sie klar."
+        ],
+        "cta": "Rollenspiel starten · 2 Min"
+      }
+    },
+    "levelSkill": {
+      "skillOf": "Fertigkeit {{n}} von 2",
+      "canLabel": "Das kannst du schon",
+      "workLabel": "Daran arbeiten wir",
+      "reading": {
+        "headline": "Du liest auf {{level}}.",
+        "pill": "Lesen",
+        "pillSub": "2 kurze Texte",
+        "cta": "Weiter zum Sprechen",
+        "A1": {
+          "can": [
+            "Einzelne Wörter und Schilder erkennst du sicher.",
+            "Kurze, einfache Sätze verstehst du mit Kontext."
+          ],
+          "work": ["Ganze Absätze verlierst du noch.", "Zeitformen im Text erkennst du noch nicht."]
+        },
+        "A2": {
+          "can": [
+            "Kurze Alltagstexte verstehst du im Kern.",
+            "Bekannte Wörter findest du schnell wieder."
+          ],
+          "work": [
+            "Längere Sätze brechen noch ab.",
+            "Vergangenheitsformen erkennst du noch unsicher."
+          ]
+        },
+        "B1": {
+          "can": [
+            "Cafékarten und Beschreibungen liest du ohne Hilfe.",
+            "Du erkennst das Passé composé im Text."
+          ],
+          "work": [
+            "Längere Sätze mit Nebensätzen verlierst du noch.",
+            "Ironie und Umgangssprache entgehen dir oft."
+          ]
+        },
+        "B2": {
+          "can": ["Auch längere Texte liest du flüssig.", "Nebensätze und Zeitformen sitzen."],
+          "work": [
+            "Feine Nuancen und Register unterscheidest du noch selten.",
+            "Redewendungen musst du noch nachschlagen."
+          ]
+        }
+      },
+      "speaking": {
+        "headline": "Du sprichst auf {{level}}.",
+        "pill": "Sprechen",
+        "pillSub": "2 Minuten Rollenspiel",
+        "cta": "Weiter",
+        "A1": {
+          "can": ["Du hast dich vorgestellt und gegrüßt.", "Einzelne Wörter kamen sicher."],
+          "work": ["Ganze Sätze brauchen noch Zeit.", "Fragen verstehst du noch nicht immer."]
+        },
+        "A2": {
+          "can": [
+            "Du hast bestellt und nach einer Alternative gefragt.",
+            "Deine Sätze waren kurz, aber verständlich."
+          ],
+          "work": [
+            "Höfliche Formen hast du zweimal vergessen.",
+            "Bei Rückfragen bricht das Gespräch noch ab."
+          ]
+        },
+        "B1": {
+          "can": [
+            "Du hast das Gespräch selbst geführt.",
+            "Rückfragen hast du ohne Pause beantwortet."
+          ],
+          "work": [
+            "Vergangenheitsformen vertauschst du noch.",
+            "Konnektoren fehlen, die Sätze stehen einzeln."
+          ]
+        },
+        "B2": {
+          "can": [
+            "Du sprichst flüssig und korrigierst dich selbst.",
+            "Höflichkeit und Register passen."
+          ],
+          "work": [
+            "Redewendungen klingen noch übersetzt.",
+            "Bei schnellen Antworten fehlen Nuancen."
+          ]
+        }
+      }
+    },
+    "prognosis": {
+      "kicker": "In {{n}} Monaten",
+      "title": "{{min}} Minuten am Tag und du stehst hier.",
+      "speaking": "Sprechen",
+      "reading": "Lesen",
+      "inMonths": "in etwa {{n}} Monaten",
+      "today": "heute",
+      "note": "Schätzung auf Basis deiner Einstufung und täglicher Übung mit Pip.",
+      "change": "Lernzeit ändern"
+    },
+    "login": {
+      "title": "Pip hat auf dich gewartet.",
+      "sub": "Logge dich ein und mach da weiter, wo du aufgehört hast.",
+      "cta": "Einloggen"
     }
   },
   "home": {
@@ -364,7 +447,7 @@
     "toB2": "38 % bis B2",
     "toA2": "15 % bis A2",
     "words": "{{level}} · {{n}} Wörter",
-    "new": "Neue Sprache"
+    "new": "Sprache hinzufügen"
   },
   "lesson": {
     "kicker": "Französisch · Leicht · 12 Wörter",

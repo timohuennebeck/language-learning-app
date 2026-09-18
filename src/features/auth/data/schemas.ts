@@ -9,7 +9,7 @@ export const UPCOMING_LEARNING_LANGUAGES = ['en', 'es', 'de'] as const;
 export type LearningLanguage = z.infer<typeof LearningLanguageSchema>;
 
 /** The app covers A1–B2 only; C1/C2 are out of scope everywhere. */
-const LevelSchema = z.enum(['A1', 'A2', 'B1', 'B2']);
+export const LevelSchema = z.enum(['A1', 'A2', 'B1', 'B2']);
 export const LEVELS = LevelSchema.options;
 export type Level = z.infer<typeof LevelSchema>;
 
@@ -24,6 +24,8 @@ export const SessionSchema = z.object({
   learningLanguage: LearningLanguageSchema.default('fr'),
   level: LevelSchema.default('A2'),
   targetLevel: LevelSchema.default('B2'),
+  /** Result of the reading placement; combined with the call's level later. */
+  readingLevel: LevelSchema.nullable().default(null),
   dailyGoalMinutes: z.number().int().default(15),
   reminder: z
     .object({ hour: z.number().int(), minute: z.number().int(), repeat: z.number().int() })

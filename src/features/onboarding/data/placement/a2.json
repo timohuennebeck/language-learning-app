@@ -1,0 +1,35 @@
+{
+  "id": "placement-reading-a2-two-tickets",
+  "level": "A2",
+  "role": "round2-easier",
+  "language": "fr",
+  "wordCount": 87,
+  "text": "Tom aime la musique. La semaine dernière, il a gagné deux billets pour un concert samedi. Il était très content, mais il y avait un problème. Il a deux meilleurs amis, Luca et Mia, et un seul billet en plus. Luca adore le groupe. Mia ne connaît pas le groupe, mais elle est toujours là quand Tom a besoin d’aide. Vendredi, Tom a décidé. Il a donné le billet à Mia. Luca était un peu triste, mais il a compris. La prochaine fois, Tom achètera trois billets.",
+  "questions": [
+    {
+      "id": "q1",
+      "prompt": "Hat Tom zwei Tickets gewonnen?",
+      "answer": true
+    },
+    {
+      "id": "q2",
+      "prompt": "Hat Tom das Ticket Luca gegeben?",
+      "answer": false
+    },
+    {
+      "id": "q3",
+      "prompt": "Kennt Mia die Band?",
+      "answer": false
+    }
+  ],
+  "placement": {
+    "passIf": {
+      "maxTaps": 2,
+      "minCorrect": 3,
+      "readingLevel": "A2"
+    },
+    "otherwise": {
+      "readingLevel": "A1"
+    }
+  }
+}

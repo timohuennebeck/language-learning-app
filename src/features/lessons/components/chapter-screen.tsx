@@ -12,7 +12,7 @@ import { cn } from '@/shared/lib/cn';
 import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { CheckIcon } from '@/shared/ui/icons';
-import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
 const DEFAULT_STATIONS: StationKind[] = ['read', 'cards', 'grammar', 'practice', 'live'];
@@ -64,9 +64,8 @@ export function ChapterScreen() {
   };
 
   return (
-    <Screen top={TAB_TOP} bottom={6} scroll>
-      <View className="flex-1 px-[22px]" style={{ minHeight: 0 }}>
-        <HomeHeader />
+    <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
+      <View className="flex-1" style={{ minHeight: 0 }}>
         <ChapterChips className="mt-[14px]" />
         <View className="mt-[16px] flex-row items-end justify-between" style={{ columnGap: 14 }}>
           <View className="flex-1" style={{ minWidth: 0 }}>

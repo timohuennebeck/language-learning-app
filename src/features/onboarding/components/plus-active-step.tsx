@@ -15,7 +15,7 @@ export function PlusActiveStep() {
   const router = useRouter();
   const { session, update } = useSession();
   return (
-    <Screen top={-4} bottom={0} className="px-[22px]">
+    <Screen bottom={0} className="px-[22px]">
       <View className="h-[34px] justify-center">
         <NavCircle icon="close" onPress={() => router.push('/(onboarding)/widget')} />
       </View>
