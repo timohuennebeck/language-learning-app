@@ -10,11 +10,14 @@ const THRESHOLD = 110;
 const FLY_DISTANCE = 520;
 
 /** Swipe / flip state for a stack of flashcards: gestures, shared values and counters. */
-export function useSwipeDeck(cards: Flashcard[]) {
+type Outcome = { known: number; againIds: string[] };
+
+export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) => void) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState(0);
-  const [again, setAgain] = useState(0);
+  const [againIds, setAgainIds] = useState<string[]>([]);
+  const again = againIds.length;
   const dx = useSharedValue(0);
   const flip = useSharedValue(0);
   /** -1 / 1 while a card is flying out, 0 otherwise. Guards against double commits. */
@@ -25,9 +28,12 @@ export function useSwipeDeck(cards: Flashcard[]) {
 
   const commit = (dir: 1 | -1) => {
     haptic(dir > 0 ? 'success' : 'light');
-    if (dir > 0) setKnown((k) => k + 1);
-    else setAgain((a) => a + 1);
+    const nextKnown = known + (dir > 0 ? 1 : 0);
+    const nextAgain = dir > 0 ? againIds : [...againIds, cards[index].id];
+    setKnown(nextKnown);
+    setAgainIds(nextAgain);
     setIndex((i) => i + 1);
+    if (index + 1 >= cards.length) onFinish?.({ known: nextKnown, againIds: nextAgain });
     setFlipped(false);
     dx.value = 0;
     leaving.value = 0;
@@ -71,12 +77,5 @@ export function useSwipeDeck(cards: Flashcard[]) {
   const tap = Gesture.Tap().onEnd(() => runOnJS(onFlip)());
   const gesture = Gesture.Exclusive(pan, tap);
 
-  const restart = () => {
-    setIndex(0);
-    setKnown(0);
-    setAgain(0);
-    setFlipped(false);
-  };
-
-  return { index, card, flipped, known, again, dx, flip, leaving, gesture, flyOut, restart };
+  return { index, card, flipped, known, again, dx, flip, leaving, gesture, flyOut };
 }

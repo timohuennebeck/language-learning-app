@@ -1,9 +1,8 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Text as RNText, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-import { DoneCard } from '@/features/flashcards/components/done-card';
 import { SwipeCard } from '@/features/flashcards/components/swipe-card';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
 import { useSwipeDeck } from '@/features/flashcards/hooks/use-swipe-deck';
@@ -27,12 +26,19 @@ const HINT = {
 export function FlashcardsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useLocalSearchParams<{ ids?: string }>();
   const deck = useDeck('cafe');
-  const cards = deck.data?.cards ?? [];
-  const d = useSwipeDeck(cards);
+  // `?ids=` repeats a subset ("Die 23 gleich nochmal" from the results screen).
+  const only = params.ids ? new Set(params.ids.split(',')) : null;
+  const cards = (deck.data?.cards ?? []).filter((c) => !only || only.has(c.id));
+  const d = useSwipeDeck(cards, ({ known, againIds }) =>
+    router.replace({
+      pathname: '/(app)/flashcards/done',
+      params: { total: String(cards.length), known: String(known), ids: againIds.join(',') },
+    }),
+  );
   // Worklets copy every captured value to the UI thread; capturing `d` would copy the gesture too.
   const { dx } = d;
-  const finished = !deck.isPending && !d.card;
 
   const leftHint = useAnimatedStyle(() => ({
     color: dx.value < -40 ? colors.sub : colors.neutral[400],
@@ -89,8 +95,6 @@ export function FlashcardsScreen() {
             flip={d.flip}
             leaving={d.leaving}
           />
-        ) : finished ? (
-          <DoneCard known={d.known} again={d.again} onRestart={d.restart} />
         ) : null}
         <View
           pointerEvents="none"
@@ -113,9 +117,9 @@ export function FlashcardsScreen() {
         <View style={{ width: 80 }} />
         <Tap
           haptic="success"
-          onPress={() => (d.card ? d.flyOut(1) : router.back())}
-          disabled={!finished && !d.card}
-          accessibilityLabel={d.card ? t('flashcards.known') : t('common.close')}
+          onPress={() => d.flyOut(1)}
+          disabled={!d.card}
+          accessibilityLabel={t('flashcards.known')}
           className="h-[68px] w-[68px] items-center justify-center rounded-full bg-accent-800"
         >
           <CheckIcon size={26} color={colors.accent[100]} strokeWidth={2.2} />

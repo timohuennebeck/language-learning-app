@@ -419,6 +419,13 @@
     "onboarded": 1
   },
   {
+    "name": "41b-flashcards-done",
+    "ref": "41B_Karten_durch.png",
+    "route": "/flashcards/done",
+    "h": 874,
+    "onboarded": true
+  },
+  {
     "name": "05-grammar",
     "ref": "Grammatik.png",
     "route": "/grammar",
