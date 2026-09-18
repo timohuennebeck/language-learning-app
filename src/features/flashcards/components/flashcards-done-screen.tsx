@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { useSession } from '@/features/auth/hooks/use-session';
 import { demoResult } from '@/features/flashcards/data/content';
 import type { DeckResult } from '@/features/flashcards/data/schemas';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
@@ -65,6 +66,7 @@ export function FlashcardsDoneScreen() {
   const back = useBack('/(app)');
   const params = useLocalSearchParams<{ total?: string; known?: string; ids?: string }>();
   const deck = useDeck('cafe');
+  const { session } = useSession();
 
   // Opened from a real run: build the result from the swiped cards; opened directly: design sample.
   let result: DeckResult = demoResult;
@@ -123,7 +125,7 @@ export function FlashcardsDoneScreen() {
           className="mt-[26px] text-center font-semibold text-ink"
           style={{ fontSize: 30, lineHeight: 34, letterSpacing: -0.9 }}
         >
-          {t('flashcards.result.title', { known: result.known, total: result.total })}
+          {t('flashcards.result.title', { name: session.name })}
         </Text>
         <Text
           className="mt-[12px] px-[20px] text-center text-muted"
