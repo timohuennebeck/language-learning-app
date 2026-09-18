@@ -13,6 +13,9 @@ export default function TabsLayout() {
   return (
     <NativeTabs
       tintColor={colors.accent[800]}
+      // The glass bar is translucent: paint the container behind it in the app background,
+      // otherwise iOS's white system background shows through and around the bar.
+      contentStyle={{ backgroundColor: colors.bg }}
       // No custom label font: the bar's own SF metrics keep the platform spacing between icon and label.
       minimizeBehavior="onScrollDown"
     >
