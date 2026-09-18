@@ -63,9 +63,8 @@ export function ChapterScreen() {
   };
 
   return (
-    <Screen tabRoot bottom={6} scroll>
-      <View className="flex-1 px-[22px]" style={{ minHeight: 0 }}>
-        <HomeHeader />
+    <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
+      <View className="flex-1" style={{ minHeight: 0 }}>
         <ChapterChips className="mt-[14px]" />
         <View className="mt-[16px] flex-row items-end justify-between" style={{ columnGap: 14 }}>
           <View className="flex-1" style={{ minWidth: 0 }}>

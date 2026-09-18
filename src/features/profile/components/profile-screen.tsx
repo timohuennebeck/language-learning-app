@@ -55,8 +55,11 @@ export function ProfileScreen() {
   const p = useProgress().data ?? FALLBACK;
 
   return (
-    <Screen tabRoot bottom={6} scroll>
-      <View className="flex-1 px-[22px]">
+    <Screen
+      tabRoot
+      bottom={6}
+      className="px-[22px]"
+      header={
         <HomeHeader
           right={
             <Tap
@@ -69,6 +72,9 @@ export function ProfileScreen() {
             </Tap>
           }
         />
+      }
+    >
+      <View className="flex-1">
         <View className="mt-[20px] flex-row items-center" style={{ columnGap: 14 }}>
           <Avatar size={62} />
           <View>

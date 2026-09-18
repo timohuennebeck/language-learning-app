@@ -29,6 +29,8 @@ type ScreenProps = ViewProps & {
    * so a primary button is never pushed off small screens.
    */
   footer?: ReactNode;
+  /** Pinned top section (the tab header). Content scrolls underneath it. */
+  header?: ReactNode;
 };
 
 /** Full-height screen container with the app background and safe-area aware padding. */
@@ -42,6 +44,7 @@ export function Screen({
   tabRoot = false,
   keyboard = false,
   footer,
+  header,
   children,
   ...props
 }: ScreenProps) {
@@ -55,13 +58,14 @@ export function Screen({
       : insets.top + top;
   const paddingBottom = insets.bottom + bottom;
   let body: ReactNode;
-  if (footer) {
+  if (footer || header) {
     body = (
       <View
         className={cn('flex-1 bg-bg', className)}
         style={[{ paddingTop, paddingBottom }, style]}
         {...props}
       >
+        {header}
         <ScrollView
           className="flex-1"
           // Bleed the scroll area past the horizontal padding so shadows/rings are not clipped.
