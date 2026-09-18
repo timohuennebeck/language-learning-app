@@ -5,45 +5,58 @@ import { useTranslation } from 'react-i18next';
 import { demoResult } from '@/features/flashcards/data/content';
 import type { DeckResult } from '@/features/flashcards/data/schemas';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
-import { GradientHeader } from '@/shared/components/gradient-header';
 import { useBack } from '@/shared/hooks/use-back';
-import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
+import { NavCircle } from '@/shared/ui/nav-circle';
+import { Ring } from '@/shared/ui/ring';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
-/** Cards missed this often are drawn as filled chips. */
+/** Cards missed this often are drawn as filled chips with their count. */
 const EMPHASIS_AT = 3;
 
-function Chip({ word, misses }: { word: string; misses: number }) {
+type RepeatCard = DeckResult['again'][number];
+
+function Chip({ card }: { card: RepeatCard }) {
   const { t } = useTranslation();
-  const strong = misses >= EMPHASIS_AT;
+  const strong = card.misses >= EMPHASIS_AT;
   return (
     <View
-      className={cn(
-        'flex-row items-center rounded-pill px-[15px]',
-        strong ? 'bg-accent-800' : 'bg-white',
-      )}
-      style={{
-        height: 41,
-        columnGap: 5,
-        boxShadow: strong ? undefined : `0 0 0 1.5px ${colors.line2}`,
-      }}
+      className={`flex-row items-center rounded-pill px-[14px] ${strong ? 'bg-accent-800' : 'bg-surface'}`}
+      style={{ height: 40, columnGap: 5 }}
     >
-      <Text className={strong ? 'text-accent-100' : 'text-ink'} style={{ fontSize: 18 }}>
-        {word}
+      <Text className={strong ? 'text-accent-100' : 'text-ink'} style={{ fontSize: 17 }}>
+        {card.word}
       </Text>
-      <Text className={strong ? 'text-lilac' : 'text-faint'} style={{ fontSize: 18 }}>
-        {t('flashcards.result.times', { n: misses })}
-      </Text>
+      {strong ? (
+        <Text className="text-lilac" style={{ fontSize: 17 }}>
+          {t('flashcards.result.times', { n: card.misses })}
+        </Text>
+      ) : null}
     </View>
   );
 }
 
-/** 41b · Karteikarten · Stapel geschafft (all repeat cards as chips, scrollable). */
+function Group({ title, cards, first }: { title: string; cards: RepeatCard[]; first: boolean }) {
+  if (!cards.length) return null;
+  return (
+    <View style={{ marginTop: first ? 0 : 20 }}>
+      <Kicker size={13} tracking={0.1} className={first ? undefined : 'text-muted'}>
+        {title}
+      </Kicker>
+      <View className="mt-[10px] flex-row flex-wrap" style={{ gap: 8 }}>
+        {cards.map((c) => (
+          <Chip key={c.id} card={c} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+/** 42d · Karteikarten · Stapel geschafft (ring, headline, repeat cards grouped by misses). */
 export function FlashcardsDoneScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -68,15 +81,21 @@ export function FlashcardsDoneScreen() {
   }
   const againCount = result.againCount ?? result.again.length;
   const againIds = result.again.map((c) => c.id).join(',');
+  const groups: [string, RepeatCard[]][] = [
+    [t('flashcards.result.group3'), result.again.filter((c) => c.misses >= EMPHASIS_AT)],
+    [t('flashcards.result.group2'), result.again.filter((c) => c.misses === 2)],
+    [t('flashcards.result.group1'), result.again.filter((c) => c.misses <= 1)],
+  ];
+  const progress = result.total ? result.known / result.total : 0;
 
   return (
     <Screen
-      edgeToEdgeTop
+      top={0}
       bottom={-10}
       className="px-[22px]"
       footer={
         <View style={{ rowGap: 6 }}>
-          {result.again.length ? (
+          {againCount ? (
             <Button
               height={58}
               size={17}
@@ -96,34 +115,55 @@ export function FlashcardsDoneScreen() {
         </View>
       }
     >
-      <GradientHeader left="close" onLeftPress={back} className="-mx-[22px]" paddingBottom={30}>
-        <View className="mt-[10px] w-full flex-row items-center" style={{ columnGap: 20 }}>
-          <Illustration name="pip-trophy" size={82} />
-          <View className="flex-1">
-            <Kicker size={13}>{t('flashcards.result.kicker')}</Kicker>
+      <View className="h-[40px] justify-center">
+        <NavCircle icon="close" onPress={back} />
+      </View>
+      <View className="mt-[24px] items-center">
+        <View className="items-center" style={{ paddingBottom: 18 }}>
+          <Ring
+            size={190}
+            stroke={8}
+            progress={progress}
+            trackColor={colors.track3}
+            color={colors.accent[700]}
+          >
+            <Illustration name="pip-trophy" size={112} />
+          </Ring>
+          <View
+            className="absolute rounded-pill bg-accent-800 px-[16px]"
+            style={{ bottom: 0, height: 36, justifyContent: 'center' }}
+          >
             <Text
-              className="mt-[6px] font-semibold text-ink"
-              style={{ fontSize: 33, lineHeight: 37, letterSpacing: -0.99 }}
+              className="font-semibold text-accent-100"
+              style={{ fontSize: 15, fontVariant: ['tabular-nums'] }}
             >
-              {t('flashcards.result.title', { n: result.total })}
-            </Text>
-            <Text className="mt-[6px] text-muted" style={{ fontSize: 18 }}>
-              {t('flashcards.result.sub', { known: result.known, again: againCount })}
+              {t('flashcards.result.badge', { known: result.known, total: result.total })}
             </Text>
           </View>
         </View>
-      </GradientHeader>
-      <Kicker size={14} tracking={0.1} className="mt-[34px] text-muted">
-        {t('flashcards.result.againTitle')}
-      </Kicker>
-      <Text className="mt-[8px] text-faint" style={{ fontSize: 15.5, lineHeight: 21.5 }}>
-        {t('flashcards.result.againSub')}
-      </Text>
-      <View className="mt-[22px] flex-row flex-wrap" style={{ gap: 10, paddingBottom: 12 }}>
-        {result.again.map((c) => (
-          <Chip key={c.id} word={c.word} misses={c.misses} />
-        ))}
+        <Text
+          className="mt-[26px] text-center font-semibold text-ink"
+          style={{ fontSize: 30, lineHeight: 34, letterSpacing: -0.9 }}
+        >
+          {t('flashcards.result.title', { known: result.known, total: result.total })}
+        </Text>
+        <Text
+          className="mt-[12px] px-[20px] text-center text-muted"
+          style={{ fontSize: 17, lineHeight: 24 }}
+        >
+          {t('flashcards.result.sub')}
+        </Text>
       </View>
+      {result.again.length ? (
+        <View
+          className="mt-[30px] rounded-[28px] bg-white p-[16px]"
+          style={{ boxShadow: `0 0 0 1.5px ${colors.line2}`, marginBottom: 12 }}
+        >
+          {groups.map(([title, cards], i) => (
+            <Group key={title} title={title} cards={cards} first={i === 0} />
+          ))}
+        </View>
+      ) : null}
     </Screen>
   );
 }

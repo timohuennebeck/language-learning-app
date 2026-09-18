@@ -46,15 +46,7 @@
     },
     "back": "Back",
     "close": "Close",
-    "weekdayLetters": [
-      "M",
-      "T",
-      "W",
-      "T",
-      "F",
-      "S",
-      "S"
-    ],
+    "weekdayLetters": ["M", "T", "W", "T", "F", "S", "S"],
     "languagePill": "French · A2",
     "reset": "Reset"
   },
@@ -150,13 +142,7 @@
       "question": "Qu’est-ce que tu fais le week-end ?",
       "stage": "Stage 1 · Present",
       "stagesLabel": "The five stages",
-      "stages": [
-        "Today",
-        "Yesterday",
-        "Tomorrow",
-        "Maybe",
-        "Dreams"
-      ],
+      "stages": ["Today", "Yesterday", "Tomorrow", "Maybe", "Dreams"],
       "cta": "Start conversation · 2 min"
     },
     "levelSelf": {
@@ -366,12 +352,7 @@
         "cta": "Practice"
       }
     },
-    "filters": [
-      "For you",
-      "Daily life",
-      "Travel",
-      "Friends"
-    ]
+    "filters": ["For you", "Daily life", "Travel", "Friends"]
   },
   "languages": {
     "title": "Languages",
@@ -409,11 +390,7 @@
     }
   },
   "chapter": {
-    "chapters": [
-      "Chapter 1",
-      "Chapter 2 · At the café",
-      "Chapter 3"
-    ],
+    "chapters": ["Chapter 1", "Chapter 2 · At the café", "Chapter 3"],
     "title": "At the café",
     "station": "Station {{n}} of 5 · from your conversation on Tuesday",
     "next": "Next",
@@ -464,12 +441,7 @@
   "preparing": {
     "title": "Exercise",
     "headline": "Pip is building your exercise.",
-    "steps": [
-      "Conversation analysed",
-      "12 words selected",
-      "Writing tasks",
-      "Setting the order"
-    ],
+    "steps": ["Conversation analysed", "12 words selected", "Writing tasks", "Setting the order"],
     "secondsLeft": "{{n}} seconds left"
   },
   "error": {
@@ -544,11 +516,12 @@
     "again": "Again",
     "known": "Known",
     "result": {
-      "kicker": "Free practice",
-      "title": "{{n}} cards done.",
-      "sub": "{{known}} stick · {{again}} come back",
-      "againTitle": "Coming back",
-      "againSub": "Pip highlights cards you mixed up 3× or more.",
+      "title": "{{known}} of {{total}} solid.",
+      "badge": "{{known}} of {{total}}",
+      "sub": "Pip highlights cards you mixed up 3× or more.",
+      "group3": "3× and more",
+      "group2": "2×",
+      "group1": "1×",
       "times": "{{n}}×",
       "retry": "Repeat {{n}} flashcards",
       "finish": "Done"
@@ -646,16 +619,8 @@
       "sub": "One reminder a day. Tap a number to pick it.",
       "preview1": "Pip checks in ",
       "previewAt": " at ",
-      "freq": [
-        "every day",
-        "Monday to Friday",
-        "Saturday and Sunday"
-      ],
-      "tail": [
-        " with a gap from your last conversation.",
-        ". Weekends stay quiet.",
-        "."
-      ],
+      "freq": ["every day", "Monday to Friday", "Saturday and Sunday"],
+      "tail": [" with a gap from your last conversation.", ". Weekends stay quiet.", "."],
       "save": "Save {{time}}",
       "off": "Turn reminder off"
     },
