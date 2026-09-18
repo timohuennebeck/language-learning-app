@@ -14,7 +14,6 @@ import {
   ClockIcon,
   Cog6ToothIcon,
   EyeIcon,
-  PlusIcon,
   XMarkIcon,
 } from 'react-native-heroicons/outline';
 import { LockClosedIcon, PlayIcon, StarIcon as HiStar } from 'react-native-heroicons/solid';
@@ -57,14 +56,6 @@ export function CloseIcon({ size = 16, color = colors.accent[900], strokeWidth =
 
 export function CheckIcon({ size = 14, color = '#fff', strokeWidth = 3 }: IconProps) {
   return <HiCheck size={size} color={color} strokeWidth={strokeWidth} />;
-}
-
-export function PlusIconSm({
-  size = 15,
-  color = colors.accent[900],
-  strokeWidth = 2.6,
-}: IconProps) {
-  return <PlusIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 export function ArrowRight({ size = 18, color = colors.lilac, strokeWidth = 2 }: IconProps) {

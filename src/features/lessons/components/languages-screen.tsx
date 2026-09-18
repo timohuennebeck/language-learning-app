@@ -9,7 +9,6 @@ import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Flag } from '@/shared/ui/illustration';
 import { CheckCircle } from '@/shared/ui/marks';
-import { PlusIconSm } from '@/shared/ui/icons';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
@@ -99,8 +98,6 @@ export function LanguagesScreen() {
         height={56}
         size={16.5}
         label={t('languages.new')}
-        left={<PlusIconSm />}
-        className="[column-gap:-1px]"
         haptic="light"
         onPress={() => router.push('/(app)/profile/learning-language')}
       />
