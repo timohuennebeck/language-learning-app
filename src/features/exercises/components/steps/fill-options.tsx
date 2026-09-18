@@ -6,6 +6,7 @@ import { AnswerChip } from '@/features/exercises/components/answer-chip';
 import { SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout';
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import { InlineFlow } from '@/shared/components/inline-flow';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
@@ -35,7 +36,7 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
                   height: 44,
                   borderRadius: 14,
                   backgroundColor: answer ? colors.surface : colors.surface2,
-                  boxShadow: `inset 0 0 0 1.5px ${colors.accent[500]}`,
+                  boxShadow: insetRing(1.5, colors.accent[500]),
                   alignItems: 'center',
                   justifyContent: 'center',
                   paddingHorizontal: 12,
@@ -69,7 +70,7 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
             if (isAnswer) {
               bg = colors.ok.chip;
               color = colors.ok.text;
-              ring = `inset 0 0 0 2px ${colors.ok.ring}`;
+              ring = insetRing(2, colors.ok.ring);
               icon = <CheckIcon size={16} color={colors.ok.icon} strokeWidth={2.6} />;
             } else if (isPicked) {
               bg = colors.err.chip;
@@ -80,7 +81,7 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
               color = colors.dim7;
             }
           } else if (isPicked) {
-            ring = `inset 0 0 0 2px ${colors.accent[600]}`;
+            ring = insetRing(2, colors.accent[600]);
           }
           return (
             <Tap

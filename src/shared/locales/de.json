@@ -15,8 +15,6 @@
     "alreadyMember": "Schon dabei?",
     "recommended": "Empfohlen",
     "min": "Min",
-    "minutes": "Minuten",
-    "of": "von",
     "stepOf": "{{step}} von {{total}}",
     "soon": "Bald",
     "understood": "Verstanden",
@@ -66,7 +64,6 @@
     "headlinePost": "werden deine Übungen."
   },
   "terms": {
-    "title": "Nutzungsbedingungen",
     "meta": "Lorem ipsum · Stand 15. September 2026",
     "sections": [
       {
@@ -184,10 +181,7 @@
       "captions": "Live-Untertitel",
       "you": "Du",
       "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live-Gespräch",
-      "mute": "Stumm",
-      "end": "Beenden",
-      "subtitles": "Untertitel"
+      "liveLabel": "Live-Gespräch"
     },
     "evaluating": {
       "title": "Pip hört noch mal hin.",
@@ -238,6 +232,10 @@
       "sub": "Pip stellt deine Übungen auf dieses Ziel ein. Änderbar jederzeit.",
       "today": "Dein Stand heute",
       "options": {
+        "A2": {
+          "name": "Alltag meistern",
+          "sub": "Bestellen, nach dem Weg fragen, Small Talk"
+        },
         "B1": {
           "name": "Gespräche ohne Stocken",
           "sub": "Erzählen, nachfragen, Termine machen"
@@ -331,13 +329,11 @@
     "due": "Karteikarten fällig",
     "hero": {
       "talk": {
-        "preview": "Ça te dit ?",
         "kicker": "SPRECHEN · 5–15 MIN",
         "title": "Live-Gespräch starten",
         "cta": "Sprechen"
       },
       "read": {
-        "preview": "marché",
         "kicker": "1 THEMA · 4 MIN",
         "title": "Lesetext erstellen",
         "cta": "Text erstellen"
@@ -350,8 +346,6 @@
         "cta": "Übung starten"
       },
       "cards": {
-        "front": "le café",
-        "back": "das Café",
         "kicker": "12 KARTEN FÄLLIG",
         "title": "Karteikarten wiederholen",
         "cta": "Üben"
@@ -618,7 +612,8 @@
     "learningLanguage": "Lernsprache",
     "appLanguage": "App-Sprache",
     "reminder": "Erinnerung",
-    "reminderSub": "Täglich um {{time}}",
+    "reminderSubs": ["Täglich um {{time}}", "Mo–Fr um {{time}}", "Am Wochenende um {{time}}"],
+    "reminderOff": "Aus",
     "account": "Konto",
     "plus": "Yori Plus",
     "active": "Aktiv",
@@ -655,13 +650,6 @@
         "15": "2–3 Übungen",
         "30": "5 Übungen"
       },
-      "week": {
-        "5": "35 Min",
-        "10": "1 h 10",
-        "15": "1 h 45",
-        "30": "3 h 30"
-      },
-      "perWeek": "{{t}} pro Woche",
       "a2today": "A2 heute",
       "b1": "B1",
       "save": "{{min}} Minuten am Tag"

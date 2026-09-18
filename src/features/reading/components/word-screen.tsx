@@ -5,31 +5,15 @@ import { useTranslation } from 'react-i18next';
 
 import { segments } from '@/features/reading/data/content';
 import { InlineFlow } from '@/shared/components/inline-flow';
+import { InlineMark } from '@/shared/components/inline-mark';
+import { insetRing } from '@/shared/lib/styles';
+import { splitMarks } from '@/shared/lib/text';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
-import { Screen } from '@/shared/ui/screen';
 import { Kicker } from '@/shared/ui/kicker';
+import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 import { TopBar } from '@/shared/ui/top-bar';
-
-/** Splits `text` into plain runs and `{ mark }` runs for every occurrence of the given phrases. */
-function markPieces(text: string, marks: string[]): (string | { mark: string })[] {
-  const out: (string | { mark: string })[] = [];
-  let rest = text;
-  while (rest) {
-    let best: { at: number; mark: string } | null = null;
-    for (const m of marks) {
-      const at = rest.indexOf(m);
-      if (at >= 0 && (!best || at < best.at)) best = { at, mark: m };
-    }
-    if (!best) break;
-    if (best.at > 0) out.push(rest.slice(0, best.at));
-    out.push({ mark: best.mark });
-    rest = rest.slice(best.at + best.mark.length);
-  }
-  if (rest) out.push(rest);
-  return out;
-}
 
 /** 16a · Worterklärung aus dem Lesetext. */
 export function WordScreen() {
@@ -75,18 +59,9 @@ export function WordScreen() {
             {
               key: 'word',
               node: (
-                <View
-                  style={{
-                    borderRadius: 6,
-                    paddingHorizontal: 4,
-                    paddingVertical: 1,
-                    backgroundColor: colors.track,
-                  }}
-                >
-                  <Text style={{ fontSize: 19, lineHeight: 24.7, color: colors.accent[900] }}>
-                    {s.word}
-                  </Text>
-                </View>
+                <InlineMark size={19} color={colors.accent[900]} bg={colors.track} py={1}>
+                  {s.word}
+                </InlineMark>
               ),
             },
             s.sentence.post,
@@ -94,26 +69,25 @@ export function WordScreen() {
         />
         <InlineFlow
           textStyle={{ fontSize: 14.5, lineHeight: 21, color: colors.muted }}
-          pieces={markPieces(s.sentence.de, s.sentence.deMarks).map((piece, i) =>
-            typeof piece === 'string'
-              ? piece
-              : {
+          pieces={splitMarks(s.sentence.de, s.sentence.deMarks).map((run, i) =>
+            run.marked
+              ? {
                   key: `de-${i}`,
                   node: (
-                    <View
-                      style={{
-                        borderRadius: 5,
-                        paddingHorizontal: 3,
-                        paddingVertical: 1,
-                        backgroundColor: colors.track,
-                      }}
+                    <InlineMark
+                      size={14.5}
+                      lineHeight={18}
+                      color={colors.accent[900]}
+                      bg={colors.track}
+                      radius={5}
+                      px={3}
+                      py={1}
                     >
-                      <Text style={{ fontSize: 14.5, lineHeight: 18, color: colors.accent[900] }}>
-                        {piece.mark}
-                      </Text>
-                    </View>
+                      {run.text}
+                    </InlineMark>
                   ),
-                },
+                }
+              : run.text,
           )}
         />
       </View>
@@ -123,7 +97,7 @@ export function WordScreen() {
           height={58}
           label={saved ? t('word.saved') : t('word.save')}
           variant={saved ? 'ghost-accent' : 'primary'}
-          style={saved ? { boxShadow: `inset 0 0 0 1.5px ${colors.accent[800]}` } : undefined}
+          style={saved ? { boxShadow: insetRing(1.5, colors.accent[800]) } : undefined}
           haptic={saved ? 'light' : 'success'}
           onPress={() => setSaved((v) => !v)}
         />

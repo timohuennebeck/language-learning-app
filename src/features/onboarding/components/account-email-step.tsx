@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
-import { NO_OUTLINE } from '@/shared/lib/styles';
+import { NO_OUTLINE, ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Eye } from '@/shared/ui/icons';
-import { CheckCircle } from '@/shared/ui/marks';
+import { RadioMark } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
@@ -32,7 +32,7 @@ export function AccountEmailStep() {
     height: 58,
     borderRadius: 20,
     backgroundColor: '#fff',
-    boxShadow: focused ? `0 0 0 2px ${colors.accent[700]}` : `0 0 0 1.5px ${colors.line2}`,
+    boxShadow: focused ? ring(2, colors.accent[700]) : ring(1.5, colors.line2),
     paddingHorizontal: 18,
   });
   return (
@@ -118,14 +118,7 @@ export function AccountEmailStep() {
           <View className="mt-[10px]" style={{ rowGap: 6 }}>
             {rules.map((r) => (
               <View key={r.key} className="flex-row items-center" style={{ columnGap: 8 }}>
-                {r.ok ? (
-                  <CheckCircle size={18} bg={colors.accent[700]} stroke={2.6} iconSize={10} />
-                ) : (
-                  <View
-                    className="h-[18px] w-[18px] rounded-full"
-                    style={{ boxShadow: `inset 0 0 0 1.5px ${colors.ring}` }}
-                  />
-                )}
+                <RadioMark selected={r.ok} size={18} />
                 <Text className={r.ok ? 'text-ink' : 'text-muted'} style={{ fontSize: 13.5 }}>
                   {t(`onboarding.accountEmail.rules.${r.key}`)}
                 </Text>

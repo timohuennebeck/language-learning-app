@@ -1,6 +1,5 @@
 import { DeckSchema, type Deck } from '@/features/flashcards/data/schemas';
-
-const delay = (ms = 120) => new Promise((r) => setTimeout(r, ms));
+import { delay } from '@/shared/lib/time';
 
 const cafeDeck: Deck = DeckSchema.parse({
   id: 'cafe',

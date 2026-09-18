@@ -100,20 +100,6 @@ export function CogIcon({ size = 20, color = colors.glyph, strokeWidth = 1.8 }: 
   return <Cog6ToothIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
-/** Three-dot overflow glyph inside a nav circle. */
-export function Ellipsis({ color = colors.glyph }: { color?: string }) {
-  return (
-    <View style={{ flexDirection: 'row', columnGap: 3 }}>
-      {[0, 1, 2].map((i) => (
-        <View
-          key={i}
-          style={{ width: 3.5, height: 3.5, borderRadius: 2, backgroundColor: color }}
-        />
-      ))}
-    </View>
-  );
-}
-
 /** Muted microphone (call controls). */
 export function MicSlash({ size = 26, color = colors.accent[900] }: IconProps) {
   return (

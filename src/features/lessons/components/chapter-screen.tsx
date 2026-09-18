@@ -9,6 +9,7 @@ import { useChapter } from '@/features/lessons/hooks/use-lessons';
 import type { StationKind } from '@/features/lessons/data/schemas';
 import { HomeHeader } from '@/shared/components/home-header';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { CheckIcon } from '@/shared/ui/icons';
 import { Screen, TAB_TOP } from '@/shared/ui/screen';
@@ -30,7 +31,7 @@ function StepDot({ state, n }: { state: 'done' | 'current' | 'pending'; n: numbe
         'h-[26px] w-[26px] items-center justify-center rounded-full',
         state === 'current' ? 'bg-accent-800' : 'bg-surface2',
       )}
-      style={state === 'current' ? { boxShadow: `0 0 0 3px ${colors.line}` } : undefined}
+      style={state === 'current' ? { boxShadow: ring(3, colors.line) } : undefined}
     >
       <Text
         className={cn('font-semibold', state === 'current' ? 'text-accent-100' : 'text-dim')}

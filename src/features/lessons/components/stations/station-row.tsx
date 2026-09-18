@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { RowPreview } from '@/features/lessons/components/stations/station-previews';
 import type { StationKind } from '@/features/lessons/data/schemas';
 import { cn } from '@/shared/lib/cn';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
 import { CheckIcon } from '@/shared/ui/icons';
@@ -35,7 +36,7 @@ export function StationRow({ kind, index, done, onPress }: Props) {
           'h-[34px] w-[34px] items-center justify-center rounded-full',
           done ? 'bg-lavender3' : 'bg-surface2',
         )}
-        style={done ? undefined : { boxShadow: `inset 0 0 0 1.5px ${colors.line2}` }}
+        style={done ? undefined : { boxShadow: insetRing(1.5, colors.line2) }}
       >
         {done ? (
           <CheckIcon size={14} color={colors.accent[900]} strokeWidth={2.4} />

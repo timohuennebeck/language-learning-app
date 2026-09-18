@@ -1,8 +1,6 @@
-import { View } from 'react-native';
-
+import { InlineMark } from '@/shared/components/inline-mark';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
-import { Text } from '@/shared/ui/text';
 
 /**
  * Inline answer chip inside a sentence (green when correct, red + strikethrough when wrong).
@@ -10,24 +8,17 @@ import { Text } from '@/shared/ui/text';
  */
 export function AnswerChip({ text, ok, size }: { text: string; ok: boolean; size: number }) {
   return (
-    <View
-      style={{
-        borderRadius: 14,
-        paddingHorizontal: 12,
-        paddingVertical: 2,
-        backgroundColor: ok ? colors.ok.chip : colors.err.chip,
-      }}
+    <InlineMark
+      size={size}
+      lineHeight={size * 1.4}
+      color={ok ? colors.ok.text : colors.err.text}
+      bg={ok ? colors.ok.chip : colors.err.chip}
+      radius={14}
+      px={12}
+      py={2}
+      textClassName={cn(!ok && 'line-through')}
     >
-      <Text
-        className={cn(!ok && 'line-through')}
-        style={{
-          fontSize: size,
-          lineHeight: size * 1.4,
-          color: ok ? colors.ok.text : colors.err.text,
-        }}
-      >
-        {text}
-      </Text>
-    </View>
+      {text}
+    </InlineMark>
   );
 }

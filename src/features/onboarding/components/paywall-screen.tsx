@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MarkedHeadline } from '@/shared/components/marked-headline';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
@@ -125,7 +126,7 @@ export function PaywallScreen() {
                   paddingTop: 16,
                   paddingBottom: 15,
                   paddingHorizontal: 14,
-                  boxShadow: on ? `0 0 0 2px ${colors.accent[700]}` : `0 0 0 1.5px ${colors.line2}`,
+                  boxShadow: on ? ring(2, colors.accent[700]) : ring(1.5, colors.line2),
                   zIndex: 'recommended' in p && p.recommended ? 2 : 1,
                 }}
               >

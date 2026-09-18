@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useProfile } from '@/features/profile/hooks/use-profile';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Avatar, Illustration } from '@/shared/ui/illustration';
@@ -63,7 +64,7 @@ export function LogoutScreen() {
       </View>
       <View
         className="mt-[24px] flex-row items-center rounded-[20px] bg-white px-[16px] py-[14px]"
-        style={{ columnGap: 12, boxShadow: `0 0 0 1px ${colors.line2}` }}
+        style={{ columnGap: 12, boxShadow: ring(1, colors.line2) }}
       >
         <Avatar size={40} />
         <View className="flex-1">

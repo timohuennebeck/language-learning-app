@@ -5,12 +5,13 @@ import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reani
 
 import type { Flashcard } from '@/features/flashcards/data/schemas';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-/** Card frame shared by the swipe card and the "done" card. */
-export const CARD_FRAME = { top: 32, left: 26, right: 26, bottom: 128 } as const;
+/** Where the card sits inside the deck area (the backing card and Pip are laid out around it). */
+const CARD_FRAME = { top: 32, left: 26, right: 26, bottom: 128 } as const;
 
 function Stamp({
   side,
@@ -86,7 +87,7 @@ export function SwipeCard({ card, flipped, gesture, dx, leaving }: Props) {
             borderRadius: 26,
             backgroundColor: colors.surface,
             padding: 26,
-            boxShadow: '0 0 0 1px #e4e7f5, 0 6px 18px rgba(41,43,49,.10)',
+            boxShadow: `${ring(1, colors.neutral[200])}, 0 6px 18px rgba(41,43,49,.10)`,
           },
           cardStyle,
         ]}

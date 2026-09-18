@@ -1,6 +1,7 @@
 import { Image, type ImageProps } from 'expo-image';
 import { View } from 'react-native';
 
+import { insetRing, ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 
 /** Registry of design illustrations (Pip mascot artwork, flags, avatar). */
@@ -100,7 +101,7 @@ export function Flag({
           position: 'absolute',
           inset: 0,
           borderRadius: size / 2,
-          boxShadow: 'inset 0 0 0 1px rgba(22,24,34,.1)',
+          boxShadow: insetRing(1, 'rgba(22,24,34,.1)'),
         }}
       />
     </View>
@@ -115,7 +116,7 @@ export function Avatar({ size = 34 }: { size?: number }) {
         width: size,
         height: size,
         borderRadius: size / 2,
-        boxShadow: `0 0 0 1.5px ${colors.line2}`,
+        boxShadow: ring(1.5, colors.line2),
       }}
     >
       <Image

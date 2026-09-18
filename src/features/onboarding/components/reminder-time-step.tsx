@@ -1,14 +1,13 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useReminderDraft } from '@/features/auth/hooks/use-reminder-draft';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { RepeatSegments, TimePicker } from '@/shared/components/time-picker';
 import { Button } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
-import { formatTime } from '@/shared/lib/time';
 import { Kicker } from '@/shared/ui/kicker';
 
 /** 05a · Erinnerungszeit (6 von 13). */
@@ -16,12 +15,7 @@ export function ReminderTimeStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session, update } = useSession();
-  const [time, setTime] = useState({
-    hour: session.reminder?.hour ?? 20,
-    minute: session.reminder?.minute ?? 30,
-  });
-  const [repeat, setRepeat] = useState(session.reminder?.repeat ?? 0);
-  const label = formatTime(time.hour, time.minute);
+  const draft = useReminderDraft(session.reminder);
   return (
     <OnboardingFrame
       step={6}
@@ -31,9 +25,9 @@ export function ReminderTimeStep() {
         <Button
           height={60}
           size={17.5}
-          label={t('onboarding.reminder.cta', { time: label })}
+          label={t('onboarding.reminder.cta', { time: draft.label })}
           onPress={() => {
-            update({ reminder: { ...time, repeat } });
+            update({ reminder: draft.value });
             router.push('/(onboarding)/assessment-intro');
           }}
         />
@@ -44,13 +38,13 @@ export function ReminderTimeStep() {
       </CardGradient>
       <TimePicker
         className="mt-[18px]"
-        hour={time.hour}
-        minute={time.minute}
+        hour={draft.time.hour}
+        minute={draft.time.minute}
         minuteStep={15}
-        onChange={setTime}
+        onChange={draft.setTime}
       />
       <Kicker className="mt-[2px] text-muted">{t('onboarding.reminder.repeat')}</Kicker>
-      <RepeatSegments className="mt-[8px]" value={repeat} onChange={setRepeat} />
+      <RepeatSegments className="mt-[8px]" value={draft.repeat} onChange={draft.setRepeat} />
     </OnboardingFrame>
   );
 }

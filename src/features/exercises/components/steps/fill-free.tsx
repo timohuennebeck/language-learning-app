@@ -7,6 +7,7 @@ import { SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import { Hint } from '@/shared/components/hint';
 import { InlineFlow } from '@/shared/components/inline-flow';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Caret } from '@/shared/ui/caret';
 import { Kicker } from '@/shared/ui/kicker';
@@ -43,7 +44,7 @@ export function FillFree({
                   alignItems: 'center',
                   borderRadius: 14,
                   backgroundColor: colors.white,
-                  boxShadow: `0 0 0 2px ${colors.accent[500]}`,
+                  boxShadow: ring(2, colors.accent[500]),
                   paddingHorizontal: 12,
                 }}
               >

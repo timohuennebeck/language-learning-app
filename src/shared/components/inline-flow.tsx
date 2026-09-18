@@ -9,6 +9,8 @@ type Props = {
   pieces: FlowPiece[];
   /** Applied to every plain word. Must include `fontSize` and `lineHeight`. */
   textStyle: TextStyle;
+  /** Class applied to every plain word (font face, color). */
+  textClassName?: string;
   className?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -19,7 +21,7 @@ type Props = {
  * as a wrapping row of words and the boxes are real Views. Spaces are kept at the end of each word.
  * A box taller than the line height makes its own line taller; the words on it stay centred.
  */
-export function InlineFlow({ pieces, textStyle, className, style }: Props) {
+export function InlineFlow({ pieces, textStyle, textClassName, className, style }: Props) {
   const items: ReactNode[] = [];
   pieces.forEach((piece, i) => {
     if (typeof piece !== 'string') {
@@ -37,7 +39,7 @@ export function InlineFlow({ pieces, textStyle, className, style }: Props) {
     const words = piece.match(/\S+\s*|\s+/g) ?? [];
     words.forEach((w, j) => {
       items.push(
-        <Text key={`${i}-${j}`} style={textStyle}>
+        <Text key={`${i}-${j}`} className={textClassName} style={textStyle}>
           {w}
         </Text>,
       );

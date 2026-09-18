@@ -17,7 +17,6 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState(0);
   const [againIds, setAgainIds] = useState<string[]>([]);
-  const again = againIds.length;
   const dx = useSharedValue(0);
   /** -1 / 1 while a card is flying out, 0 otherwise. Guards against double commits. */
   const leaving = useSharedValue(0);
@@ -63,5 +62,5 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
   const tap = Gesture.Tap().onEnd(() => runOnJS(onFlip)());
   const gesture = Gesture.Exclusive(pan, tap);
 
-  return { index, card, flipped, known, again, dx, leaving, gesture, flyOut };
+  return { index, card, flipped, dx, leaving, gesture, flyOut };
 }

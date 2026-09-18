@@ -1,6 +1,7 @@
 import { View, type ViewProps } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
@@ -46,6 +47,8 @@ type RadioProps = {
   bg?: string;
   checkColor?: string;
   checkStroke?: number;
+  /** Check glyph size; defaults to 54% of the circle. */
+  checkSize?: number;
   className?: string;
 };
 
@@ -58,13 +61,14 @@ export function RadioMark({
   bg = colors.accent[700],
   checkColor = '#fff',
   checkStroke = 2.6,
+  checkSize,
   className,
 }: RadioProps) {
   if (!selected) {
     return (
       <View
         className={cn('rounded-full', className)}
-        style={{ width: size, height: size, boxShadow: `inset 0 0 0 ${ringWidth}px ${ringColor}` }}
+        style={{ width: size, height: size, boxShadow: insetRing(ringWidth, ringColor) }}
       />
     );
   }
@@ -74,6 +78,7 @@ export function RadioMark({
       bg={bg}
       color={checkColor}
       stroke={checkStroke}
+      iconSize={checkSize}
       className={className}
     />
   );

@@ -19,7 +19,6 @@ type SessionContextValue = {
   session: Session;
   update: (patch: Partial<Session>) => void;
   completeOnboarding: () => void;
-  resetOnboarding: () => void;
   /** Wipe the stored session and start from the defaults (account deletion). */
   reset: () => void;
 };
@@ -69,7 +68,6 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       session,
       update,
       completeOnboarding: () => update({ onboardingComplete: true }),
-      resetOnboarding: () => update({ onboardingComplete: false }),
       reset: () => setSession({ ...DEFAULT_SESSION, appLanguage: detectLanguage() }),
     }),
     [status, session, update],

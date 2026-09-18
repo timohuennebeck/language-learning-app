@@ -38,10 +38,10 @@ export function DailyGoalScreen() {
           onPress={() => {
             const previous = session.dailyGoalMinutes;
             update({ dailyGoalMinutes: minutes });
-            updateProfile.mutate(
-              { dailyGoalMinutes: minutes },
-              { onError: () => update({ dailyGoalMinutes: previous }) },
-            );
+            // mutateAsync: the promise outlives this screen, mutate()'s callbacks would not.
+            updateProfile
+              .mutateAsync({ dailyGoalMinutes: minutes })
+              .catch(() => update({ dailyGoalMinutes: previous }));
             router.back();
           }}
         />

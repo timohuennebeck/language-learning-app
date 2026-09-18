@@ -1,7 +1,6 @@
-import { View } from 'react-native';
-
 import type { Run } from '@/features/exercises/data/schemas';
 import { InlineFlow, type FlowPiece } from '@/shared/components/inline-flow';
+import { InlineMark } from '@/shared/components/inline-mark';
 import { colors } from '@/shared/theme/tokens';
 import { Text } from '@/shared/ui/text';
 
@@ -27,23 +26,13 @@ export function MarkedRuns({ runs, color, size = 17, markColor }: Props) {
       pieces.push({
         key: `m${i}`,
         node: (
-          <View
-            style={{
-              borderRadius: 6,
-              paddingHorizontal: 4,
-              backgroundColor: ok ? colors.ok.chip : colors.err.mark,
-            }}
+          <InlineMark
+            size={size}
+            color={markColor ?? (ok ? colors.ok.text : colors.err.text)}
+            bg={ok ? colors.ok.chip : colors.err.mark}
           >
-            <Text
-              style={{
-                fontSize: size,
-                lineHeight: size * 1.3,
-                color: markColor ?? (ok ? colors.ok.text : colors.err.text),
-              }}
-            >
-              {r.text}
-            </Text>
-          </View>
+            {r.text}
+          </InlineMark>
         ),
       });
     } else {

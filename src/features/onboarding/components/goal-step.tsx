@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration, type IllustrationName } from '@/shared/ui/illustration';
@@ -62,9 +63,7 @@ export function GoalStep() {
                 paddingTop: 14,
                 paddingBottom: 15,
                 paddingHorizontal: 12,
-                boxShadow: on
-                  ? `0 0 0 2px ${colors.accent[700]}`
-                  : `0 0 0 1px ${colors.neutral[200]}`,
+                boxShadow: on ? ring(2, colors.accent[700]) : ring(1, colors.neutral[200]),
                 rowGap: 10,
               }}
             >

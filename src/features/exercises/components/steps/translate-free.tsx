@@ -6,19 +6,17 @@ import { PROMPT, STEP_TOP } from '@/features/exercises/components/steps/layout';
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import type { Run } from '@/features/exercises/data/schemas';
 import { Hint } from '@/shared/components/hint';
-import { NO_OUTLINE } from '@/shared/lib/styles';
+import { NO_OUTLINE, ring } from '@/shared/lib/styles';
+import { splitMarks } from '@/shared/lib/text';
 import { colors } from '@/shared/theme/tokens';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-/** Splits the typed answer into runs, marking every occurrence of `mark`. */
+/** The typed answer as runs, with every occurrence of `mark` highlighted as an error. */
 function markTyped(typed: string, mark: string): Run[] {
-  return typed
-    .split(mark)
-    .flatMap((part, i): Run[] =>
-      i === 0 ? [{ text: part }] : [{ text: mark, mark: 'err' }, { text: part }],
-    )
-    .filter((r) => r.text);
+  return splitMarks(typed, [mark]).map((r) =>
+    r.marked ? { text: r.text, mark: 'err' } : { text: r.text },
+  );
 }
 
 /** 19d1 / 25g / 25h · Übersetzen frei getippt. */
@@ -32,7 +30,7 @@ export function TranslateFree({
   const { t } = useTranslation();
   const task = phase === 'task';
   const ok = phase === 'correct';
-  const ring = task ? colors.accent[500] : ok ? colors.ok.ring : colors.err.ring;
+  const ringColor = task ? colors.accent[500] : ok ? colors.ok.ring : colors.err.ring;
   return (
     <>
       <Kicker size={12} style={{ marginTop: STEP_TOP }}>
@@ -41,7 +39,7 @@ export function TranslateFree({
       <Text style={{ ...PROMPT, marginTop: 12 }}>{step.prompt}</Text>
       <View
         className="rounded-[22px] bg-white px-[18px] py-[16px]"
-        style={{ marginTop: 18, minHeight: task ? 130 : undefined, boxShadow: `0 0 0 2px ${ring}` }}
+        style={{ marginTop: 18, minHeight: task ? 130 : undefined, boxShadow: ring(2, ringColor) }}
       >
         <Text
           style={{

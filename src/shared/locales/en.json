@@ -15,8 +15,6 @@
     "alreadyMember": "Already a member?",
     "recommended": "Recommended",
     "min": "min",
-    "minutes": "minutes",
-    "of": "of",
     "stepOf": "{{step}} of {{total}}",
     "soon": "Soon",
     "understood": "Got it",
@@ -66,7 +64,6 @@
     "headlinePost": "become your exercises."
   },
   "terms": {
-    "title": "Terms of Service",
     "meta": "Lorem ipsum · Updated 15 September 2026",
     "sections": [
       {
@@ -184,10 +181,7 @@
       "captions": "Live captions",
       "you": "You",
       "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live conversation",
-      "mute": "Mute",
-      "end": "End",
-      "subtitles": "Captions"
+      "liveLabel": "Live conversation"
     },
     "evaluating": {
       "title": "Pip is listening again.",
@@ -238,6 +232,10 @@
       "sub": "Pip tunes your exercises to this goal. Change it any time.",
       "today": "Your level today",
       "options": {
+        "A2": {
+          "name": "Handle everyday life",
+          "sub": "Ordering, asking for directions, small talk"
+        },
         "B1": {
           "name": "Conversations without stalling",
           "sub": "Telling, asking, making appointments"
@@ -331,13 +329,11 @@
     "due": "flashcards due",
     "hero": {
       "talk": {
-        "preview": "Ça te dit ?",
         "kicker": "SPEAK · 5–15 MIN",
         "title": "Start live conversation",
         "cta": "Speak"
       },
       "read": {
-        "preview": "marché",
         "kicker": "1 TOPIC · 4 MIN",
         "title": "Create reading text",
         "cta": "Create text"
@@ -350,8 +346,6 @@
         "cta": "Start exercise"
       },
       "cards": {
-        "front": "le café",
-        "back": "the café",
         "kicker": "12 CARDS DUE",
         "title": "Review flashcards",
         "cta": "Practice"
@@ -613,7 +607,8 @@
     "learningLanguage": "Learning language",
     "appLanguage": "App language",
     "reminder": "Reminder",
-    "reminderSub": "Daily at {{time}}",
+    "reminderSubs": ["Daily at {{time}}", "Mon–Fri at {{time}}", "Weekends at {{time}}"],
+    "reminderOff": "Off",
     "account": "Account",
     "plus": "Yori Plus",
     "active": "Active",
@@ -646,13 +641,6 @@
         "15": "2–3 exercises",
         "30": "5 exercises"
       },
-      "week": {
-        "5": "35 min",
-        "10": "1 h 10",
-        "15": "1 h 45",
-        "30": "3 h 30"
-      },
-      "perWeek": "{{t}} per week",
       "a2today": "A2 today",
       "b1": "B1",
       "save": "{{min}} minutes a day"

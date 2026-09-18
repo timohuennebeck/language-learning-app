@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useSession } from '@/features/auth/hooks/use-session';
 import type { LearningLanguage } from '@/features/auth/data/schemas';
-import { LearningLanguageList } from '@/shared/components/learning-language-list';
+import { useSession } from '@/features/auth/hooks/use-session';
 import { Headline } from '@/shared/components/headline';
+import { LearningLanguageList } from '@/shared/components/learning-language-list';
 import { Button } from '@/shared/ui/button';
 import { Screen } from '@/shared/ui/screen';
 import { TopBar } from '@/shared/ui/top-bar';
@@ -26,13 +26,12 @@ export function LearningLanguageScreen() {
         title={t('profile.learningLanguageScreen.headline')}
         sub={t('profile.learningLanguageScreen.sub')}
       />
-      <View className="mt-[20px]">
-        <LearningLanguageList
-          value={value}
-          onChange={setValue}
-          frSub={t('profile.learningLanguageScreen.frSub')}
-        />
-      </View>
+      <LearningLanguageList
+        className="mt-[20px]"
+        value={value}
+        onChange={setValue}
+        frSub={t('profile.learningLanguageScreen.frSub')}
+      />
       <View className="flex-1" />
       <Button
         height={60}

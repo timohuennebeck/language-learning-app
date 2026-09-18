@@ -1,6 +1,6 @@
 import { View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
-import { cn } from '@/shared/lib/cn';
+import { InlineFlow } from '@/shared/components/inline-flow';
 import { Text } from '@/shared/ui/text';
 
 type Props = {
@@ -13,10 +13,15 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-/**
- * Headline with one highlighted phrase. Laid out as a wrapping row of words so the mark is a
- * real View with a rounded background (native Text cannot draw one) and can wrap to its own line.
- */
+/** Every word followed by exactly one space, whatever the surrounding whitespace in the copy. */
+const spaced = (s: string) =>
+  s
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => `${w} `)
+    .join('');
+
+/** Headline with one highlighted phrase in a rounded box (an `InlineFlow` of semibold words). */
 export function MarkedHeadline({
   pre = '',
   mark,
@@ -25,33 +30,29 @@ export function MarkedHeadline({
   textClassName = 'font-semibold text-ink',
   style,
 }: Props) {
-  const words = (s: string) => s.split(' ').filter(Boolean);
   return (
-    <View className="flex-row flex-wrap items-center" style={style}>
-      {words(pre).map((w, i) => (
-        <Text key={`a${i}`} className={textClassName} style={textStyle}>
-          {w}{' '}
-        </Text>
-      ))}
-      <View
-        className="rounded-[8px] bg-lilac3"
-        style={{ flexShrink: 0, paddingHorizontal: (textStyle.fontSize ?? 30) * 0.22 }}
-      >
-        <Text className={textClassName} style={textStyle}>
-          {mark}
-        </Text>
-      </View>
-      {/* The space after the mark is its own item so it stays on the mark's line when wrapping. */}
-      {post ? (
-        <Text className={textClassName} style={textStyle}>
-          {' '}
-        </Text>
-      ) : null}
-      {words(post).map((w, i) => (
-        <Text key={`b${i}`} className={cn(textClassName)} style={textStyle}>
-          {w}{' '}
-        </Text>
-      ))}
-    </View>
+    <InlineFlow
+      style={style}
+      textStyle={textStyle}
+      textClassName={textClassName}
+      pieces={[
+        spaced(pre),
+        {
+          key: 'mark',
+          node: (
+            <View
+              className="rounded-[8px] bg-lilac3"
+              style={{ paddingHorizontal: (textStyle.fontSize ?? 30) * 0.22 }}
+            >
+              <Text className={textClassName} style={textStyle}>
+                {mark}
+              </Text>
+            </View>
+          ),
+        },
+        // The space after the mark is its own item so it stays on the mark's line when wrapping.
+        post ? ` ${spaced(post)}` : '',
+      ]}
+    />
   );
 }

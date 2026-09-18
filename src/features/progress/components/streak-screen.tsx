@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { GradientHeader } from '@/shared/components/gradient-header';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
@@ -72,7 +73,7 @@ export function StreakScreen() {
               style={
                 i === 0
                   ? { backgroundColor: colors.accent[800] }
-                  : { boxShadow: `inset 0 0 0 1.5px ${colors.accent[300]}` }
+                  : { boxShadow: insetRing(1.5, colors.accent[300]) }
               }
             >
               {i === 0 ? (

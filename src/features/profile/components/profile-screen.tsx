@@ -3,28 +3,17 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import { ProfileRow } from '@/features/profile/components/profile-row';
 import { LevelCard } from '@/features/profile/components/level-card';
+import { ProfileRow } from '@/features/profile/components/profile-row';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/features/profile/components/streak-card';
+import { DESIGN_PROGRESS } from '@/features/profile/data/repository';
 import { useProfile, useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
 import { Avatar } from '@/shared/ui/illustration';
 import { CogIcon } from '@/shared/ui/icons';
 import { Screen, TAB_TOP } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
-
-/** Design values shown while the progress query is loading. */
-const FALLBACK = {
-  streakDays: 12,
-  minutesToday: 6,
-  week: [1, 1, 1, 1, 1, 0, 0],
-  levelProgress: 0.62,
-  wordsSaved: 86,
-  wordsGoal: 100,
-  talks: 19,
-  talksLast30: 6,
-};
 
 /** Talks tile ring: the design shows 60% for 19 talks; there is no goal for talks yet. */
 const TALKS_RING = 0.6;
@@ -52,7 +41,7 @@ export function ProfileScreen() {
   const router = useRouter();
   const { session } = useSession();
   const profile = useProfile();
-  const p = useProgress().data ?? FALLBACK;
+  const p = useProgress().data ?? DESIGN_PROGRESS;
 
   return (
     <Screen top={TAB_TOP} bottom={6} scroll>

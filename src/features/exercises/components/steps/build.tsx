@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { PROMPT, STEP_TOP } from '@/features/exercises/components/steps/layout';
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import { Hint } from '@/shared/components/hint';
+import { insetRing, ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Kicker } from '@/shared/ui/kicker';
 import { Tap } from '@/shared/ui/tap';
@@ -33,7 +34,7 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
                 className="rounded-[14px] px-[14px] py-[10px]"
                 style={{
                   backgroundColor: wrong ? colors.err.chip : colors.ok.chip,
-                  boxShadow: wrong ? `inset 0 0 0 2px ${colors.err.ring}` : undefined,
+                  boxShadow: wrong ? insetRing(2, colors.err.ring) : undefined,
                 }}
               >
                 <Text style={{ fontSize: 17, color: wrong ? colors.err.text : colors.ok.text }}>
@@ -48,7 +49,7 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
               haptic="selection"
               onPress={() => setAnswer(answer.filter((_, j) => j !== i))}
               className="rounded-[14px] bg-white px-[14px] py-[10px]"
-              style={{ boxShadow: `0 0 0 1px ${colors.neutral[200]}` }}
+              style={{ boxShadow: ring(1, colors.neutral[200]) }}
             >
               <Text className="text-accent-900" style={{ fontSize: 17 }}>
                 {piece}
@@ -65,7 +66,7 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
                   width: SLOT_WIDTHS[i % SLOT_WIDTHS.length],
                   height: 44,
                   backgroundColor: colors.surface2,
-                  boxShadow: i === 0 ? `inset 0 0 0 1.5px ${colors.accent[500]}` : undefined,
+                  boxShadow: i === 0 ? insetRing(1.5, colors.accent[500]) : undefined,
                 }}
               />
             ))

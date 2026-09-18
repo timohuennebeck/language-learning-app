@@ -17,8 +17,10 @@ export function SettingsScreen() {
   const router = useRouter();
   const { session } = useSession();
   const reminder = session.reminder
-    ? formatTime(session.reminder.hour, session.reminder.minute)
-    : '—';
+    ? t(`profile.reminderSubs.${session.reminder.repeat}`, {
+        time: formatTime(session.reminder.hour, session.reminder.minute),
+      })
+    : t('profile.reminderOff');
   return (
     <Screen top={0} bottom={6} scroll>
       <View className="flex-1 px-[22px]">
@@ -45,7 +47,7 @@ export function SettingsScreen() {
           />
           <ProfileRow
             label={t('profile.reminder')}
-            sub={t('profile.reminderSub', { time: reminder })}
+            sub={reminder}
             onPress={() => router.push('/(app)/profile/reminder')}
             last
           />

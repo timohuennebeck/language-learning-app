@@ -11,10 +11,14 @@ type Options = {
   designDrafts?: boolean;
 };
 
-/** Loose comparison for typed answers: case, surrounding whitespace and punctuation are ignored. */
+/**
+ * Loose comparison for typed answers: case, surrounding whitespace and punctuation are ignored
+ * and typographic apostrophes (iOS smart punctuation) count as straight ones.
+ */
 function normalize(s: string) {
   return s
     .toLowerCase()
+    .replace(/[’‘`´]/g, "'")
     .replace(/[.,!?;:…]/g, '')
     .replace(/\s+/g, ' ')
     .trim();

@@ -4,14 +4,12 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
+import { AppLanguageList } from '@/shared/components/app-language-list';
 import { Headline } from '@/shared/components/headline';
-import { isAppLanguage, type AppLanguage } from '@/shared/lib/i18n';
-import { SelectRow } from '@/shared/components/select-row';
+import type { AppLanguage } from '@/shared/lib/i18n';
 import { Button } from '@/shared/ui/button';
 import { Screen } from '@/shared/ui/screen';
 import { TopBar } from '@/shared/ui/top-bar';
-
-const LANGS = ['de', 'en', 'es', 'fr', 'it', 'pt'] as const;
 
 /** 09d · Profil · Interface-Sprache ändern. */
 export function AppLanguageScreen() {
@@ -28,20 +26,7 @@ export function AppLanguageScreen() {
         title={t('profile.appLanguageScreen.headline')}
         sub={t('profile.appLanguageScreen.sub')}
       />
-      <View className="mt-[20px]" style={{ rowGap: 10 }}>
-        {LANGS.map((code) => (
-          <SelectRow
-            key={code}
-            flag={code}
-            label={t(`common.languageNative.${code}`)}
-            selected={value === code}
-            disabled={!isAppLanguage(code)}
-            onPress={() => {
-              if (isAppLanguage(code)) setValue(code);
-            }}
-          />
-        ))}
-      </View>
+      <AppLanguageList className="mt-[20px]" value={value} onChange={setValue} />
       <View className="flex-1" />
       <Button
         height={60}

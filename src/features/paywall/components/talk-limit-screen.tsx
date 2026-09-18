@@ -4,15 +4,14 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Circle } from 'react-native-svg';
 
-import { Hint } from '@/shared/components/hint';
 import { GradientHeader } from '@/shared/components/gradient-header';
+import { Hint } from '@/shared/components/hint';
+import { OptionRow } from '@/shared/components/option-row';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
 import { RadioMark } from '@/shared/ui/marks';
 import { Screen } from '@/shared/ui/screen';
-import { Tap } from '@/shared/ui/tap';
-import { RecommendedBadge } from '@/shared/ui/recommended-badge';
 import { Text } from '@/shared/ui/text';
 
 const PACKS = [
@@ -77,41 +76,16 @@ export function TalkLimitScreen() {
           {PACKS.map((p) => {
             const on = p.n === pack;
             return (
-              <Tap
+              <OptionRow
                 key={p.n}
-                haptic="selection"
+                n={p.n}
+                label={t('talkLimit.talks')}
+                sub={t('talkLimit.perTalk', { price: p.each })}
+                tabularSub
+                selected={on}
+                recommended={p.recommended}
                 onPress={() => setPack(p.n)}
-                className="relative flex-row items-center rounded-[20px] bg-white px-[16px] py-[13px]"
-                style={{
-                  columnGap: 13,
-                  boxShadow: on ? `0 0 0 1.8px ${colors.accent[800]}` : '0 0 0 1px #e4e7f5',
-                  // The badge hangs above the card; lift the card over its siblings so it is not covered.
-                  zIndex: p.recommended ? 2 : 1,
-                }}
               >
-                {p.recommended ? <RecommendedBadge style={{ right: 18, top: -11 }} /> : null}
-                <View
-                  className="h-[46px] w-[46px] items-center justify-center rounded-full"
-                  style={{ backgroundColor: on ? colors.surface : colors.surface2 }}
-                >
-                  <Text
-                    className="font-semibold text-accent-900"
-                    style={{ fontSize: 19, fontVariant: ['tabular-nums'] }}
-                  >
-                    {p.n}
-                  </Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="font-semibold text-ink" style={{ fontSize: 16.5 }}>
-                    {t('talkLimit.talks')}
-                  </Text>
-                  <Text
-                    className="mt-[3px] text-faint"
-                    style={{ fontSize: 13.5, fontVariant: ['tabular-nums'] }}
-                  >
-                    {t('talkLimit.perTalk', { price: p.each })}
-                  </Text>
-                </View>
                 <Text
                   className="font-semibold text-ink"
                   style={{ fontSize: 17, fontVariant: ['tabular-nums'] }}
@@ -126,7 +100,7 @@ export function TalkLimitScreen() {
                   bg={colors.accent[800]}
                   checkStroke={2.1}
                 />
-              </Tap>
+              </OptionRow>
             );
           })}
           <Hint glyph="i" align="start" className="mt-[6px] px-[4px]" text={t('talkLimit.info')} />

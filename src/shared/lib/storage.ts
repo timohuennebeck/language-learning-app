@@ -23,11 +23,3 @@ export async function writeJson(key: string, value: unknown): Promise<void> {
     /* storage is best-effort */
   }
 }
-
-export async function removeKey(key: string): Promise<void> {
-  try {
-    await AsyncStorage.removeItem(key);
-  } catch {
-    /* ignore */
-  }
-}

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/features/auth/hooks/use-session';
 import type { LearningLanguage } from '@/features/auth/data/schemas';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Flag } from '@/shared/ui/illustration';
@@ -54,7 +55,7 @@ export function LanguagesScreen() {
             className={cn('rounded-[24px] bg-white p-[16px]', i > 0 && 'mt-[-6px]')}
             style={{
               rowGap: 12,
-              boxShadow: active ? `0 0 0 2px ${colors.accent[700]}` : undefined,
+              boxShadow: active ? ring(2, colors.accent[700]) : undefined,
             }}
           >
             <View className="flex-row items-center" style={{ columnGap: 13 }}>

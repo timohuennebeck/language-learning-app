@@ -23,27 +23,29 @@ to be connected next.
 ```
 app/                     Expo Router routes (thin re-exports of feature screens)
   _layout.tsx            providers, fonts, Stack.Protected groups
-  (onboarding)/          22 onboarding steps (only reachable until onboarding is complete)
+  (onboarding)/          21 onboarding steps (only reachable until onboarding is complete)
   (app)/                 the product (only reachable after onboarding / later: a session)
   dev/                   index of every design screen (development only)
 src/
-  features/<feature>/    components · data (schemas, repository, query keys) · hooks
-    auth                 mock session store (stand-in for Supabase auth)
+  features/<feature>/    components · data (schemas, repository, query keys) · hooks · lib
+    auth                 mock session store (lib/, stand-in for Supabase auth), useReminderDraft
     onboarding           welcome → … → widget (OnboardingFrame, OptionCard)
     lessons              home, languages, lesson start, chapter + stations/ (card, row, chips)
     exercises            exercise flow: steps/ (FillOptions, FillFree, Build, TranslateFree),
-                         useExerciseSession, FeedbackCard, preparing, error
+                         useExerciseSession, FeedbackCard, MarkedRuns, preparing, error
     reading              reading sections, tappable segments, word explanation
-    flashcards           swipe deck: useSwipeDeck, SwipeCard, DoneCard
+    flashcards           swipe deck: useSwipeDeck, SwipeCard, FlashcardsDoneScreen
     profile              profile (StreakCard, LevelCard, StatTiles, ProfileRow) + settings screens
     grammar, review, live, progress, paywall, dev
   shared/
     ui/                  primitives: Text, Tap, Button, Screen, TopBar, Kicker, Marks, Ring,
                          Gradient (CardGradient), RecommendedBadge, Illustration, icons…
     components/          composed pieces used by several features: HomeHeader, HeroCarousel,
-                         Previews, DailyGoal, TimePicker, Hint, PipTip, SelectRow, LearningLanguageList…
-    hooks/               useAppFonts, useBack / useGoHome
-    lib/                 cn, haptics, i18n, storage, time, query client
+                         Previews, DailyGoal, OptionRow, TimePicker, Hint, PipTip, SelectRow,
+                         InlineFlow / InlineMark / MarkedHeadline (inline highlighted words),
+                         ProgressChecklist, AppLanguageList, LearningLanguageList…
+    hooks/               useAppFonts, useBack / useGoHome / useGoToCourse
+    lib/                 cn, haptics, i18n, storage, styles (ring helpers), text, time, query client
     data/                query key registry
     locales/             de.json, en.json
     theme/               tokens.ts (source of truth), generated tokens.cjs, global.css
@@ -72,7 +74,7 @@ npm run ios        # or: npm run android / npm run web
 npm run lint && npm run typecheck && npm run format:check
 ```
 
-Open `/dev` in development for a list of all 64 screens. Onboarding state lives in AsyncStorage
+Open `/dev` in development for a list of all 67 screens. Onboarding state lives in AsyncStorage
 (`yori.session.v1`); "Konto löschen" resets it.
 
 ## Visual verification against the design
