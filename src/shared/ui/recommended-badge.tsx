@@ -11,7 +11,7 @@ export function RecommendedBadge({ style, size = 12, paddingVertical = 4 }: Prop
   return (
     <View
       className="absolute rounded-pill bg-accent-800 px-[12px]"
-      style={[{ paddingVertical }, style]}
+      style={[{ paddingVertical, zIndex: 2 }, style]}
     >
       <Text className="font-semibold text-accent-100" style={{ fontSize: size }}>
         {t('common.recommended')}

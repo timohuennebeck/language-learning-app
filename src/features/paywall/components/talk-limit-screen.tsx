@@ -73,7 +73,7 @@ export function TalkLimitScreen() {
         <Text className="mt-[10px] text-center text-muted" style={{ fontSize: 15 }}>
           {t('talkLimit.sub')}
         </Text>
-        <View className="mt-[22px]" style={{ rowGap: 10 }}>
+        <View className="mt-[22px]" style={{ rowGap: 10, zIndex: 1 }}>
           {PACKS.map((p) => {
             const on = p.n === pack;
             return (

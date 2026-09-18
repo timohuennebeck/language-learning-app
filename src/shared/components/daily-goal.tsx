@@ -30,7 +30,7 @@ type OptionsProps = {
 export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
   const { t } = useTranslation();
   return (
-    <View className={cn(className)} style={{ rowGap: 10 }}>
+    <View className={cn(className)} style={{ rowGap: 10, zIndex: 1 }}>
       {DAILY_GOAL_OPTIONS.map(({ min, filled }) => {
         const on = min === value;
         return (
