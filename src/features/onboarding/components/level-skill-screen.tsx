@@ -88,7 +88,7 @@ export function LevelSkillScreen({ skill }: { skill: Skill }) {
             {t(`onboarding.levelSkill.${skill}.pillSub`)}
           </Kicker>
         </View>
-        <View className="mt-[10px] flex-row items-end" style={{ columnGap: 10 }}>
+        <View className="mt-[18px] flex-row items-end" style={{ columnGap: 10 }}>
           <Text
             className="font-semibold text-accent-900"
             style={{ fontSize: 52, lineHeight: 52, letterSpacing: -2.08, marginTop: -5 }}
