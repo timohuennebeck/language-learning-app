@@ -65,6 +65,7 @@ export function ProfileScreen() {
     <Screen top={0} bottom={6} scroll>
       <View className="flex-1 px-[22px]">
         <TopBar
+          left={null}
           title={t('profile.title')}
           right={
             <NavCircle

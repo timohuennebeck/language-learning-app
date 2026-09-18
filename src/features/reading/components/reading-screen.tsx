@@ -11,6 +11,7 @@ import {
   swapPairs,
   swapSection,
 } from '@/features/reading/data/content';
+import { useGoToCourse } from '@/shared/hooks/use-back';
 import { InlineFlow } from '@/shared/components/inline-flow';
 import { colors } from '@/shared/theme/tokens';
 import { ArrowLeft, ArrowRight } from '@/shared/ui/icons';
@@ -32,6 +33,7 @@ const SECTIONS = 3;
 export function ReadingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const goToCourse = useGoToCourse();
   const params = useLocalSearchParams<{ section?: string; mode?: string; seg?: string }>();
   const [section, setSection] = useState(params.section === '2' ? 2 : 1);
   const swap = params.mode === 'swap';
@@ -205,9 +207,7 @@ export function ReadingScreen() {
             className="flex-1"
             size={17.5}
             label={t('reading.continue')}
-            onPress={() =>
-              section < 2 ? setSection(2) : router.push('/(app)/chapter/cafe?station=1')
-            }
+            onPress={() => (section < 2 ? setSection(2) : goToCourse(1))}
           />
         </View>
       </View>

@@ -8,7 +8,7 @@ export default function Index() {
   const { session } = useSession();
   return (
     <SplashScreen>
-      <Redirect href={session.onboardingComplete ? '/(app)' : '/(onboarding)/welcome'} />
+      <Redirect href={session.onboardingComplete ? '/(app)/(tabs)' : '/(onboarding)/welcome'} />
     </SplashScreen>
   );
 }

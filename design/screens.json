@@ -238,35 +238,35 @@
   {
     "name": "3c-chapter-read",
     "ref": "3c_Lesen_expandiert.png",
-    "route": "/chapter/cafe?station=0",
+    "route": "/course?station=0",
     "h": 946,
     "onboarded": 1
   },
   {
     "name": "3b-chapter-cards",
     "ref": "3b_Karteikarten_expandiert.png",
-    "route": "/chapter/cafe?station=1",
+    "route": "/course?station=1",
     "h": 942,
     "onboarded": 1
   },
   {
     "name": "3f-chapter-grammar",
     "ref": "3f_Grammatik_expandiert.png",
-    "route": "/chapter/cafe?station=2",
+    "route": "/course?station=2",
     "h": 905,
     "onboarded": 1
   },
   {
     "name": "3d-chapter-practice",
     "ref": "3d_ben_expandiert.png",
-    "route": "/chapter/cafe?station=3",
+    "route": "/course?station=3",
     "h": 930,
     "onboarded": 1
   },
   {
     "name": "3e-chapter-live",
     "ref": "3e_Konversation_expandiert.png",
-    "route": "/chapter/cafe?station=4",
+    "route": "/course?station=4",
     "h": 936,
     "onboarded": 1
   },

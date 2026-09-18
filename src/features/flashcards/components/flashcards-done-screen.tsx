@@ -63,7 +63,7 @@ function Group({ title, cards, first }: { title: string; cards: RepeatCard[]; fi
 export function FlashcardsDoneScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const back = useBack('/(app)');
+  const back = useBack('/(app)/(tabs)');
   const params = useLocalSearchParams<{ total?: string; known?: string; ids?: string }>();
   const deck = useDeck('cafe');
   const { session } = useSession();

@@ -697,5 +697,10 @@
   "dev": {
     "title": "Screens",
     "sub": "Alle Screens aus dem Claude-Design-Projekt"
+  },
+  "tabs": {
+    "learn": "Lernen",
+    "course": "Kurs",
+    "profile": "Profil"
   }
 }

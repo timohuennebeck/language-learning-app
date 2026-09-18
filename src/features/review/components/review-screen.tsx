@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { nextTime, recapWords } from '@/features/review/data/content';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Checkbox } from '@/shared/ui/marks';
+import { useGoToCourse } from '@/shared/hooks/use-back';
 import { Button } from '@/shared/ui/button';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
@@ -18,7 +19,7 @@ type Tab = 'words' | 'next';
 /** 3h · Rückblick · Wörter / Umschrieben. */
 export function ReviewScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const goToCourse = useGoToCourse();
   const params = useLocalSearchParams<{ tab?: string }>();
   const [tab, setTab] = useState<Tab>(params.tab === 'next' ? 'next' : 'words');
   const [words, setWords] = useState(recapWords);
@@ -138,7 +139,7 @@ export function ReviewScreen() {
             haptic="success"
             labelClassName="font-medium"
             label={t('review.cta', { n: selectedWords })}
-            onPress={() => router.replace('/(app)/chapter/cafe?station=1')}
+            onPress={() => goToCourse(1)}
           />
         </>
       ) : (
@@ -184,7 +185,7 @@ export function ReviewScreen() {
             haptic="success"
             labelClassName="font-medium"
             label={t('review.cta', { n: picked.length })}
-            onPress={() => router.replace('/(app)/chapter/cafe?station=1')}
+            onPress={() => goToCourse(1)}
           />
         </>
       )}

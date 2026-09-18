@@ -28,7 +28,7 @@ export function HomeHeader({ compact = false, className }: Props) {
     >
       <Tap
         haptic="light"
-        onPress={() => router.push('/(app)/profile')}
+        onPress={() => router.push('/(app)/(tabs)/profile')}
         accessibilityLabel={t('profile.title')}
       >
         <Avatar size={34} />
