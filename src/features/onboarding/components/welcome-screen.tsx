@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -15,6 +15,10 @@ export function WelcomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  // The design is laid out for 402pt; shrink the headline on narrower phones so the mark fits.
+  const { width } = useWindowDimensions();
+  const h = Math.min(1, width / 402) * 33;
+  const headline = { fontSize: h, lineHeight: h * 1.14, letterSpacing: -0.035 * h };
   return (
     <Gradient
       colors={['#e7e5fe', '#eceafe', '#f3f5fe']}
@@ -26,24 +30,15 @@ export function WelcomeScreen() {
         <Illustration name="pip-cheer-3" size={272} />
       </View>
       <View>
-        <Text
-          className="font-semibold text-ink"
-          style={{ fontSize: 33, lineHeight: 37.6, letterSpacing: -1.155 }}
-        >
+        <Text className="font-semibold text-ink" style={headline}>
           {t('welcome.headline1')}
         </Text>
         <View className="mt-[9px] flex-row items-center">
-          <Text
-            className="font-semibold text-ink"
-            style={{ fontSize: 33, lineHeight: 37.6, letterSpacing: -1.155 }}
-          >
+          <Text className="font-semibold text-ink" style={headline}>
             {t('welcome.headline2')}
           </Text>
           <View className="rounded-[8px] bg-lilac3 px-[7px] py-[3px]">
-            <Text
-              className="font-semibold text-ink"
-              style={{ fontSize: 33, lineHeight: 37.6, letterSpacing: -1.155 }}
-            >
+            <Text className="font-semibold text-ink" style={headline}>
               {t('welcome.headline2Mark')}
             </Text>
           </View>
