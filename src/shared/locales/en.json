@@ -54,16 +54,16 @@
     "brand": "Yori"
   },
   "welcome": {
-    "headline1": "Your conversations",
-    "headline2": "become ",
-    "headline2Mark": "your exercises.",
     "sub": "Pip listens to your conversations and turns them into new exercises every day.",
     "rating": "4.9 out of 5",
     "reviews": "· 2,140 reviews",
     "cta": "Let's go",
     "legal1": "By tapping “Let's go” you accept the ",
     "legal2": " and the ",
-    "legal3": "."
+    "legal3": ".",
+    "headlinePre": "Your",
+    "headlineMark": "conversations",
+    "headlinePost": "become your exercises."
   },
   "terms": {
     "title": "Terms of Service",

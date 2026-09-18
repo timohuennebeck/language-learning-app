@@ -3,6 +3,7 @@ import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { MarkedHeadline } from '@/shared/components/marked-headline';
 import { Button } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
@@ -30,21 +31,12 @@ export function WelcomeScreen() {
       <View className="flex-1 items-center justify-center">
         <Illustration name="pip-cheer-3" size={272} />
       </View>
-      <View>
-        <Text className="font-semibold text-ink" style={headline}>
-          {t('welcome.headline1')}
-        </Text>
-        <View className="mt-[6px] flex-row flex-wrap items-center" style={{ rowGap: 6 }}>
-          <Text className="font-semibold text-ink" style={headline}>
-            {t('welcome.headline2')}{' '}
-          </Text>
-          <View className="rounded-[8px] bg-lilac3 px-[7px] py-[2px]" style={{ flexShrink: 0 }}>
-            <Text className="font-semibold text-ink" style={headline}>
-              {t('welcome.headline2Mark')}
-            </Text>
-          </View>
-        </View>
-      </View>
+      <MarkedHeadline
+        pre={t('welcome.headlinePre')}
+        mark={t('welcome.headlineMark')}
+        post={t('welcome.headlinePost')}
+        textStyle={headline}
+      />
       <Text className="mt-[14px] text-muted" style={{ fontSize: 16.5, lineHeight: 23.9 }}>
         {t('welcome.sub')}
       </Text>

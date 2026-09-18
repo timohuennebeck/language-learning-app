@@ -11,13 +11,15 @@ type Props = {
   sub?: string;
   value?: string;
   right?: ReactNode;
+  /** Leading icon, e.g. the cog on the settings row. */
+  left?: ReactNode;
   onPress?: () => void;
   /** Last row in a group: no divider below. */
   last?: boolean;
 };
 
 /** Settings row (label, optional sub/value, chevron) inside a rounded group. */
-export function ProfileRow({ label, sub, value, right, onPress, last }: Props) {
+export function ProfileRow({ label, sub, value, right, left, onPress, last }: Props) {
   return (
     <>
       <Tap
@@ -26,6 +28,7 @@ export function ProfileRow({ label, sub, value, right, onPress, last }: Props) {
         className="flex-row items-center px-[18px] py-[15px]"
         style={{ columnGap: 12 }}
       >
+        {left}
         <View className="flex-1">
           <Text className="text-accent-900" style={{ fontSize: 16.5 }}>
             {label}

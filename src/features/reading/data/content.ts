@@ -87,7 +87,7 @@ export const segments: Record<string, Segment> = {
     tier: 0,
     reps: 'noch nie wiederholt',
     why: 'Im Café die Kurzform von un café crème. Deshalb männlich, obwohl la crème weiblich ist.',
-    from: 'Kam in deiner Konversation „Café in Paris“ vor.',
+    from: 'Kam in deinem Gespräch „Café in Paris“ vor.',
     stats: { right: 8, total: 13 },
     sentence: {
       pre: 'Le serveur m’a demandé si je voulais ',

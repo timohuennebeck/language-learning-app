@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { MarkedHeadline } from '@/shared/components/marked-headline';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
@@ -101,31 +102,13 @@ export function PaywallScreen() {
             </Text>
           </View>
         </View>
-        {/* Word-wrapping row so the highlighted word is a View with a real rounded background. */}
-        <View className="mt-[6px] flex-row flex-wrap items-center">
-          {t('onboarding.paywall.title1')
-            .split(' ')
-            .filter(Boolean)
-            .map((w, i) => (
-              <Text key={`a${i}`} className="font-semibold text-ink" style={TITLE}>
-                {w}{' '}
-              </Text>
-            ))}
-          <View className="rounded-[8px] bg-lilac3 px-[6px]" style={{ flexShrink: 0 }}>
-            <Text className="font-semibold text-ink" style={TITLE}>
-              {t('onboarding.paywall.titleMark')}
-            </Text>
-          </View>
-          {t('onboarding.paywall.title2')
-            .split(' ')
-            .filter(Boolean)
-            .map((w, i) => (
-              <Text key={`b${i}`} className="font-semibold text-ink" style={TITLE}>
-                {i === 0 ? ' ' : ''}
-                {w}{' '}
-              </Text>
-            ))}
-        </View>
+        <MarkedHeadline
+          style={{ marginTop: 6 }}
+          pre={t('onboarding.paywall.title1')}
+          mark={t('onboarding.paywall.titleMark')}
+          post={t('onboarding.paywall.title2')}
+          textStyle={TITLE}
+        />
         <Text className="mt-[8px] text-muted" style={{ fontSize: 15.5, lineHeight: 22 }}>
           {t('onboarding.paywall.sub')}
         </Text>

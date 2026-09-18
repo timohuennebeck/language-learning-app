@@ -54,16 +54,16 @@
     "brand": "Yori"
   },
   "welcome": {
-    "headline1": "Deine Konversationen",
-    "headline2": "werden ",
-    "headline2Mark": "deine Übungen.",
-    "sub": "Pip hört deinen Konversationen zu und macht daraus jeden Tag neue Übungen.",
+    "sub": "Pip hört deinen Gesprächen zu und macht daraus jeden Tag neue Übungen.",
     "rating": "4,9 von 5",
     "reviews": "· 2.140 Bewertungen",
     "cta": "Los geht's",
     "legal1": "Mit „Los geht’s“ akzeptierst du die ",
     "legal2": " und die ",
-    "legal3": "."
+    "legal3": ".",
+    "headlinePre": "Deine",
+    "headlineMark": "Gespräche",
+    "headlinePost": "werden deine Übungen."
   },
   "terms": {
     "title": "Nutzungsbedingungen",
@@ -99,7 +99,7 @@
     },
     "goal": {
       "title": "Warum lernst du\nFranzösisch?",
-      "sub": "Danach richtet Yori die Themen deiner Konversationen.",
+      "sub": "Danach richtet Yori die Themen deiner Gespräche.",
       "options": {
         "travel": "Reise nach Frankreich",
         "media": "Serien und Musik",
@@ -143,11 +143,11 @@
       "stage": "Stufe 1 · Präsens",
       "stagesLabel": "Die fünf Stufen",
       "stages": ["Heute", "Gestern", "Morgen", "Eventuell", "Träume"],
-      "cta": "Konversation starten · 2 Min"
+      "cta": "Gespräch starten · 2 Min"
     },
     "levelSelf": {
       "title": "Wie gut ist dein Französisch?",
-      "sub": "Grob reicht. Nach dem ersten Konversation zieht Yori das nach.",
+      "sub": "Grob reicht. Nach dem ersten Gespräch zieht Yori das nach.",
       "options": {
         "new": {
           "name": "Komplett neu",
@@ -184,7 +184,7 @@
       "captions": "Live-Untertitel",
       "you": "Du",
       "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live-Konversation",
+      "liveLabel": "Live-Gespräch",
       "mute": "Stumm",
       "end": "Beenden",
       "subtitles": "Untertitel"
@@ -202,14 +202,14 @@
     "levelResult": {
       "title": "Dein Stand",
       "kicker": "Einstufung",
-      "kickerSub": "2 Minuten Konversation",
+      "kickerSub": "2 Minuten Gespräch",
       "blurb": {
         "A1": "Einzelne Wörter und feste Wendungen. Yori startet bei Aussprache und ersten Sätzen.",
         "A2": "Du baust einfache Sätze über Alltag und Wochenende. Zeitformen und Höflichkeit sind noch wackelig.",
         "B1": "Du erzählst zusammenhängend und korrigierst dich selbst. Als Nächstes: Konnektoren und Nuancen.",
         "B2": "Du diskutierst flüssig. Als Nächstes: Register, Redewendungen und schriftlicher Stil."
       },
-      "fromTalk": "Aus deiner Konversation",
+      "fromTalk": "Aus deinem Gespräch",
       "spots": "3 Stellen",
       "items": [
         {
@@ -239,7 +239,7 @@
       "today": "Dein Stand heute",
       "options": {
         "B1": {
-          "name": "Konversationen ohne Stocken",
+          "name": "Gespräche ohne Stocken",
           "sub": "Erzählen, nachfragen, Termine machen"
         },
         "B2": {
@@ -280,7 +280,7 @@
     "redeem": {
       "title": "Code eingeben",
       "headline": "Code einlösen.",
-      "sub": "Gib den Code deines Freundes ein. Ihr bekommt beide 1 Stunde Live-Konversation.",
+      "sub": "Gib den Code deines Freundes ein. Ihr bekommt beide 1 Stunde Live-Gespräch.",
       "tip1": "Der Code steht im Link, zum Beispiel ",
       "tipCode": "yori.app/MAJA7K",
       "tip2": ".",
@@ -289,7 +289,7 @@
     },
     "account": {
       "title": "Sichere dein Konto.",
-      "sub": "Dein Abo, dein Level und deine Konversationen bleiben so auf jedem Gerät erhalten.",
+      "sub": "Dein Abo, dein Level und deine Gespräche bleiben so auf jedem Gerät erhalten.",
       "phone": "Mit Telefonnummer",
       "google": "Weiter mit Google",
       "legal1": "Mit dem Anlegen akzeptierst du die\n",
@@ -312,7 +312,7 @@
     },
     "plusActive": {
       "title": "Pip ist bereit, {{name}}.",
-      "sub": "Plus läuft, dein Konto ist gesichert. 15 Minuten Konversation am Tag, Übungen aus jedem davon.",
+      "sub": "Plus läuft, dein Konto ist gesichert. 15 Minuten Gespräch am Tag, Übungen aus jedem davon.",
       "manage": "Abo verwalten"
     },
     "widget": {
@@ -326,14 +326,14 @@
     }
   },
   "home": {
-    "greeting": "Salut, {{name}}.\nLust auf eine Konversation?",
+    "greeting": "Salut, {{name}}.\nLust auf ein Gespräch?",
     "today": "Französisch · {{done}} von {{goal}} Min heute",
     "due": "Karteikarten fällig",
     "hero": {
       "talk": {
         "preview": "Ça te dit ?",
         "kicker": "SPRECHEN · 5–15 MIN",
-        "title": "Live-Konversation starten",
+        "title": "Live-Gespräch starten",
         "cta": "Sprechen"
       },
       "read": {
@@ -379,12 +379,12 @@
       "kicker": "3–5 Min",
       "title": "Live sprechen",
       "sub": "Du schreibst, Pip antwortet sofort.",
-      "cta": "Konversation starten"
+      "cta": "Gespräch starten"
     },
     "read": {
       "kicker": "4 Min · 2 Varianten",
       "title": "Lesen",
-      "sub": "Ein kurzer Text aus deiner Konversation.",
+      "sub": "Ein kurzer Text aus deinem Gespräch.",
       "cta": "Text öffnen"
     },
     "practice": {
@@ -397,7 +397,7 @@
   "chapter": {
     "chapters": ["Kapitel 1", "Kapitel 2 · Im Café", "Kapitel 3"],
     "title": "Im Café",
-    "station": "Station {{n}} von 5 · aus deiner Konversation vom Dienstag",
+    "station": "Station {{n}} von 5 · aus deinem Gespräch vom Dienstag",
     "next": "Weiter",
     "go": "Los",
     "after": "danach",
@@ -405,7 +405,7 @@
     "read": {
       "num": "01 Lesen",
       "title": "Mardi matin",
-      "sub": "3 Abschnitte · aus deiner Konversation vom Dienstag",
+      "sub": "3 Abschnitte · aus deinem Gespräch vom Dienstag",
       "cta": "Lesen starten",
       "row": "Lesen · Mardi matin",
       "rowSub": "3 Abschnitte"
@@ -413,7 +413,7 @@
     "cards": {
       "num": "02 Karteikarten",
       "title": "18 Karten üben",
-      "sub": "18 Karten · aus deiner Konversation",
+      "sub": "18 Karten · aus deinem Gespräch",
       "cta": "Karteikarten üben",
       "row": "Karteikarten",
       "rowSub": "18 Karten"
@@ -435,11 +435,11 @@
       "rowSub": "5 Aufgaben"
     },
     "live": {
-      "num": "05 Konversation",
-      "title": "Konversation · Live",
+      "num": "05 Gespräch",
+      "title": "Gespräch · Live",
       "sub": "4 Min · hier endet Im Café",
-      "cta": "Konversation starten",
-      "row": "Konversation · Live",
+      "cta": "Gespräch starten",
+      "row": "Gespräch · Live",
       "rowSub": "4 Min · hier endet Im Café"
     }
   },
@@ -447,7 +447,7 @@
     "title": "Übung",
     "headline": "Pip baut deine Übung.",
     "steps": [
-      "Konversation ausgewertet",
+      "Gespräch ausgewertet",
       "12 Wörter ausgewählt",
       "Aufgaben werden geschrieben",
       "Reihenfolge festlegen"
@@ -487,7 +487,7 @@
   },
   "reading": {
     "title": "Lesen",
-    "kicker": "Aus deiner Konversation · Café in Paris",
+    "kicker": "Aus deinem Gespräch · Café in Paris",
     "headline": "Mardi matin",
     "hint": "Tippe eine markierte Stelle an.",
     "section": "Abschnitt {{n}} von {{total}}",
@@ -597,7 +597,7 @@
   },
   "shareCode": {
     "title": "Teile deinen Code, sprich eine Stunde gratis",
-    "sub": "Löst ein Freund deinen Code ein, bekommt ihr beide 1 Stunde Live-Konversation."
+    "sub": "Löst ein Freund deinen Code ein, bekommt ihr beide 1 Stunde Live-Gespräch."
   },
   "profile": {
     "title": "Profil",
@@ -607,10 +607,10 @@
     "todayProgress": "Heute schon {{done}} von {{goal}} Min.",
     "level": "Level",
     "toB1": "62 % bis B1",
-    "nextAssessment": "8 Konversationen übrig bis zur nächsten Einstufung.",
+    "nextAssessment": "8 Gespräche übrig bis zur nächsten Einstufung.",
     "wordsSaved": "Wörter gespeichert",
     "wordsSub": "14 bis 100",
-    "talks": "Konversationen geführt",
+    "talks": "Gespräche geführt",
     "talksSub": "6 in 30 Tagen",
     "learn": "Lernen",
     "dailyTime": "Tägliche Lernzeit",
@@ -631,7 +631,7 @@
       "previewAt": " um ",
       "freq": ["jeden Tag", "montags bis freitags", "samstags und sonntags"],
       "tail": [
-        " mit einer Lücke aus deinem letzten Konversation.",
+        " mit einer Lücke aus deinem letzten Gespräch.",
         ". Am Wochenende bleibt es still.",
         "."
       ],
@@ -680,7 +680,7 @@
     "delete": {
       "title": "Konto löschen",
       "headline": "Konto wirklich\nlöschen, {{name}}?",
-      "sub": "86 Wörter, 12 Tage Serie und alle Konversationen werden endgültig gelöscht.",
+      "sub": "86 Wörter, 12 Tage Serie und alle Gespräche werden endgültig gelöscht.",
       "info": "Dein Plus-Abo läuft über den App Store weiter. Kündige es dort, sonst wird es weiter abgebucht.",
       "confirm": "Endgültig löschen",
       "keep": "Konto behalten"
