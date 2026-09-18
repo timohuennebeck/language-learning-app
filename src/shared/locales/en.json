@@ -166,21 +166,6 @@
       "precise": "Prefer precision? ",
       "preciseCta": "Talk for 2 minutes."
     },
-    "assessmentCall": {
-      "title": "Placement · French",
-      "question": "Question 1 of 5",
-      "sub": "Mistakes are welcome here.",
-      "partner": "Pip · your partner",
-      "live": "Live",
-      "prompt": "Qu’est-ce que tu fais le week-end ?",
-      "captions": "Live captions",
-      "you": "You",
-      "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live conversation",
-      "mute": "Mute",
-      "end": "End",
-      "subtitles": "Captions"
-    },
     "evaluating": {
       "title": "Pip is listening again.",
       "steps": [

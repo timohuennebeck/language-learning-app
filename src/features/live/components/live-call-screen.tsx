@@ -43,8 +43,13 @@ function CallBackdrop() {
   );
 }
 
-/** 02c · Live-Konversation · Vollbild-Call. */
-export function LiveCallScreen() {
+type Props = {
+  /** Where "Beenden" goes. Defaults to the in-app review; onboarding passes the evaluation step. */
+  onEnd?: () => void;
+};
+
+/** 02c · Live-Gespräch · Vollbild-Call (also used as the placement call in onboarding). */
+export function LiveCallScreen({ onEnd }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
   return (
@@ -101,7 +106,7 @@ export function LiveCallScreen() {
         endColor={colors.danger}
         endShadow="0 10px 24px rgba(201,64,63,.32)"
         subtitlesBg={colors.neutral[200]}
-        onEnd={() => router.replace('/(app)/review')}
+        onEnd={onEnd ?? (() => router.replace('/(app)/review'))}
       />
     </Screen>
   );

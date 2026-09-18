@@ -166,21 +166,6 @@
       "precise": "Lieber genau? ",
       "preciseCta": "2 Minuten reden."
     },
-    "assessmentCall": {
-      "title": "Einstufung · Französisch",
-      "question": "Frage 1 von 5",
-      "sub": "Fehler sind hier erwünscht.",
-      "partner": "Pip · dein Partner",
-      "live": "Live",
-      "prompt": "Qu’est-ce que tu fais le week-end ?",
-      "captions": "Live-Untertitel",
-      "you": "Du",
-      "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live-Gespräch",
-      "mute": "Stumm",
-      "end": "Beenden",
-      "subtitles": "Untertitel"
-    },
     "evaluating": {
       "title": "Pip hört noch mal hin.",
       "steps": [
