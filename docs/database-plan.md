@@ -370,7 +370,6 @@ create table public.flashcards (
   front                   text not null,        -- 'la cuillère'
   back                    text not null,        -- 'der Löffel' / 'the spoon' …
   back_language           text not null references public.languages(code),  -- of `back`
-  example                 text,                 -- 'un café à emporter'
   source_conversation_id  uuid references public.conversations(id) on delete set null,
   -- Leitner state: which box the card is in and the day it comes back
   box                     smallint not null default 1 check (box between 1 and 6),
@@ -413,7 +412,7 @@ columns plus a `flashcard_reviews` log per swipe to feed its optimiser, and the 
 a number they cannot see. Leitner needs two columns, no log, and the app can show the learner
 exactly where a card sits ("Fach 3 von 6"). What is given up is the per-user parameter fitting;
 the intervals are the same for everyone. If that ever becomes the limit, the FSRS columns can come
-back in one migration — the vocabulary itself (`front`, `back`, `example`) is untouched by either.
+back in one migration — the vocabulary itself (`front`, `back`) is untouched by either.
 
 `review` shape (written once by `end-conversation`, read by the Rückblick and level-result screens):
 
@@ -435,6 +434,11 @@ Why jsonb and not tables: the transcript is written once and read as a whole; th
 candidate list the user picks from, not something queried across conversations. Both fit one row.
 If Lernen later needs "every sentence the user ever said with _prendre_", a `conversation_turns`
 table can be filled from `transcript` in one migration.
+
+Why `flashcards` carries no `example`: the card shows the word and its translation and nothing
+else (migration 0015 dropped the column). The sentence a word was heard in still lives in the
+conversation's `review` jsonb below; if the Rückblick ever wants to keep it per card, it comes
+back as its own column.
 
 Why `flashcards` carries `back_language`: a German user's "der Löffel" and an English user's "the
 spoon" are both valid rows, and a user who switches app language keeps the old cards readable.
@@ -584,6 +588,12 @@ supabase/migrations/
   20260919140000_profile_avatars.sql    profiles.avatar_storage_path, avatars bucket, owner-only policies
   20260919143241_flashcards_leitner.sql flashcards on six Leitner boxes (box, due date, reviews);
                                         FSRS columns and flashcard_reviews dropped
+  20260919150824_flashcards_box_one_same_day.sql
+                                        box 1 is due the same day (column comment; BOX_DAYS is a
+                                        client constant)
+  20260919152551_flashcards_drop_example.sql
+                                        flashcards.example dropped (the card shows word and
+                                        translation only)
 supabase/seed.sql                       languages (six app languages; fr/en/es learnable),
                                         app_config (three keys), terms + privacy in all six locales
                                         (placeholder text until legal copy exists),
@@ -592,7 +602,7 @@ supabase/seed.sql                       languages (six app languages; fr/en/es l
 ```
 
 Status: **applied to the hosted project** (`language-learning-app`, eu-west-1) on 2026-09-19:
-all thirteen migrations are recorded in its migration history under the versions above, the reference
+all fifteen migrations are recorded in its migration history under the versions above, the reference
 data (languages, config, twelve legal documents) is seeded there, and the `delete-account` edge
 function is deployed. The app is wired to it (auth, profiles, learner languages, legal documents,
 account flows); `start-conversation` / `end-conversation` wait for the model details (open

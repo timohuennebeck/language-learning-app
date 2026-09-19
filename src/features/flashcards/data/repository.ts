@@ -3,6 +3,8 @@ import { FIRST_BOX, dueAfter, promote, today } from '@/features/flashcards/lib/b
 import type { Tables } from '@/shared/lib/database.types';
 import { supabase } from '@/shared/lib/supabase';
 
+// Every column the run writes back: the deck is saved with an upsert, and a column left out of
+// an upsert is written as null, so a partial row here would quietly erase data.
 const COLUMNS =
   'id, user_id, language, lexeme_id, front, back, back_language, box, reviews, lapses';
 
