@@ -191,13 +191,12 @@ Initial `app_config` keys (seed):
 | ------------------------------------ | ---------------------------------- | --------------------------- |
 | `min_app_version`                    | `"1.0.0"`                          | force-update gate           |
 | `conversation_max_seconds`           | `360`                              | live call timer / cut-off   |
-| `plans`                              | `[{id:"plus_10",talks:10},{id:"plus_30",talks:30}]` | paywall (prices from RevenueCat) |
-| `trial_days`                         | `5`                                | paywall copy                |
-| `trial_conversations`                | `5`                                | grant on trial start        |
-| `packs`                              | `[{id:"pack_10",talks:10},{id:"pack_25",talks:25},{id:"pack_50",talks:50}]` | talk-limit screen |
 | `referral_reward_conversations`      | `10`                               | redeem code (≈ 1 Stunde)    |
 | `reassessment_every_n_conversations` | `10`                               | "8 Gespräche übrig bis zur nächsten Einstufung" |
 | `daily_goal_options_minutes`         | `[5,10,15,30]`                     | goal pickers                |
+
+Plans, packs, prices and the trial length are **not** config: RevenueCat offerings own them
+(§3.6). The only thing the database needs about a product is how many conversations it grants.
 
 ### 3.3 Profiles and learner state
 
@@ -294,7 +293,7 @@ create table public.legal_documents (
   locale                 text not null default 'de',
   version                text not null,                 -- '2026-09-15'
   title                  text not null,
-  body_md                text not null,                 -- rendered as sections in TermsScreen
+  content_md             text not null,                 -- rendered as sections in TermsScreen
   effective_at           timestamptz not null,
   requires_reacceptance  boolean not null default false, -- true → app shows a consent sheet
   unique (kind, locale, version)
@@ -375,13 +374,25 @@ RevenueCat owns the store subscriptions; the database mirrors the state it needs
 entitlements and keeps the credit ledger. The client never writes here; the `revenuecat-webhook`
 edge function does.
 
+RevenueCat knows products, prices per storefront, the intro offer (the 5-day trial) and the
+current entitlement. It does not know that `yori_plus_30_monthly` is worth 30 conversations, and
+the webhook that writes the ledger must not trust the app for that number. So the database keeps
+exactly one thing per product: its conversation count.
+
 ```sql
+-- One row per store product. Same identifiers on App Store and Play Store, so one row covers both.
+create table public.products (
+  product_id     text primary key,          -- 'yori_plus_10_monthly', 'yori_pack_25'
+  kind           text not null check (kind in ('subscription','pack')),
+  conversations  int not null check (conversations > 0),
+  active         boolean not null default true
+);
+
 -- Current subscription state per user (upserted from RevenueCat webhooks).
 create table public.subscriptions (
   user_id         uuid primary key references public.profiles(id) on delete cascade,
   rc_app_user_id  text not null,           -- = profiles.id, set via Purchases.logIn()
-  product_id      text,                    -- store product identifier
-  plan            text,                    -- 'plus_10' | 'plus_30' (matches app_config.plans)
+  product_id      text references public.products(product_id),
   status          public.subscription_status not null,
   store           text,                    -- 'app_store' | 'play_store'
   period_start    timestamptz,
@@ -419,15 +430,19 @@ create index on public.credit_ledger (user_id, bucket, period_end);
 Semantics, matching the copy on the paywall and talk-limit screens:
 
 - **Monthly bucket** ("30 Gespräche im Monat"): each `RENEWAL` / `INITIAL_PURCHASE` webhook inserts
-  `+N` with `period_end = subscription.period_end`. Consumption rows copy the same `period_end`, so
+  `+products.conversations` with `period_end = subscription.period_end`. Consumption rows copy the same `period_end`, so
   the remaining quota is `sum(amount) where bucket='monthly' and period_end > now()`. Unused
   conversations expire with the period. "In 11 Tagen hast du wieder 30 Gespräche" = `period_end`.
 - **Purchased bucket** ("Guthaben verfällt nicht und wird erst nach deinem Monatskontingent
-  verbraucht"): packs and referral rewards land here with `period_end = null` and are consumed only
-  when the monthly bucket is empty.
-- **Trial** ("5 Tage kostenlos testen"): the store trial arrives as a subscription with
-  `status='trial'`; the webhook grants `app_config.trial_conversations` into the monthly bucket with
-  `period_end = trial end`.
+  verbraucht"): pack purchases (`NON_RENEWING_PURCHASE` webhook, `+products.conversations`) and
+  referral rewards land here with `period_end = null` and are consumed only when the monthly
+  bucket is empty.
+- **Trial** ("5 Tage kostenlos testen"): the store intro offer arrives as `INITIAL_PURCHASE` with
+  `period_type = 'TRIAL'`; the webhook sets `status='trial'` and grants the plan's normal
+  `products.conversations` with `period_end = trial end`. No separate trial quota.
+- **Display**: the paywall and talk-limit screens read prices, the trial length and the
+  recommended package from RevenueCat offerings and join `products` by `product_id` for the
+  conversation count.
 
 ```sql
 create function public.conversation_balance()
@@ -668,7 +683,7 @@ Analytics (PostHog) does not touch the database.
 | 06a Level selbst                             |                                                    | `learner_languages.level`, `level_assessments` (source self) |
 | 09g Ziel-Level                               |                                                    | `learner_languages.target_level`          |
 | 09h / 09g Lernzeit                           | `app_config.daily_goal_options_minutes`            | `profiles.daily_goal_minutes`             |
-| 11f Paywall · 13 Plus aktiv                  | `app_config.plans`, RevenueCat offerings, `subscriptions` | purchase via RevenueCat → webhook   |
+| 11f Paywall · 13 Plus aktiv                  | RevenueCat offerings, `products`, `subscriptions`  | purchase via RevenueCat → webhook         |
 | 11b Code einlösen · 15 Code teilen           | `referral_codes` (own)                             | `redeem_referral_code()`                  |
 | 12 / 12b Konto                               |                                                    | `updateUser` / `linkIdentity`, `legal_acceptances`, `onboarding_completed_at` |
 | 09b Profil                                   | `profiles`, `learner_languages`, `daily_activity` (week), `saved_words` count, `conversations` count | |
@@ -676,7 +691,7 @@ Analytics (PostHog) does not touch the database.
 | 09e Konto löschen · 41a Abmelden             |                                                    | `delete-account` / `signOut`              |
 | 02c Live-Konversation                        | `conversation_balance()`                           | `start-conversation`, `end-conversation`  |
 | 3h Rückblick                                 | `conversation_items`                               | `saved_words`                             |
-| 30a Gespräche aufgebraucht                   | `conversation_balance()`, `app_config.packs`       | pack purchase via RevenueCat → webhook    |
+| 30a Gespräche aufgebraucht                   | `conversation_balance()`, RevenueCat offerings, `products` | pack purchase via RevenueCat → webhook |
 | 08b Serie · 08 Tägliches Limit               | `profiles.streak_*`, `daily_activity`              | (via `log_activity()` from Lernen)        |
 | 10a Bewertung                                |                                                    | `feedback`                                |
 
@@ -693,12 +708,13 @@ supabase/migrations/
   0004_consent_devices_feedback.sql legal_acceptances, devices, feedback
   0005_activity.sql                daily_activity, log_activity()
   0006_conversations.sql           conversations, conversation_turns, conversation_items, saved_words
-  0007_billing.sql                 subscriptions, revenuecat_events, credit_ledger,
+  0007_billing.sql                 products, subscriptions, revenuecat_events, credit_ledger,
                                    conversation_balance(), consume_conversation_credit()
   0008_referrals.sql               referral_codes, referrals, generate_referral_code(),
                                    redeem_referral_code()
 supabase/seed.sql                  languages (six app languages; fr/en/es learnable),
-                                   app_config keys above, terms + privacy in all six locales
+                                   app_config keys above, products (plus_10, plus_30, pack_10/25/50),
+                                   terms + privacy in all six locales
                                    (placeholder text until legal copy exists),
                                    a dev user (dev@yori.app / password) with onboarding done
 ```
