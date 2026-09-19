@@ -14,7 +14,8 @@ type Props = {
 };
 
 export function AnswerChip({ text, ok, size, height }: Props) {
-  const lineHeight = size * 1.4;
+  // Natural line height: extra leading would sit above the glyphs on iOS and sink the word.
+  const lineHeight = size * 1.2;
   return (
     <InlineMark
       size={size}

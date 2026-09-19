@@ -20,12 +20,12 @@ function FormChip({ text, ok }: { text: string; ok: boolean }) {
   return (
     <InlineMark
       size={FORM}
-      lineHeight={FORM * 1.35}
+      lineHeight={FORM * 1.2}
       color={ok ? colors.ok.text : colors.err.text}
       bg={ok ? colors.ok.chip : colors.err.chip}
       radius={8}
       px={10}
-      py={3}
+      py={4}
       textClassName={ok ? undefined : 'line-through'}
     >
       {text}

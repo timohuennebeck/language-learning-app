@@ -67,8 +67,7 @@ export function ExerciseScreen() {
         labelSize={13}
         trackColor={colors.track2}
       />
-      {/* The step scrolls (the conjugation table runs under the keyboard) while Prüfen stays put; the
-          result scrolls as a whole so a long table is never cut off above the feedback card. */}
+      {/* The step (and, after checking, the feedback card) scrolls; Prüfen / Weiter stay put. */}
       <ScrollView
         className="flex-1"
         style={{ marginHorizontal: -22 }}
@@ -129,11 +128,14 @@ export function ExerciseScreen() {
               youLine={'youLine' in s.step ? s.step.youLine : undefined}
               rightLine={'rightLine' in s.step ? s.step.rightLine : undefined}
             />
-            <View style={{ height: 14 }} />
-            <Button height={56} label={t('common.next')} onPress={onNext} />
           </>
         )}
       </ScrollView>
+      {task ? null : (
+        <View style={{ paddingTop: 14 }}>
+          <Button height={56} label={t('common.next')} onPress={onNext} />
+        </View>
+      )}
       {task ? (
         <View
           className="flex-row items-center"
