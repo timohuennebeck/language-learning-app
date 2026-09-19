@@ -20,8 +20,8 @@ type Props = {
   correct: boolean;
   why: string;
   wrongWhy: string[];
-  youLine: Run[];
-  rightLine: Run[];
+  youLine?: Run[];
+  rightLine?: Run[];
 };
 
 /** The green/red feedback card with Pip peeking over the top-right corner. */
@@ -73,25 +73,27 @@ export function FeedbackCard({ correct, why, wrongWhy, youLine, rightLine }: Pro
           </Text>
         ) : (
           <>
-            <View className="mt-[12px]" style={{ rowGap: 10 }}>
-              {[
-                { label: t('exercise.you'), runs: youLine, color: colors.muted },
-                { label: t('exercise.right'), runs: rightLine, color: colors.ink },
-              ].map((line) => (
-                <View key={line.label} className="flex-row" style={{ columnGap: 10 }}>
-                  <Kicker
-                    tracking={0.08}
-                    style={{ color: colors.err.label }}
-                    className="w-[58px] pt-[4px]"
-                  >
-                    {line.label}
-                  </Kicker>
-                  <View className="flex-1">
-                    <MarkedRuns runs={line.runs} color={line.color} />
+            {youLine && rightLine ? (
+              <View className="mt-[12px]" style={{ rowGap: 10 }}>
+                {[
+                  { label: t('exercise.you'), runs: youLine, color: colors.muted },
+                  { label: t('exercise.right'), runs: rightLine, color: colors.ink },
+                ].map((line) => (
+                  <View key={line.label} className="flex-row" style={{ columnGap: 10 }}>
+                    <Kicker
+                      tracking={0.08}
+                      style={{ color: colors.err.label }}
+                      className="w-[58px] pt-[4px]"
+                    >
+                      {line.label}
+                    </Kicker>
+                    <View className="flex-1">
+                      <MarkedRuns runs={line.runs} color={line.color} />
+                    </View>
                   </View>
-                </View>
-              ))}
-            </View>
+                ))}
+              </View>
+            ) : null}
             <View className="mt-[10px]" style={{ rowGap: 7 }}>
               {wrongWhy.map((w, i) => (
                 <View key={i} className="flex-row" style={{ columnGap: 8 }}>

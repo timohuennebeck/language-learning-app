@@ -1,10 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { FeedbackCard } from '@/features/exercises/components/feedback-card';
 import { Build } from '@/features/exercises/components/steps/build';
+import { Conjugate } from '@/features/exercises/components/steps/conjugate';
 import { FillFree } from '@/features/exercises/components/steps/fill-free';
 import { FillOptions } from '@/features/exercises/components/steps/fill-options';
 import { TranslateFree } from '@/features/exercises/components/steps/translate-free';
@@ -39,7 +40,8 @@ export function ExerciseScreen() {
     designDrafts: params.step !== undefined,
   });
   const task = s.phase === 'task';
-  const typed = s.step.kind === 'fill-free' || s.step.kind === 'translate-free';
+  const typed =
+    s.step.kind === 'fill-free' || s.step.kind === 'translate-free' || s.step.kind === 'conjugate';
   const keyboard = task && typed;
   const check = () => {
     if (!s.canCheck) return;
@@ -64,38 +66,54 @@ export function ExerciseScreen() {
         labelSize={13}
         trackColor={colors.track2}
       />
-      {s.step.kind === 'fill-options' ? (
-        <FillOptions
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string}
-          setAnswer={s.setAnswer}
-        />
-      ) : s.step.kind === 'fill-free' ? (
-        <FillFree
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string}
-          setAnswer={s.setAnswer}
-          onSubmit={check}
-        />
-      ) : s.step.kind === 'build' ? (
-        <Build
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string[]}
-          setAnswer={s.setAnswer}
-        />
-      ) : (
-        <TranslateFree
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string}
-          setAnswer={s.setAnswer}
-          onSubmit={check}
-        />
-      )}
-      <View className="flex-1" style={{ minHeight: task ? 0 : 20 }} />
+      {/* The step scrolls (the conjugation table runs under the keyboard); the actions stay put. */}
+      <ScrollView
+        className="flex-1"
+        style={{ marginHorizontal: -22 }}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 22, paddingBottom: task ? 0 : 20 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {s.step.kind === 'fill-options' ? (
+          <FillOptions
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string}
+            setAnswer={s.setAnswer}
+          />
+        ) : s.step.kind === 'fill-free' ? (
+          <FillFree
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string}
+            setAnswer={s.setAnswer}
+            onSubmit={check}
+          />
+        ) : s.step.kind === 'build' ? (
+          <Build
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string[]}
+            setAnswer={s.setAnswer}
+          />
+        ) : s.step.kind === 'conjugate' ? (
+          <Conjugate
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string[]}
+            setAnswer={s.setAnswer}
+            onSubmit={check}
+          />
+        ) : (
+          <TranslateFree
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string}
+            setAnswer={s.setAnswer}
+            onSubmit={check}
+          />
+        )}
+      </ScrollView>
       {task ? (
         <View
           className="flex-row items-center"
@@ -127,8 +145,8 @@ export function ExerciseScreen() {
             correct={s.phase === 'correct'}
             why={s.step.correctWhy}
             wrongWhy={s.step.wrongWhy}
-            youLine={s.step.youLine}
-            rightLine={s.step.rightLine}
+            youLine={'youLine' in s.step ? s.step.youLine : undefined}
+            rightLine={'rightLine' in s.step ? s.step.rightLine : undefined}
           />
           <View style={{ height: 14 }} />
           <Button height={56} label={t('common.next')} onPress={onNext} />

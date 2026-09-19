@@ -20,7 +20,9 @@ const DEMO = { total: 8, wrong: ['s2', 's5'] };
 
 /** The right answer of a step, shown as the chip to look at again. */
 function solution(step: ExerciseStep) {
-  return step.kind === 'build' ? step.answer.join(' ') : step.answer;
+  if (step.kind === 'build') return step.answer.join(' ');
+  if (step.kind === 'conjugate') return `${step.verb} · ${step.tense}`;
+  return step.answer;
 }
 
 /** 19e · Übung geschafft: ring with the score, Pip, and the tasks to look at again. */

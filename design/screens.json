@@ -266,6 +266,27 @@
     "onboarded": 1
   },
   {
+    "name": "68a-conjugate",
+    "ref": "68_Tabelle.png",
+    "route": "/exercise?step=9",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "68b-conjugate-ok",
+    "ref": "68_Tabelle.png",
+    "route": "/exercise?step=9&state=correct",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
+    "name": "68c-conjugate-wrong",
+    "ref": "68_Tabelle.png",
+    "route": "/exercise?step=9&state=wrong",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
     "name": "19e-exercise-done",
     "ref": "42D_Karten_durch.png",
     "route": "/exercise/done",

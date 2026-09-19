@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AnswerChip } from '@/features/exercises/components/answer-chip';
 import { SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout';
+import { TranslationLine } from '@/features/exercises/components/steps/translation-line';
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import { InlineFlow } from '@/shared/components/inline-flow';
 import { insetRing } from '@/shared/lib/styles';
@@ -55,9 +56,7 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
           step.post,
         ]}
       />
-      <Text className="text-muted" style={{ fontSize: 15, marginTop: 12 }}>
-        {step.translation}
-      </Text>
+      <TranslationLine text={step.translation} marks={step.translationMarks} />
       <View className="flex-row flex-wrap" style={{ gap: 10, marginTop: 26 }}>
         {step.options.map((o) => {
           const isAnswer = o === step.answer;

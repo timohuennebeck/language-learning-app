@@ -25,6 +25,14 @@ function normalize(s: string) {
 }
 
 function draftFor(s: ExerciseStep, p: Phase, designDrafts: boolean): string | string[] {
+  if (s.kind === 'conjugate')
+    return p === 'wrong'
+      ? s.wrongTyped
+      : p === 'correct'
+        ? s.answer
+        : designDrafts
+          ? s.typedPartial
+          : s.pronouns.map(() => '');
   if (s.kind === 'build')
     return p === 'wrong' ? s.wrongOrder : p === 'correct' ? s.answer : s.initial;
   if (s.kind === 'fill-options')
@@ -57,11 +65,19 @@ export function useExerciseSession(
   const [wrongIds, setWrongIds] = useState<string[]>([]);
 
   const canCheck =
-    step.kind === 'build' ? (answer as string[]).length >= 1 : String(answer).trim().length > 0;
+    step.kind === 'build'
+      ? (answer as string[]).length >= 1
+      : step.kind === 'conjugate'
+        ? (answer as string[]).every((a) => a.trim().length > 0)
+        : String(answer).trim().length > 0;
 
   const check = useCallback(() => {
     let ok = false;
     if (step.kind === 'build') ok = JSON.stringify(answer) === JSON.stringify(step.answer);
+    else if (step.kind === 'conjugate')
+      ok = step.answer.every(
+        (form, i) => normalize((answer as string[])[i] ?? '') === normalize(form),
+      );
     else ok = typeof answer === 'string' && normalize(answer) === normalize(step.answer);
     setPhase(ok ? 'correct' : 'wrong');
     if (!ok) setWrongIds((ids) => (ids.includes(step.id) ? ids : [...ids, step.id]));

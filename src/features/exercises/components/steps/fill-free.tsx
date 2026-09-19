@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { AnswerChip } from '@/features/exercises/components/answer-chip';
 import { AutoWidthInput } from '@/features/exercises/components/auto-width-input';
 import { SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout';
+import { TranslationLine } from '@/features/exercises/components/steps/translation-line';
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import { Hint } from '@/shared/components/hint';
 import { InlineFlow } from '@/shared/components/inline-flow';
@@ -13,7 +14,6 @@ import { colors } from '@/shared/theme/tokens';
 import { Caret } from '@/shared/ui/caret';
 import { Kicker } from '@/shared/ui/kicker';
 import { Tap } from '@/shared/ui/tap';
-import { Text } from '@/shared/ui/text';
 
 /** 19b3 / 25c / 25d · Lücke frei getippt. */
 export function FillFree({
@@ -72,9 +72,7 @@ export function FillFree({
           step.post,
         ]}
       />
-      <Text className="text-muted" style={{ fontSize: 15, marginTop: 12 }}>
-        {step.translation}
-      </Text>
+      <TranslationLine text={step.translation} marks={step.translationMarks} />
       {task ? <Hint text={step.hint} className="mt-[22px]" /> : null}
     </>
   );
