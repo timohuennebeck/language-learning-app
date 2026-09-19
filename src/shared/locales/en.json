@@ -604,10 +604,13 @@
   },
   "flashcards": {
     "title": "Flashcards",
-    "box": "Box {{n}} of {{total}}",
+    "left": "← Don't know",
+    "right": "I know it →",
     "flip": "Tap to flip",
     "again": "Again",
     "known": "Known",
+    "empty": "No cards are due today.",
+    "error": "Your cards could not be loaded.",
     "result": {
       "title": "Well done, {{name}}.",
       "badge": "{{known}} of {{total}}",

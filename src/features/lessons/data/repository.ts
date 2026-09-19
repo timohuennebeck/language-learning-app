@@ -44,5 +44,5 @@ export async function getChapter(id: string): Promise<Chapter> {
 
 export async function getHomeFeed(): Promise<HomeFeed> {
   await delay();
-  return { minutesToday: 6, goalMinutes: 10, dueCards: 12, lessons };
+  return { minutesToday: 6, goalMinutes: 10, lessons };
 }

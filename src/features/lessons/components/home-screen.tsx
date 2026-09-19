@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
+import { useDueCount } from '@/features/flashcards/hooks/use-deck';
 import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
@@ -30,7 +31,8 @@ export function HomeScreen() {
   const progress = useProgress().data!;
   const minutes = feed.data?.minutesToday ?? 6;
   const goal = feed.data?.goalMinutes ?? session.dailyGoalMinutes;
-  const due = feed.data?.dueCards ?? 12;
+  // Real count, so the pill and the deck behind it can never disagree.
+  const due = useDueCount().data ?? 0;
 
   return (
     <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
@@ -45,21 +47,23 @@ export function HomeScreen() {
           <Text className="text-sub" style={{ fontSize: 16 }}>
             {t('home.today', { done: minutes, goal })}
           </Text>
-          <Tap
-            haptic="light"
-            onPress={() => router.push('/(app)/flashcards')}
-            className="flex-row items-center rounded-pill bg-lavender py-[5px] pl-[9px] pr-[12px]"
-            style={{ columnGap: 7 }}
-          >
-            <View className="h-[20px] min-w-[20px] items-center justify-center rounded-pill bg-accent-800 px-[6px]">
-              <Text className="font-semibold text-accent-100" style={{ fontSize: 12.5 }}>
-                {due}
+          {due ? (
+            <Tap
+              haptic="light"
+              onPress={() => router.push('/(app)/flashcards')}
+              className="flex-row items-center rounded-pill bg-lavender py-[5px] pl-[9px] pr-[12px]"
+              style={{ columnGap: 7 }}
+            >
+              <View className="h-[20px] min-w-[20px] items-center justify-center rounded-pill bg-accent-800 px-[6px]">
+                <Text className="font-semibold text-accent-100" style={{ fontSize: 12.5 }}>
+                  {due}
+                </Text>
+              </View>
+              <Text className="font-medium text-accent-800" style={{ fontSize: 14 }}>
+                {t('home.due')}
               </Text>
-            </View>
-            <Text className="font-medium text-accent-800" style={{ fontSize: 14 }}>
-              {t('home.due')}
-            </Text>
-          </Tap>
+            </Tap>
+          ) : null}
         </View>
         <HeroCarousel
           className="mt-[16px]"

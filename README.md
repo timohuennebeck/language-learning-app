@@ -34,8 +34,8 @@ src/
     exercises            exercise flow: steps/ (FillOptions, FillFree, Build, TranslateFree),
                          useExerciseSession, FeedbackCard, MarkedRuns, preparing, error
     reading              reading sections, tappable segments, word explanation
-    flashcards           swipe deck on six Leitner boxes (lib/boxes.ts): useSwipeDeck,
-                         SwipeCard, FlashcardsDoneScreen
+    flashcards           swipe deck on six Leitner boxes (lib/boxes.ts), reading and writing
+                         the `flashcards` table: useDeck, useSwipeDeck, SwipeCard, done screen
     profile              profile (StreakCard, LevelCard, StatTiles, ProfileRow) + settings screens
     grammar, review, live, progress, paywall, dev
   shared/

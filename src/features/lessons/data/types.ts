@@ -19,6 +19,5 @@ export interface Chapter {
 export interface HomeFeed {
   minutesToday: number;
   goalMinutes: number;
-  dueCards: number;
   lessons: Lesson[];
 }

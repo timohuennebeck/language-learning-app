@@ -392,9 +392,11 @@ when it comes back — each box waits twice as long as the one before it.
 | ---- | --: | --: | --: | --: | --: | --: |
 | Days |   1 |   2 |   4 |   8 |  16 |  32 |
 
-- **Review**: one `update` per card at the end of the deck — `box`, `due = today + BOX_DAYS[box]`,
-  `reviews + 1`, `lapses + 1` on a wrong answer, `last_reviewed_at = now()`. No second table, no
-  per-swipe log.
+- **Review**: one `upsert` with the whole run at the end of the deck — `box`,
+  `due = today + BOX_DAYS[box]`, `reviews + 1`, `lapses + 1` on a wrong answer,
+  `last_reviewed_at = now()`. The rows exist, so every one of them is an update; PostgREST has no
+  bulk update, and an upsert keeps the deck at one round trip instead of twenty. No second table,
+  no per-swipe log.
 - **Due**: `select … from flashcards where user_id = auth.uid() and language = :active and
 due <= current_date order by box, due limit 20`. A card the user has never seen is simply a
   box-1 card due today; a per-day cap on new cards stays a client constant.
@@ -571,7 +573,7 @@ supabase/migrations/
   20260919094818_goal_minutes_and_legal_title.sql
                                         profiles.goal_minutes (was daily_goal_minutes); legal_documents.title dropped
   …                                     scenarios, placement, profile avatars (0007–0012)
-  20260919150000_flashcards_leitner.sql flashcards on six Leitner boxes (box, due date, reviews);
+  20260919143241_flashcards_leitner.sql flashcards on six Leitner boxes (box, due date, reviews);
                                         FSRS columns and flashcard_reviews dropped
 supabase/seed.sql                       languages (six app languages; fr/en/es learnable),
                                         app_config (three keys), terms + privacy in all six locales
@@ -587,9 +589,9 @@ function is deployed. The app is wired to it (auth, profiles, learner languages,
 account flows); `start-conversation` / `end-conversation` wait for the model details (open
 question 6). Locally, `npm run db:reset` replays the same files.
 
-`20260919150000_flashcards_leitner.sql` is **not applied to the hosted project yet** — it drops
-`flashcard_reviews` and seven columns of `flashcards`, so it wants a deliberate `supabase db push`
-(nothing writes those columns today, so no data is lost).
+`20260919143241_flashcards_leitner.sql` is applied there too (both tables were empty, so the drop
+cost nothing). Its filename carries the version the hosted history recorded, so a later
+`supabase db push` sees it as done.
 
 Suggested build order in the app:
 

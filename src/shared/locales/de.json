@@ -624,10 +624,13 @@
   },
   "flashcards": {
     "title": "Karteikarten",
-    "box": "Fach {{n}} von {{total}}",
+    "left": "← Weiß ich nicht",
+    "right": "Ich weiß es →",
     "flip": "Tippen zum Umdrehen",
     "again": "Nochmal",
     "known": "Gewusst",
+    "empty": "Heute ist keine Karte fällig.",
+    "error": "Deine Karten konnten nicht geladen werden.",
     "result": {
       "title": "Gut gemacht, {{name}}.",
       "badge": "{{known}} von {{total}}",

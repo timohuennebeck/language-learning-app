@@ -1,10 +1,14 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
-import { getDeck } from '@/features/flashcards/data/repository';
+import { countDue, getDueDeck } from '@/features/flashcards/data/repository';
 
 export const flashcardKeys = createQueryKeys('flashcards', {
-  deck: (deckId: string) => ({
-    queryKey: [deckId],
-    queryFn: () => getDeck(deckId),
+  due: (userId: string, language: string) => ({
+    queryKey: [userId, language],
+    queryFn: () => getDueDeck(userId, language),
+  }),
+  dueCount: (userId: string, language: string) => ({
+    queryKey: [userId, language],
+    queryFn: () => countDue(userId, language),
   }),
 });

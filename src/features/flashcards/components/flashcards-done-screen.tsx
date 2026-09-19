@@ -22,7 +22,7 @@ export function FlashcardsDoneScreen() {
   const router = useRouter();
   const back = useBack('/(app)/(tabs)');
   const params = useLocalSearchParams<{ total?: string; known?: string; ids?: string }>();
-  const deck = useDeck('cafe');
+  const deck = useDeck();
   const { session } = useSession();
 
   // Opened from a real run: build the result from the swiped cards; opened directly: design sample.

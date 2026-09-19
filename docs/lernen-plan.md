@@ -114,9 +114,9 @@ vs "Übung wiederholen · 5 Aufgaben".
 
 ## 5 Flashcards and activity
 
-Flashcards: `flashcards` already exists and carries the six Leitner boxes; the deck adds the due
-query (`due <= current_date`, plus N new cards per day), the box move per swipe (right: one box up,
-wrong: back to box 1) and one batched `update` per card at the end of the run.
+Flashcards: done — the deck reads `flashcards` (due today, lowest box first, 20 at a time), moves
+each card a box on the way out (right: one box up, wrong: back to box 1) and writes the run back
+in one `upsert`. What is left here is the per-day cap on new cards.
 
 Activity (moved here from the database plan's deferred list): one row per user and local day; the
 streak is derived on the client from the rows, no cached columns, no function.

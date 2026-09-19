@@ -1,14 +1,19 @@
 export interface Flashcard {
   id: string;
+  userId: string;
+  language: string;
   front: string;
-  example: string;
   back: string;
+  backLanguage: string;
+  example: string | null;
   /** Leitner box 1…6 the card is in right now (see lib/boxes.ts). */
   box: number;
+  reviews: number;
+  lapses: number;
 }
 
 export interface Deck {
-  id: string;
+  language: string;
   cards: Flashcard[];
 }
 
