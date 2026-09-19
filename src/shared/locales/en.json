@@ -434,14 +434,11 @@
     "title": "Languages",
     "headline": "Switch language",
     "sub": "Your progress is kept in every language.",
-    "active": "Français · active · 12 day streak",
-    "enSub": "English · last 3 weeks ago",
-    "esSub": "Español · last in June",
-    "toB1": "64 % to B1",
-    "toB2": "38 % to B2",
-    "toA2": "15 % to A2",
     "words": "{{level}} · {{n}} words",
-    "new": "Add a language"
+    "new": "Add a language",
+    "activeSub": "{{name}} · active",
+    "sinceSub": "{{name}} · since {{date}}",
+    "to": "{{pct}} % to {{level}}"
   },
   "lesson": {
     "kicker": "French · Easy · 12 words",

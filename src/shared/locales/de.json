@@ -449,14 +449,11 @@
     "title": "Sprachen",
     "headline": "Sprache wechseln",
     "sub": "Dein Fortschritt bleibt in jeder Sprache erhalten.",
-    "active": "Français · aktiv · 12 Tage Serie",
-    "enSub": "English · zuletzt vor 3 Wochen",
-    "esSub": "Español · zuletzt im Juni",
-    "toB1": "64 % bis B1",
-    "toB2": "38 % bis B2",
-    "toA2": "15 % bis A2",
     "words": "{{level}} · {{n}} Wörter",
-    "new": "Sprache hinzufügen"
+    "new": "Sprache hinzufügen",
+    "activeSub": "{{name}} · aktiv",
+    "sinceSub": "{{name}} · seit {{date}}",
+    "to": "{{pct}} % bis {{level}}"
   },
   "lesson": {
     "kicker": "Französisch · Leicht · 12 Wörter",

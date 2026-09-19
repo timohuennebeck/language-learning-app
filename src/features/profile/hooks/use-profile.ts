@@ -13,3 +13,13 @@ export function useProgress() {
     placeholderData: DESIGN_PROGRESS,
   });
 }
+
+/** The user's started languages; refetched on every mount because the session adds rows outside the query cache. */
+export function useLearnerLanguages() {
+  const { session } = useSession();
+  return useQuery({
+    ...queries.profile.languages(session.userId ?? ''),
+    enabled: Boolean(session.userId),
+    refetchOnMount: 'always',
+  });
+}

@@ -2,8 +2,11 @@ import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { LEVELS, type Level } from '@/features/auth/data/types';
 import { useSession } from '@/features/auth/hooks/use-session';
-import type { LearningLanguage } from '@/features/auth/data/types';
+import { DESIGN_PROGRESS } from '@/features/profile/data/repository';
+import type { LearnerLanguageSummary } from '@/features/profile/data/types';
+import { useLearnerLanguages } from '@/features/profile/hooks/use-profile';
 import { cn } from '@/shared/lib/cn';
 import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
@@ -16,20 +19,32 @@ import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 import { TopBar } from '@/shared/ui/top-bar';
 
-const CARDS: {
-  code: LearningLanguage;
-  sub: string;
-  words: string;
-  level: string;
-  to: string;
-  pct: number;
-}[] = [{ code: 'fr', sub: 'active', level: 'A2', words: '86', to: 'toB1', pct: 0.64 }];
+/** The next level above the current one (B2 stays B2). */
+function nextLevel(level: Level): Level {
+  return LEVELS[Math.min(LEVELS.indexOf(level) + 1, LEVELS.length - 1)];
+}
 
-/** 01a · Sprache wechseln. */
+/** 01a · Sprache wechseln: one card per started language (`learner_languages`), the active one ringed. */
 export function LanguagesScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { session, update } = useSession();
+  const learned = useLearnerLanguages().data ?? [];
+  // The active language is listed even before its row has been fetched (just added, or offline).
+  const cards: LearnerLanguageSummary[] = learned.some(
+    (l) => l.language === session.learningLanguage,
+  )
+    ? learned
+    : [
+        ...learned,
+        {
+          language: session.learningLanguage,
+          level: session.level,
+          targetLevel: session.targetLevel,
+          words: 0,
+          startedAt: new Date().toISOString(),
+        },
+      ];
   return (
     <Screen bottom={6} className="px-[22px]" style={{ rowGap: 16 }}>
       <TopBar left="back" title={t('languages.title')} />
@@ -44,13 +59,20 @@ export function LanguagesScreen() {
           {t('languages.sub')}
         </Text>
       </View>
-      {CARDS.map((c, i) => {
-        const active = session.learningLanguage === c.code;
+      {cards.map((c, i) => {
+        const active = session.learningLanguage === c.language;
+        const name = t(`common.languageNative.${c.language}`);
+        const since = new Date(c.startedAt).toLocaleDateString(i18n.language, {
+          month: 'long',
+          year: 'numeric',
+        });
+        // Level progress stays at the design's value until activity tracking exists (docs/lernen-plan.md).
+        const pct = DESIGN_PROGRESS.levelProgress;
         return (
           <Tap
-            key={c.code}
+            key={c.language}
             haptic="selection"
-            onPress={() => update({ learningLanguage: c.code })}
+            onPress={() => update({ learningLanguage: c.language })}
             className={cn('rounded-[24px] bg-white p-[16px]', i > 0 && 'mt-[-6px]')}
             style={{
               rowGap: 12,
@@ -58,16 +80,18 @@ export function LanguagesScreen() {
             }}
           >
             <View className="flex-row items-center" style={{ columnGap: 13 }}>
-              <Flag code={c.code} size={42} />
+              <Flag code={c.language} size={42} />
               <View className="flex-1" style={{ rowGap: 1 }}>
                 <Text
                   className={cn('text-ink', active && 'font-semibold')}
                   style={{ fontSize: 17.5 }}
                 >
-                  {t(`common.language.${c.code}`)}
+                  {t(`common.language.${c.language}`)}
                 </Text>
                 <Text className="text-muted" style={{ fontSize: 13.5 }}>
-                  {t(`languages.${c.sub}`)}
+                  {active
+                    ? t('languages.activeSub', { name })
+                    : t('languages.sinceSub', { name, date: since })}
                 </Text>
               </View>
               {active ? <CheckCircle /> : null}
@@ -78,11 +102,11 @@ export function LanguagesScreen() {
                   {t('languages.words', { level: c.level, n: c.words })}
                 </Text>
                 <Text className="text-muted" style={{ fontSize: 13.5 }}>
-                  {t(`languages.${c.to}`)}
+                  {t('languages.to', { pct: Math.round(pct * 100), level: nextLevel(c.level) })}
                 </Text>
               </View>
               <ProgressBar
-                progress={c.pct}
+                progress={pct}
                 height={8}
                 trackColor={colors.surface2}
                 fillColor={active ? colors.accent[800] : colors.dim8}
