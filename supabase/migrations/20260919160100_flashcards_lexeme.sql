@@ -2,7 +2,7 @@
 --
 -- The card's identity moves from the text it was saved from to the lexeme it is about. That is what
 -- lets a reading text tint "nous allons" from a card saved as "je suis allée": both point at the
--- same row. `front`/`back`/`example` stay as the learner's copy, so the card they see never changes
+-- same row. `front` and `back` stay as the learner's copy, so the card they see never changes
 -- under them; `language` stays denormalised for the deck's (user_id, language, due) index.
 
 alter table public.flashcards
