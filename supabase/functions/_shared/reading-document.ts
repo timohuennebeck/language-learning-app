@@ -24,7 +24,6 @@ export interface AnnotatorSpan {
   surface: string;
   here: string;
   nativeMarks: string[];
-  mark: boolean;
   /** An offered dictionary entry the model judged to fit this sentence, or null. */
   lexeme: string | null;
   /** A fresh dictionary entry, when nothing offered fitted. Resolved before the document is built. */
@@ -142,14 +141,8 @@ export function buildDocument(
 
         lexemeIds.add(lexeme);
         used.push({ at, end: at + surface.length });
-        spans.push({
-          at,
-          len: surface.length,
-          lexeme,
-          here: span.here,
-          nativeMarks: marks,
-          ...(span.mark ? { mark: true as const } : {}),
-        });
+        // `mark` is chosen afterwards by `chooseHighlights`, not by the model.
+        spans.push({ at, len: surface.length, lexeme, here: span.here, nativeMarks: marks });
       }
 
       spans.sort((a, b) => a.at - b.at);
@@ -163,6 +156,43 @@ export function buildDocument(
     wordCount,
     dropped,
   };
+}
+
+/** How many words a section highlights. The rest stay tappable but untinted. */
+export const HIGHLIGHTS_PER_SECTION = 7;
+
+/**
+ * Picks the words each section tints.
+ *
+ * The annotator used to decide this, and marked 45 of 48 words in a 105-word text — fairly, since
+ * it was asked for "about seven per section" while being shown a flat list with no sections in it.
+ * Counting is the server's job: it is the only side that knows what a section is, and the answer
+ * should not cost a token or vary between runs.
+ *
+ * Longest first, because a phrase teaches more than a bare noun, and at most two per sentence on
+ * the first pass so a section does not tint one sentence and leave the rest plain.
+ */
+export function chooseHighlights(document: Document, perSection = HIGHLIGHTS_PER_SECTION): void {
+  for (const section of document.sections) {
+    const all = section.sentences.flatMap((s) => s.spans.map((span) => ({ id: s.id, span })));
+    for (const { span } of all) delete span.mark;
+
+    const ranked = [...all].sort((a, b) => b.span.len - a.span.len);
+    const perSentence = new Map<string, number>();
+    let taken = 0;
+
+    for (const cap of [2, Infinity]) {
+      for (const { id, span } of ranked) {
+        if (taken >= perSection) break;
+        if (span.mark) continue;
+        if ((perSentence.get(id) ?? 0) >= cap) continue;
+        span.mark = true;
+        perSentence.set(id, (perSentence.get(id) ?? 0) + 1);
+        taken += 1;
+      }
+      if (taken >= perSection) break;
+    }
+  }
 }
 
 /**

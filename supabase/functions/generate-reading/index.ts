@@ -36,6 +36,7 @@ import {
 import {
   assertUsable,
   buildDocument,
+  chooseHighlights,
   InvalidText,
   type AnnotatorSpan,
   type WriterText,
@@ -224,7 +225,7 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
           writerInput({ ...ctx, dueWords: ctx.dueLemmas, complaint }),
           'reading_text',
           WRITER_SCHEMA,
-          { model: READING_WRITER_MODEL, effort: 'medium', maxOutputTokens: 4000 },
+          { model: READING_WRITER_MODEL, effort: 'low', maxOutputTokens: 3000 },
         );
         usage.push(written.usage);
         text = written.value;
@@ -236,13 +237,19 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
         await db.from('reading_texts').update({ stage: STAGE.explaining }).eq('id', textId);
       }
 
-      // Sentence ids are positional and are what the next two calls refer to.
+      // Sentence ids are positional and are what the next two calls refer to. Sections are kept
+      // apart because the annotator now runs once per section, in parallel.
+      const bySection: { id: string; source: string; native: string }[][] = [];
       const sentences: { id: string; source: string; native: string }[] = [];
-      text.sections.forEach((section) =>
-        section.sentences.forEach((s) =>
-          sentences.push({ id: `s${sentences.length + 1}`, source: s.source, native: s.native }),
-        ),
-      );
+      for (const section of text.sections) {
+        const group: { id: string; source: string; native: string }[] = [];
+        for (const s of section.sentences) {
+          const entry = { id: `s${sentences.length + 1}`, source: s.source, native: s.native };
+          sentences.push(entry);
+          group.push(entry);
+        }
+        bySection.push(group);
+      }
 
       // 2 · which words are worth a gloss, and what their dictionary form is.
       const lemmatised = await respondJsonWithUsage<{
@@ -271,42 +278,54 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
       // 3 · what the dictionary already knows, so the annotator only writes what is new.
       const candidates = await findCandidates(db, ctx.language, ctx.nativeLanguage, allWords);
 
-      const annotatorLines = sentences.flatMap((s) => {
-        const words = wordsBySentence.get(s.id) ?? [];
-        if (!words.length) return [];
-        return [
-          `${s.id} · ${ctx.language}: ${s.source}`,
-          `${s.id} · ${ctx.nativeLanguage}: ${s.native}`,
-          ...words.map((w, i) => {
-            const known = candidates.get(toLemma(w.lemma, ctx.language)) ?? [];
-            const offered = known
-              .filter((c: Candidate) => c.trans)
-              .map((c: Candidate) => `${c.id} = "${c.trans}" (${c.pos})`)
-              .join('; ');
-            return `  [${s.id}w${i + 1}] "${w.surface}" (${w.lemma}, ${w.pos})${offered ? ` · known meanings: ${offered}` : ''}`;
-          }),
-          '',
-        ];
-      });
+      const linesFor = (group: { id: string; source: string; native: string }[]) =>
+        group.flatMap((s) => {
+          const words = wordsBySentence.get(s.id) ?? [];
+          if (!words.length) return [];
+          return [
+            `${s.id} · ${ctx.language}: ${s.source}`,
+            `${s.id} · ${ctx.nativeLanguage}: ${s.native}`,
+            ...words.map((w, i) => {
+              const known = candidates.get(toLemma(w.lemma, ctx.language)) ?? [];
+              const offered = known
+                .filter((c: Candidate) => c.trans)
+                .map((c: Candidate) => `${c.id} = "${c.trans}" (${c.pos})`)
+                .join('; ');
+              return `  [${s.id}w${i + 1}] "${w.surface}" (${w.lemma}, ${w.pos})${offered ? ` · known meanings: ${offered}` : ''}`;
+            }),
+            '',
+          ];
+        });
 
-      const annotated = await respondJsonWithUsage<{ spans: AnnotatorSpan[] }>(
-        annotatorInstructions(ctx.language, ctx.nativeLanguage),
-        [
-          `Mark about ${Math.min(7, Math.max(3, Math.round(sentences.length * 0.6)))} of the most useful words per section with "mark": true; the rest false.`,
-          '',
-          ...annotatorLines,
-        ].join('\n'),
-        'reading_glosses',
-        ANNOTATOR_SCHEMA,
-        { model: READING_HELPER_MODEL, effort: 'low', maxOutputTokens: 8000 },
+      // 4 · explain the words, one call per section at the same time. A single call has to emit
+      // every gloss in the text one after another, and generation is serial: three shorter calls
+      // finish in about a third of the time for the same tokens, which is most of the wait.
+      const annotatedSections = await Promise.all(
+        bySection.map((group) => {
+          const lines = linesFor(group);
+          if (!lines.length) {
+            return Promise.resolve({ value: { spans: [] as AnnotatorSpan[] }, usage: null });
+          }
+          return respondJsonWithUsage<{ spans: AnnotatorSpan[] }>(
+            annotatorInstructions(ctx.language, ctx.nativeLanguage),
+            lines.join('\n'),
+            'reading_glosses',
+            ANNOTATOR_SCHEMA,
+            { model: READING_HELPER_MODEL, effort: 'low', maxOutputTokens: 4000 },
+          );
+        }),
       );
-      usage.push(annotated.usage);
+      const annotatedSpans: AnnotatorSpan[] = [];
+      for (const part of annotatedSections) {
+        if (part.usage) usage.push(part.usage);
+        annotatedSpans.push(...(part.value.spans ?? []));
+      }
 
-      // Resolve every annotated span to a dictionary entry, creating what is genuinely new.
+      // Match every span to the word it was offered, then resolve each distinct word once.
       const spansBySentence = new Map<string, AnnotatorSpan[]>();
-      const lexemeBySpan = new Map<string, string>();
       const unmatched: string[] = [];
-      for (const span of annotated.value.spans ?? []) {
+      const matched: { span: AnnotatorSpan; word: LemmatisedWord; sentenceId: string }[] = [];
+      for (const span of annotatedSpans) {
         const hit = wordByKey.get(keyOf(span.word));
         if (!hit) {
           // Not a key we offered. Never silent: a run where every key is wrong looks exactly like
@@ -320,19 +339,49 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
         // offsets are computed against text that is really there whatever the annotator echoed.
         list.push({ ...span, surface: word.surface });
         spansBySentence.set(sentenceId, list);
-        const id = await resolveLexeme(
-          db,
-          ctx.language,
-          ctx.nativeLanguage,
-          { lemma: word.lemma, pos: word.pos, lexeme: span.lexeme, gloss: span.gloss },
-          candidates,
-        );
-        if (id) lexemeBySpan.set(`${sentenceId}\u0000${word.surface}`, id);
+        matched.push({ span, word, sentenceId });
       }
       if (unmatched.length) {
         console.warn(
-          `${textId}: ${unmatched.length}/${(annotated.value.spans ?? []).length} spans used a key that was never offered, e.g. ${JSON.stringify(unmatched.slice(0, 3))}`,
+          `${textId}: ${unmatched.length}/${annotatedSpans.length} spans used a key that was never offered, e.g. ${JSON.stringify(unmatched.slice(0, 3))}`,
         );
+      }
+
+      // A word repeated through the text is one dictionary entry, so resolve it once. Doing this
+      // per span meant fifty round trips to the database in a row for a hundred-word text.
+      const distinct = new Map<string, (typeof matched)[number]>();
+      for (const m of matched) {
+        const key = `${toLemma(m.word.lemma, ctx.language)}\u0000${m.word.pos}`;
+        const seen = distinct.get(key);
+        // Prefer the occurrence that actually carries a meaning to resolve from.
+        if (!seen || (!seen.span.lexeme && !seen.span.gloss)) distinct.set(key, m);
+      }
+      const resolved = new Map<string, string>();
+      const jobs = [...distinct.entries()];
+      // In batches, so a long text does not open fifty connections at once.
+      for (let i = 0; i < jobs.length; i += 8) {
+        const batch = jobs.slice(i, i + 8);
+        const ids = await Promise.all(
+          batch.map(([, m]) =>
+            resolveLexeme(
+              db,
+              ctx.language,
+              ctx.nativeLanguage,
+              { lemma: m.word.lemma, pos: m.word.pos, lexeme: m.span.lexeme, gloss: m.span.gloss },
+              candidates,
+            ),
+          ),
+        );
+        batch.forEach(([key], n) => {
+          const id = ids[n];
+          if (id) resolved.set(key, id);
+        });
+      }
+
+      const lexemeBySpan = new Map<string, string>();
+      for (const m of matched) {
+        const id = resolved.get(`${toLemma(m.word.lemma, ctx.language)}\u0000${m.word.pos}`);
+        if (id) lexemeBySpan.set(`${m.sentenceId}\u0000${m.word.surface}`, id);
       }
 
       const result = buildDocument(
@@ -342,6 +391,7 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
       );
       result.dropped.push(...unmatched.map((k) => `annotator used unknown key "${k}"`));
       dropped = result.dropped;
+      chooseHighlights(result.document);
 
       // Did the text actually bring the learner's due words back? Every lemma the lemmatiser
       // found is a word the text contains, whether or not it ended up with a tappable span.

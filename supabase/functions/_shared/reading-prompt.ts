@@ -11,7 +11,7 @@
 import { languageName } from './prompt.ts';
 import { POS } from './lexemes.ts';
 
-export const READING_PROMPT_VERSION = '2026-09-19.3';
+export const READING_PROMPT_VERSION = '2026-09-19.4';
 
 /** Words per text, by level. A two-minute read at learner pace is a little over 200 words. */
 const WORD_TARGET: Record<string, number> = { A1: 110, A2: 160, B1: 220, B2: 280 };
@@ -185,7 +185,6 @@ export const ANNOTATOR_SCHEMA = {
           word: { type: 'string' },
           here: { type: 'string' },
           nativeMarks: { type: 'array', items: { type: 'string' } },
-          mark: { type: 'boolean' },
           lexeme: { type: ['string', 'null'] },
           gloss: {
             type: ['object', 'null'],
@@ -201,7 +200,7 @@ export const ANNOTATOR_SCHEMA = {
             additionalProperties: false,
           },
         },
-        required: ['word', 'here', 'nativeMarks', 'mark', 'lexeme', 'gloss'],
+        required: ['word', 'here', 'nativeMarks', 'lexeme', 'gloss'],
         additionalProperties: false,
       },
     },

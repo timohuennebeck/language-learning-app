@@ -11,6 +11,7 @@ import assert from 'node:assert/strict';
 import {
   assertUsable,
   buildDocument,
+  chooseHighlights,
   findSurface,
   InvalidText,
   type AnnotatorSpan,
@@ -57,7 +58,6 @@ const SPANS = new Map<string, AnnotatorSpan[]>([
         surface: 'je suis allée',
         here: 'ich bin gegangen',
         nativeMarks: ['bin ich', 'gegangen', 'nicht im Text'],
-        mark: true,
         lexeme: 'L-aller',
       },
       {
@@ -164,16 +164,53 @@ test('the same word twice in one sentence gets two spans, not one twice', () => 
   );
 });
 
-test('spans come out in reading order and only the marked ones carry the flag', () => {
+test('spans come out in reading order, and none is marked until the server says so', () => {
   const s1 = built().document.sections[0].sentences[0];
   assert.deepEqual(
     s1.spans.map((s) => s.at),
     [6, 34],
   );
+  // The annotator is not asked which words to highlight: it marked 45 of 48 in a 105-word text
+  // when it was, because it is shown a flat word list and cannot see a section to budget across.
   assert.deepEqual(
     s1.spans.map((s) => s.mark),
-    [true, undefined],
+    [undefined, undefined],
   );
+});
+
+test('highlights are budgeted per section, longest first', () => {
+  const r = built();
+  chooseHighlights(r.document, 1);
+  const marked = r.document.sections.flatMap((section) =>
+    section.sentences.flatMap((s) =>
+      s.spans.filter((sp) => sp.mark).map((sp) => s.source.slice(sp.at, sp.at + sp.len)),
+    ),
+  );
+  // One per section, and the longest span in each: a phrase teaches more than a bare noun.
+  assert.deepEqual(marked, ['je suis allée', 'chaud']);
+});
+
+test('a second pass fills the quota when one sentence holds every span', () => {
+  const r = built();
+  chooseHighlights(r.document, 3);
+  const perSection = r.document.sections.map((section) =>
+    section.sentences.reduce((n, s) => n + s.spans.filter((sp) => sp.mark).length, 0),
+  );
+  // Section 1 has two spans in one sentence and section 2 three: the two-per-sentence cap would
+  // stop at 2, so the quota is filled on a second pass rather than left short.
+  assert.deepEqual(perSection, [2, 3]);
+});
+
+test('choosing highlights again replaces the previous ones', () => {
+  const r = built();
+  chooseHighlights(r.document, 3);
+  chooseHighlights(r.document, 1);
+  const total = r.document.sections.reduce(
+    (n, section) =>
+      n + section.sentences.reduce((m, s) => m + s.spans.filter((sp) => sp.mark).length, 0),
+    0,
+  );
+  assert.equal(total, 2);
 });
 
 test('the title is trimmed and every lexeme is listed once', () => {
