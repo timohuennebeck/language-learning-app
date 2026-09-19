@@ -15,7 +15,7 @@ to be connected next.
 | Data       | TanStack Query 5 with `@lukemorales/query-key-factory` key registry, optimistic mutations                   |
 | Validation | Zod schemas for all domain/session data                                                                     |
 | i18n       | i18next + react-i18next, `de` (default) and `en`                                                            |
-| Haptics    | `expo-haptics` through the shared `Tap` / `Button` primitives                                               |
+| Haptics    | `expo-haptics` through the shared `Tap` / `Button` primitives; `expo-audio` for the exercise result chimes  |
 | Tooling    | TypeScript strict, ESLint (expo + tanstack query), Prettier (tailwind plugin)                               |
 
 ## Structure
@@ -46,11 +46,11 @@ src/
                          TitledFrame (TopBar + Headline + footer scaffold), ProgressChecklist,
                          AppLanguageList, LearningLanguageList…
     hooks/               useAppFonts, useBack / useGoHome / useGoToCourse
-    lib/                 cn, haptics, i18n, storage, styles (ring helpers), text, time, query client
+    lib/                 cn, haptics, sounds, i18n, storage, styles (ring helpers), text, time, query client
     data/                query key registry
     locales/             de.json, en.json
     theme/               tokens.ts (source of truth), generated tokens.cjs, global.css
-assets/illustrations/    Pip artwork and avatar (webp)   assets/flags/  flag svgs
+assets/illustrations/    Pip artwork and avatar (webp)   assets/flags/  flag svgs   assets/sounds/  result chimes
 design/reference/        one PNG per design screen, captured from the Claude Design export
 design/screens.json      route + reference mapping used by the verification scripts and dev index
 ```

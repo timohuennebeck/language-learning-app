@@ -9,6 +9,8 @@ import { FillOptions } from '@/features/exercises/components/steps/fill-options'
 import { TranslateFree } from '@/features/exercises/components/steps/translate-free';
 import { cafeExercise } from '@/features/exercises/data/content';
 import { useExerciseSession } from '@/features/exercises/hooks/use-exercise-session';
+import { haptic } from '@/shared/lib/haptics';
+import { playSound } from '@/shared/lib/sounds';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { ResetGlyph } from '@/shared/ui/icons';
@@ -29,8 +31,11 @@ export function ExerciseScreen() {
   const task = s.phase === 'task';
   const typed = s.step.kind === 'fill-free' || s.step.kind === 'translate-free';
   const keyboard = task && typed;
-  const submit = () => {
-    if (s.canCheck) s.check();
+  const check = () => {
+    if (!s.canCheck) return;
+    const ok = s.check();
+    playSound(ok ? 'correct' : 'incorrect');
+    haptic(ok ? 'success' : 'error');
   };
   const onNext = () => {
     if (!s.next()) router.replace('/(app)/daily-limit');
@@ -58,7 +63,7 @@ export function ExerciseScreen() {
           phase={s.phase}
           answer={s.answer as string}
           setAnswer={s.setAnswer}
-          onSubmit={submit}
+          onSubmit={check}
         />
       ) : s.step.kind === 'build' ? (
         <Build
@@ -73,7 +78,7 @@ export function ExerciseScreen() {
           phase={s.phase}
           answer={s.answer as string}
           setAnswer={s.setAnswer}
-          onSubmit={submit}
+          onSubmit={check}
         />
       )}
       <View className="flex-1" style={{ minHeight: task ? 0 : 20 }} />
@@ -98,7 +103,8 @@ export function ExerciseScreen() {
             height={56}
             label={t('common.check')}
             disabled={!s.canCheck}
-            onPress={s.check}
+            haptic="none"
+            onPress={check}
           />
         </View>
       ) : (
