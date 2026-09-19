@@ -81,7 +81,7 @@ export function TermsScreen() {
             className="font-semibold text-ink"
             style={{ fontSize: 28, lineHeight: 30.2, letterSpacing: -0.84 }}
           >
-            {document.data?.title ?? docLabel}
+            {docLabel}
           </Text>
           <Text className="text-faint" style={{ fontSize: 13.5 }}>
             {meta}

@@ -121,7 +121,7 @@ edge function later.
 Caveat for the email path: with confirmations enabled, `updateUser({ email, password })` on an
 anonymous user only sends a verification mail and the account stays anonymous until the link is
 opened. Either launch with confirmations off (a typo in the address means no recovery) or add a
-"Bestätige deine E-Mail" state to onboarding. Open question 8.
+"Bestätige deine E-Mail" state to onboarding. Open question 7.
 
 **Profile creation happens in the app, not in a trigger.** Right after `signInAnonymously()` the
 app runs `profiles.upsert({ id: user.id, app_language, first_name: '' })` and only continues when
@@ -217,7 +217,7 @@ create table public.profiles (
   first_name               text not null default '' check (char_length(first_name) <= 40),
   app_language             text not null default 'en' references public.languages(code),
   active_language          text references public.languages(code),   -- currently learning
-  daily_goal_minutes       smallint not null default 15 check (daily_goal_minutes in (5,10,15,30)),
+  goal_minutes             smallint not null default 15 check (goal_minutes in (5,10,15,30)),
   reminder_time            time,                                       -- null = reminders off
   reminder_repeat          public.reminder_repeat not null default 'daily',
   onboarding_completed_at  timestamptz,
@@ -259,7 +259,7 @@ Column notes:
   `supabase.auth.getUser()`.
 
 Mapping from the current `Session` schema: `name` → `first_name`, `appLanguage`,
-`dailyGoalMinutes`, `reminder` → `profiles`; `learningLanguage` → `profiles.active_language`;
+`dailyGoalMinutes` (→ `goal_minutes`), `reminder` → `profiles`; `learningLanguage` → `profiles.active_language`;
 `level`, `targetLevel`, `goal` → `learner_languages`; `plusActive` → RevenueCat SDK (§3.5).
 
 ### 3.4 Legal documents and consent
@@ -277,7 +277,6 @@ create table public.legal_documents (
   kind                   public.legal_doc_kind not null,
   locale                 text not null default 'en',
   version                text not null,                 -- '2026-09-15'
-  title                  text not null,
   content_md             text not null,                 -- rendered as sections in TermsScreen
   effective_at           timestamptz not null,
   requires_reacceptance  boolean not null default false, -- true → app shows a consent sheet
@@ -570,7 +569,7 @@ Analytics (PostHog) does not touch the database.
 | 06 → 07 → 08 → 09 Einstufung          | `conversations.review.placement`                                           | `start-conversation` / `end-conversation` (placement)                         |
 | 06a Level selbst                      |                                                                            | `learner_languages.level` (source self)                                       |
 | 09g Ziel-Level                        |                                                                            | `learner_languages.target_level`                                              |
-| 09h / 09g Lernzeit                    |                                                                            | `profiles.daily_goal_minutes`                                                 |
+| 09h / 09g Lernzeit                    |                                                                            | `profiles.goal_minutes`                                                       |
 | 11f Paywall · 13 Plus aktiv           | RevenueCat offerings + customer info                                       | purchase via RevenueCat SDK                                                   |
 | 12 / 12b Konto                        |                                                                            | `updateUser` / `linkIdentity`, `legal_acceptances`, `onboarding_completed_at` |
 | 09b Profil                            | `profiles`, `learner_languages`, `flashcards` count, `conversations` count |                                                                               |
@@ -595,6 +594,8 @@ supabase/migrations/
   20260919092739_consent_devices.sql    legal_acceptances, devices (+ RLS)
   20260919092804_conversations.sql      conversations (incl. device_id), flashcards, flashcard_reviews,
                                         learner_languages.placement_conversation_id (+ RLS)
+  20260919094818_goal_minutes_and_legal_title.sql
+                                        profiles.goal_minutes (was daily_goal_minutes); legal_documents.title dropped
 supabase/seed.sql                       languages (six app languages; fr/en/es learnable),
                                         app_config (three keys), terms + privacy in all six locales
                                         (placeholder text until legal copy exists),
@@ -668,15 +669,14 @@ beaucoup`, …), the placement questions and the widget sentence. The `learning_
 
 ## 10. Open questions
 
-1. Name for `daily_goal_minutes`: keep, or `daily_learning_minutes` / `learning_minutes_per_day`?
-2. Fallback app language for devices outside the six locales: `en` (assumed above) or `de`?
-3. Phone-number sign-in ("Mit Telefonnummer"): keep (SMS provider + cost) or route to email?
-4. Sign in with Apple is required on iOS alongside Google. OK to add it to the account screen?
-5. 13 "Plus aktiv" says "15 Minuten Gespräch am Tag", the paywall sells 10/30 conversations per
+1. Fallback app language for devices outside the six locales: `en` (assumed above) or `de`?
+2. Phone-number sign-in ("Mit Telefonnummer"): keep (SMS provider + cost) or route to email?
+3. Sign in with Apple is required on iOS alongside Google. OK to add it to the account screen?
+4. 13 "Plus aktiv" says "15 Minuten Gespräch am Tag", the paywall sells 10/30 conversations per
    month. Which one is the product rule? §3.5 implements the monthly count.
-6. GPT-Live-1: confirm the exact model id and token endpoint so `start-conversation` can be written
+5. GPT-Live-1: confirm the exact model id and token endpoint so `start-conversation` can be written
    against it; the schema only stores `model` / `provider_session_id` as text.
-7. Should transcripts be kept indefinitely, or trimmed after N days once the review is stored
+6. Should transcripts be kept indefinitely, or trimmed after N days once the review is stored
    (data-minimisation argument for the Datenschutzerklärung)?
-8. Email confirmation at sign-up: off at launch (simpler, no recovery from typos) or on with a
+7. Email confirmation at sign-up: off at launch (simpler, no recovery from typos) or on with a
    confirmation state in onboarding (§2)?

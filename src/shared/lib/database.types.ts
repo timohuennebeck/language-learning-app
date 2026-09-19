@@ -454,7 +454,6 @@ export type Database = {
           kind: Database['public']['Enums']['legal_doc_kind'];
           locale: string;
           requires_reacceptance: boolean;
-          title: string;
           version: string;
         };
         Insert: {
@@ -464,7 +463,6 @@ export type Database = {
           kind: Database['public']['Enums']['legal_doc_kind'];
           locale?: string;
           requires_reacceptance?: boolean;
-          title: string;
           version: string;
         };
         Update: {
@@ -474,7 +472,6 @@ export type Database = {
           kind?: Database['public']['Enums']['legal_doc_kind'];
           locale?: string;
           requires_reacceptance?: boolean;
-          title?: string;
           version?: string;
         };
         Relationships: [
@@ -492,7 +489,7 @@ export type Database = {
           active_language: string | null;
           app_language: string;
           created_at: string;
-          daily_goal_minutes: number;
+          goal_minutes: number;
           first_name: string;
           id: string;
           onboarding_completed_at: string | null;
@@ -504,7 +501,7 @@ export type Database = {
           active_language?: string | null;
           app_language?: string;
           created_at?: string;
-          daily_goal_minutes?: number;
+          goal_minutes?: number;
           first_name?: string;
           id: string;
           onboarding_completed_at?: string | null;
@@ -516,7 +513,7 @@ export type Database = {
           active_language?: string | null;
           app_language?: string;
           created_at?: string;
-          daily_goal_minutes?: number;
+          goal_minutes?: number;
           first_name?: string;
           id?: string;
           onboarding_completed_at?: string | null;

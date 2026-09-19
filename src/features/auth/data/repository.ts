@@ -89,7 +89,7 @@ function toSession(user: User, profile: ProfileRow, learner: LearnerRow | null):
       : DEFAULT_SESSION.learningLanguage,
     level: learner ? LevelSchema.parse(learner.level) : DEFAULT_SESSION.level,
     targetLevel: learner ? LevelSchema.parse(learner.target_level) : DEFAULT_SESSION.targetLevel,
-    dailyGoalMinutes: profile.daily_goal_minutes,
+    dailyGoalMinutes: profile.goal_minutes,
     reminder: toReminder(profile),
     goal: learner ? LearningGoalSchema.nullable().parse(learner.goal) : DEFAULT_SESSION.goal,
     plusActive: DEFAULT_SESSION.plusActive,
@@ -133,7 +133,7 @@ export async function saveSession(next: Session, patch: Partial<Session>): Promi
   if ('name' in patch) profile.first_name = next.name;
   if ('appLanguage' in patch) profile.app_language = next.appLanguage;
   if ('learningLanguage' in patch) profile.active_language = next.learningLanguage;
-  if ('dailyGoalMinutes' in patch) profile.daily_goal_minutes = next.dailyGoalMinutes;
+  if ('dailyGoalMinutes' in patch) profile.goal_minutes = next.dailyGoalMinutes;
   if ('reminder' in patch) {
     profile.reminder_time = next.reminder
       ? formatTime(next.reminder.hour, next.reminder.minute)

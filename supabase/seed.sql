@@ -23,12 +23,11 @@ insert into public.app_config (key, value, description) values
 on conflict (key) do update set value = excluded.value, description = excluded.description;
 
 -- Legal documents (placeholder text until the real copy exists) -----------------------------------
-insert into public.legal_documents (kind, locale, version, title, content_md, effective_at)
+insert into public.legal_documents (kind, locale, version, content_md, effective_at)
 select
   kind::public.legal_doc_kind,
   locale,
   '2026-09-15',
-  title,
   '## 1. Lorem ipsum' || E'\n\n' ||
   'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.' || E'\n\n' ||
   '## 2. Dolor sit amet' || E'\n\n' ||
@@ -38,20 +37,8 @@ select
   '## 4. Takimata sanctus' || E'\n\n' ||
   'Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.',
   '2026-09-15T00:00:00Z'
-from (values
-  ('terms',   'de', 'Nutzungsbedingungen'),
-  ('terms',   'en', 'Terms of Service'),
-  ('terms',   'es', 'Términos de uso'),
-  ('terms',   'fr', 'Conditions d''utilisation'),
-  ('terms',   'it', 'Termini di utilizzo'),
-  ('terms',   'pt', 'Termos de utilização'),
-  ('privacy', 'de', 'Datenschutzerklärung'),
-  ('privacy', 'en', 'Privacy Policy'),
-  ('privacy', 'es', 'Política de privacidad'),
-  ('privacy', 'fr', 'Politique de confidentialité'),
-  ('privacy', 'it', 'Informativa sulla privacy'),
-  ('privacy', 'pt', 'Política de privacidade')
-) as docs (kind, locale, title)
+from (values ('terms'), ('privacy')) as kinds (kind)
+cross join (values ('de'), ('en'), ('es'), ('fr'), ('it'), ('pt')) as locales (locale)
 on conflict (kind, locale, version) do nothing;
 
 -- Dev user: dev@yori.app / password · onboarding done, learning French at A2 --------------------
@@ -80,7 +67,7 @@ values (
 )
 on conflict (provider_id, provider) do nothing;
 
-insert into public.profiles (id, first_name, app_language, active_language, daily_goal_minutes, reminder_time, reminder_repeat, onboarding_completed_at)
+insert into public.profiles (id, first_name, app_language, active_language, goal_minutes, reminder_time, reminder_repeat, onboarding_completed_at)
 values ('00000000-0000-0000-0000-000000000001', 'Maja', 'de', 'fr', 15, '20:30', 'daily', now())
 on conflict (id) do nothing;
 

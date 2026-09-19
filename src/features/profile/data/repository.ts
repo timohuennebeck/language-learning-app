@@ -18,7 +18,7 @@ export async function getProfile(): Promise<Profile> {
   if (!auth.user) throw new Error('Not signed in');
   const { data, error } = await supabase
     .from('profiles')
-    .select('first_name, active_language, app_language, daily_goal_minutes, reminder_time')
+    .select('first_name, active_language, app_language, goal_minutes, reminder_time')
     .eq('id', auth.user.id)
     .single();
   if (error) throw new Error(error.message);
@@ -28,7 +28,7 @@ export async function getProfile(): Promise<Profile> {
     plusActive: true, // RevenueCat later
     learningLanguage: data.active_language ?? 'fr',
     appLanguage: data.app_language,
-    dailyGoalMinutes: data.daily_goal_minutes,
+    dailyGoalMinutes: data.goal_minutes,
     reminderTime: data.reminder_time?.slice(0, 5) ?? '',
   });
 }
@@ -39,7 +39,7 @@ export async function updateProfile(patch: Partial<Profile>): Promise<Profile> {
     .from('profiles')
     .update({
       ...(patch.name !== undefined && { first_name: patch.name }),
-      ...(patch.dailyGoalMinutes !== undefined && { daily_goal_minutes: patch.dailyGoalMinutes }),
+      ...(patch.dailyGoalMinutes !== undefined && { goal_minutes: patch.dailyGoalMinutes }),
     })
     .eq('id', id);
   if (error) throw new Error(error.message);
