@@ -449,6 +449,13 @@
     "onboarded": 1
   },
   {
+    "name": "02d-6-live-done",
+    "ref": "02d-6_Gespraech_geschafft.png",
+    "route": "/live/done",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
     "name": "3h-review",
     "ref": "3h_R_ckblick_Umschrieben.png",
     "route": "/review",

@@ -54,7 +54,7 @@ function CallBackdrop() {
 }
 
 type Props = {
-  /** Where "Beenden" goes. Defaults to the in-app review; onboarding passes the evaluation step. */
+  /** Where "Beenden" goes. Defaults to the done page; onboarding passes the evaluation step. */
   onEnd?: () => void;
   /** Placement call: no way back, but the header keeps its layout. */
   hideBack?: boolean;
@@ -119,7 +119,7 @@ export function LiveCallScreen({ onEnd, hideBack = false }: Props) {
         endColor={colors.danger}
         endShadow="0 10px 24px rgba(201,64,63,.32)"
         subtitlesBg={colors.neutral[200]}
-        onEnd={onEnd ?? (() => router.replace('/(app)/review'))}
+        onEnd={onEnd ?? (() => router.replace('/(app)/live/done'))}
       />
     </Screen>
   );

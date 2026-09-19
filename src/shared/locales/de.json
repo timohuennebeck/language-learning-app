@@ -551,6 +551,13 @@
     "tasks": {
       "timer": "02:14",
       "cta": "Weiter sprechen"
+    },
+    "done": {
+      "title": "Gespräch geschafft.",
+      "meta": "Im Café · 8 Min · A2",
+      "tasks": "Deine Aufgaben",
+      "cta": "Rückblick ansehen",
+      "later": "Später"
     }
   },
   "exercise": {

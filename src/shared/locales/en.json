@@ -531,6 +531,13 @@
     "tasks": {
       "timer": "02:14",
       "cta": "Keep talking"
+    },
+    "done": {
+      "title": "Conversation done.",
+      "meta": "Im Café · 8 min · A2",
+      "tasks": "Your tasks",
+      "cta": "See the recap",
+      "later": "Later"
     }
   },
   "exercise": {
