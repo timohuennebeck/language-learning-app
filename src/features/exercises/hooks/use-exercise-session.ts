@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import type { ExerciseSession, ExerciseStep } from '@/features/exercises/data/schemas';
+import { isSameAnswer, wrongRows } from '@/features/exercises/lib/answers';
 
 export type Phase = 'task' | 'correct' | 'wrong';
 
@@ -10,19 +11,6 @@ type Options = {
   /** Pre-fill free-text drafts with the design's sample input (dev / screenshot verification only). */
   designDrafts?: boolean;
 };
-
-/**
- * Loose comparison for typed answers: case, surrounding whitespace and punctuation are ignored
- * and typographic apostrophes (iOS smart punctuation) count as straight ones.
- */
-function normalize(s: string) {
-  return s
-    .toLowerCase()
-    .replace(/[’‘`´]/g, "'")
-    .replace(/[.,!?;:…]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
 
 function draftFor(s: ExerciseStep, p: Phase, designDrafts: boolean): string | string[] {
   if (s.kind === 'conjugate')
@@ -74,11 +62,8 @@ export function useExerciseSession(
   const check = useCallback(() => {
     let ok = false;
     if (step.kind === 'build') ok = JSON.stringify(answer) === JSON.stringify(step.answer);
-    else if (step.kind === 'conjugate')
-      ok = step.answer.every(
-        (form, i) => normalize((answer as string[])[i] ?? '') === normalize(form),
-      );
-    else ok = typeof answer === 'string' && normalize(answer) === normalize(step.answer);
+    else if (step.kind === 'conjugate') ok = wrongRows(step, answer as string[]).length === 0;
+    else ok = typeof answer === 'string' && isSameAnswer(answer, step.answer);
     setPhase(ok ? 'correct' : 'wrong');
     if (!ok) setWrongIds((ids) => (ids.includes(step.id) ? ids : [...ids, step.id]));
     return ok;

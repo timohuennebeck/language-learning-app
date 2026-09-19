@@ -198,8 +198,12 @@ export const cafeExercise: ExerciseSession = ExerciseSessionSchema.parse({
       typedPartial: ['parl', '', '', '', '', ''],
       wrongTyped: ['parle', 'parles', 'parles', 'parlons', 'parlez', 'parlont'],
       correctWhy: 'parler ist regelmäßig. Dieselben Endungen gelten für aimer und travailler.',
-      wrongWhy: [
+      rowWhy: [
+        'je endet auf -e: parle.',
+        'tu bekommt ein -s: parles.',
         'Das -s gehört zu tu. il und elle enden auf -e.',
+        'nous endet auf -ons: parlons.',
+        'vous endet auf -ez: parlez.',
         'Die dritte Person Plural endet auf -ent, gesprochen wie parle.',
       ],
     },

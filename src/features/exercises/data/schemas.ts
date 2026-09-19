@@ -11,12 +11,12 @@ export type Run = z.infer<typeof RunSchema>;
 const Feedback = z.object({
   id: z.string(),
   correctWhy: z.string(),
-  /** Numbered explanations shown under the wrong-answer comparison. */
-  wrongWhy: z.array(z.string()),
 });
 
-/** Sentence steps also show "Du" / "Richtig" lines on the wrong-answer card. */
+/** Sentence steps: numbered explanations plus "Du" / "Richtig" lines on the wrong-answer card. */
 const Base = Feedback.extend({
+  /** Numbered explanations shown under the wrong-answer comparison. */
+  wrongWhy: z.array(z.string()),
   youLine: z.array(RunSchema),
   rightLine: z.array(RunSchema),
 });
@@ -72,8 +72,10 @@ const ExerciseStepSchema = z.discriminatedUnion('kind', [
     answer: z.array(z.string()),
     /** Design sample of a table in progress (dev / screenshot verification only). */
     typedPartial: z.array(z.string()),
-    /** Design sample of a wrong table; `wrongWhy` explains its wrong rows in order. */
+    /** Design sample of a wrong table (dev / screenshot verification only). */
     wrongTyped: z.array(z.string()),
+    /** One explanation per pronoun, shown (numbered) for the rows that were wrong. */
+    rowWhy: z.array(z.string()),
   }),
 ]);
 export type ExerciseStep = z.infer<typeof ExerciseStepSchema>;

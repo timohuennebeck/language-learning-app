@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { AutoWidthInput } from '@/features/exercises/components/auto-width-input';
 import { STEP_TOP } from '@/features/exercises/components/steps/layout';
 import type { StepProps } from '@/features/exercises/components/steps/types';
+import { isSameAnswer } from '@/features/exercises/lib/answers';
 import { InlineMark } from '@/shared/components/inline-mark';
 import { colors } from '@/shared/theme/tokens';
 import { Caret } from '@/shared/ui/caret';
@@ -69,7 +70,7 @@ export function Conjugate({
       <View className="mt-[16px] rounded-[22px] bg-white px-[16px]">
         {step.pronouns.map((pronoun, i) => {
           const value = answer[i] ?? '';
-          const ok = value.trim().toLowerCase() === step.answer[i].toLowerCase();
+          const ok = isSameAnswer(value, step.answer[i]);
           const sup = !task && !ok ? ++wrongCount : 0;
           return (
             <Tap

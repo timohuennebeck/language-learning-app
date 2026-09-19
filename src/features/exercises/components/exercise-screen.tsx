@@ -11,6 +11,7 @@ import { FillOptions } from '@/features/exercises/components/steps/fill-options'
 import { TranslateFree } from '@/features/exercises/components/steps/translate-free';
 import { cafeExercise } from '@/features/exercises/data/content';
 import { useExerciseSession } from '@/features/exercises/hooks/use-exercise-session';
+import { conjugateWrongWhy } from '@/features/exercises/lib/answers';
 import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sounds';
 import { colors } from '@/shared/theme/tokens';
@@ -144,7 +145,11 @@ export function ExerciseScreen() {
           <FeedbackCard
             correct={s.phase === 'correct'}
             why={s.step.correctWhy}
-            wrongWhy={s.step.wrongWhy}
+            wrongWhy={
+              s.step.kind === 'conjugate'
+                ? conjugateWrongWhy(s.step, s.answer as string[])
+                : s.step.wrongWhy
+            }
             youLine={'youLine' in s.step ? s.step.youLine : undefined}
             rightLine={'rightLine' in s.step ? s.step.rightLine : undefined}
           />
