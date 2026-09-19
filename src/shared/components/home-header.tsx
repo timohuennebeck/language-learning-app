@@ -8,21 +8,29 @@ import { ChevronDown } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = { className?: string };
+type Props = {
+  className?: string;
+  /** Hide the avatar shortcut (the profile tab shows the big one right below). */
+  avatar?: boolean;
+};
 
 /** Avatar (→ profile) on the left, "Französisch · A2" pill (→ languages) on the right. */
-export function HomeHeader({ className }: Props) {
+export function HomeHeader({ className, avatar = true }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
   return (
     <View className={cn('h-[40px] flex-row items-center justify-between', className)}>
-      <Tap
-        haptic="light"
-        onPress={() => router.push('/(app)/(tabs)/profile')}
-        accessibilityLabel={t('profile.title')}
-      >
-        <Avatar size={34} />
-      </Tap>
+      {avatar ? (
+        <Tap
+          haptic="light"
+          onPress={() => router.push('/(app)/(tabs)/profile')}
+          accessibilityLabel={t('profile.title')}
+        >
+          <Avatar size={34} />
+        </Tap>
+      ) : (
+        <View />
+      )}
       <Tap
         haptic="light"
         onPress={() => router.push('/(app)/languages')}

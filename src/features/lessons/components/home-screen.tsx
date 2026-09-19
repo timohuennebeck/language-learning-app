@@ -1,38 +1,41 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { useWindowDimensions, View } from 'react-native';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
+import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
+import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
-import { IllustrationSlot } from '@/features/lessons/components/illustration-slot';
+import { HomeHeader } from '@/shared/components/home-header';
 import {
   CardsPreview,
   ExercisePreview,
   ReadPreview,
   TalkPreview,
 } from '@/shared/components/previews';
-import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
-import { HomeHeader } from '@/shared/components/home-header';
-import { cn } from '@/shared/lib/cn';
+import { ProfileRow } from '@/shared/components/profile-row';
+import { StreakCard } from '@/shared/components/streak-card';
+import { Kicker } from '@/shared/ui/kicker';
 import { Screen, TAB_TOP } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-/** 01 · Lektionen (home). */
+/** Design values shown while the progress query is loading. */
+const FALLBACK = { streakDays: 12, week: [1, 1, 1, 1, 1, 0, 0] };
+
+/**
+ * 01 · Lernen (home): today's numbers, the carousel, the streak and what was last opened.
+ * Scenario tiles live on the Sprechen tab (docs/lernen-plan.md §0).
+ */
 export function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { width } = useWindowDimensions();
   const { session } = useSession();
   const feed = useHomeFeed();
-  const filters = t('home.filters', { returnObjects: true }) as string[];
+  const progress = useProgress().data ?? FALLBACK;
   const minutes = feed.data?.minutesToday ?? 6;
-  const goal = feed.data?.goalMinutes ?? 10;
+  const goal = feed.data?.goalMinutes ?? session.dailyGoalMinutes;
   const due = feed.data?.dueCards ?? 12;
-  const lessons = feed.data?.lessons ?? [];
-  // Filters are visual for now; the lesson list is filtered once course content exists.
-  const [filter, setFilter] = useState(0);
 
   return (
     <Screen top={TAB_TOP} bottom={6} scroll>
@@ -73,7 +76,8 @@ export function HomeScreen() {
               kicker: t('home.hero.talk.kicker'),
               title: t('home.hero.talk.title'),
               cta: t('home.hero.talk.cta'),
-              onPress: () => router.push('/(app)/live'),
+              // The Sprechen tab decides what to talk about (free talk or a scenario).
+              onPress: () => router.push('/(app)/(tabs)/speak'),
             },
             {
               key: 'read',
@@ -106,52 +110,35 @@ export function HomeScreen() {
             },
           ]}
         />
-        <View className="mt-[18px] flex-row overflow-hidden" style={{ columnGap: 8 }}>
-          {filters.map((f, i) => (
-            <Tap
-              key={f}
-              haptic="selection"
-              onPress={() => setFilter(i)}
-              accessibilityState={{ selected: i === filter }}
-              className={cn(
-                'rounded-pill px-[18px] py-[10px]',
-                i === filter ? 'bg-accent-800' : 'bg-surface2',
-              )}
-            >
-              <Text
-                className={cn('font-medium', i === filter ? 'text-accent-100' : 'text-accent-900')}
-                style={{ fontSize: 15 }}
-                numberOfLines={1}
-              >
-                {f}
-              </Text>
-            </Tap>
-          ))}
+
+        <StreakCard
+          className="mt-[18px]"
+          streakDays={progress.streakDays}
+          minutesToday={minutes}
+          goalMinutes={goal}
+          week={progress.week}
+        />
+
+        <Kicker className="mt-[22px] text-muted">{t('home.recent.title')}</Kicker>
+        <View className="mt-[8px] rounded-[24px] bg-surface2">
+          <ProfileRow
+            label={t('home.recent.read')}
+            sub={t('home.recent.readSub')}
+            onPress={() => router.push({ pathname: '/(app)/reading', params: { section: '2' } })}
+          />
+          <ProfileRow
+            label={t('home.recent.practice')}
+            sub={t('home.recent.practiceSub')}
+            onPress={() => router.push('/(app)/exercise')}
+          />
+          <ProfileRow
+            label={t('home.recent.review')}
+            sub={t('home.recent.reviewSub')}
+            onPress={() => router.push('/(app)/review')}
+            last
+          />
         </View>
-        <View className="mt-[14px] flex-row flex-wrap content-start" style={{ gap: 12 }}>
-          {lessons.map((l) => (
-            <Tap
-              key={l.id}
-              haptic="light"
-              onPress={() => router.push({ pathname: '/(app)/lesson/[id]', params: { id: l.id } })}
-              className="rounded-[22px] bg-surface2 p-[14px]"
-              style={{ width: (width - 44 - 12) / 2, height: 176 }}
-            >
-              <View className="flex-1 items-center justify-center" style={{ minHeight: 0 }}>
-                <IllustrationSlot placeholder={l.placeholder} />
-              </View>
-              <Text
-                className="mt-[8px] font-medium text-accent-900"
-                style={{ fontSize: 18, lineHeight: 20.7 }}
-              >
-                {l.title}
-              </Text>
-              <Text className="mt-[2px] text-muted" style={{ fontSize: 13 }} numberOfLines={1}>
-                {l.meta}
-              </Text>
-            </Tap>
-          ))}
-        </View>
+        <View className="flex-1" />
       </View>
     </Screen>
   );

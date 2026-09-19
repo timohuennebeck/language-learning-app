@@ -3,10 +3,10 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import { ProfileRow } from '@/features/profile/components/profile-row';
+import { ProfileRow } from '@/shared/components/profile-row';
 import { LevelCard } from '@/features/profile/components/level-card';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
-import { StreakCard } from '@/features/profile/components/streak-card';
+import { StreakCard } from '@/shared/components/streak-card';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
 import { Avatar } from '@/shared/ui/illustration';
@@ -56,7 +56,7 @@ export function ProfileScreen() {
   return (
     <Screen top={TAB_TOP} bottom={6} scroll>
       <View className="flex-1 px-[22px]">
-        <HomeHeader />
+        <HomeHeader avatar={false} />
         <View className="mt-[20px] flex-row items-center" style={{ columnGap: 14 }}>
           <Avatar size={62} />
           <View>

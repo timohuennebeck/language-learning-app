@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { colors } from '@/shared/theme/tokens';
 
 /**
- * Bottom tabs: Lernen (today), Kurs (chapter stations), Profil.
+ * Bottom tabs: Lernen (today), Kurs (chapter stations), Sprechen (scenarios), Profil.
  * Native UITabBar / BottomNavigationView, so iOS 26 renders it as Liquid Glass.
  * Flows (exercises, reading, calls…) live in the parent stack and cover the bar.
  */
@@ -26,6 +26,13 @@ export default function TabsLayout() {
           md="school"
         />
         <NativeTabs.Trigger.Label>{t('tabs.course')}</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="speak">
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'waveform', selected: 'waveform' }}
+          md="graphic_eq"
+        />
+        <NativeTabs.Trigger.Label>{t('tabs.speak')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Icon

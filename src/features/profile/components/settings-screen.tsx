@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import { ProfileRow } from '@/features/profile/components/profile-row';
+import { ProfileRow } from '@/shared/components/profile-row';
 import { formatTime } from '@/shared/lib/time';
 import { TextButton } from '@/shared/ui/button';
 import { Kicker } from '@/shared/ui/kicker';

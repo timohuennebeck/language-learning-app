@@ -360,7 +360,16 @@
         "cta": "Üben"
       }
     },
-    "filters": ["Für dich", "Alltag", "Reisen", "Freunde"]
+    "filters": ["Für dich", "Alltag", "Reisen", "Freunde"],
+    "recent": {
+      "title": "Zuletzt",
+      "read": "Lesen · Mardi matin",
+      "readSub": "Abschnitt 2 von 3 · Weiterlesen",
+      "practice": "Üben · 5 Aufgaben",
+      "practiceSub": "Übung wiederholen",
+      "review": "Rückblick · Café in Paris",
+      "reviewSub": "6 Wörter · 4 umschrieben"
+    }
   },
   "languages": {
     "title": "Sprachen",
@@ -709,7 +718,8 @@
   "tabs": {
     "learn": "Lernen",
     "course": "Kurs",
-    "profile": "Profil"
+    "profile": "Profil",
+    "speak": "Sprechen"
   },
   "auth": {
     "login": {
@@ -726,5 +736,17 @@
       "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
       "offline": "Keine Verbindung. Prüfe dein Netz und versuche es erneut."
     }
+  },
+  "speak": {
+    "title": "Freies Sprechen",
+    "sub": "Such dir ein Thema aus. Pip spielt die Situation mit dir durch.",
+    "credits": "{{left}} von {{total}} Gesprächen übrig",
+    "free": {
+      "kicker": "OHNE THEMA",
+      "title": "Freies Gespräch",
+      "sub": "Erzähl Pip, was du willst. Pip hört zu und fragt nach.",
+      "cta": "Sprechen"
+    },
+    "scenarios": "Szenarien"
   }
 }

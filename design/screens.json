@@ -377,6 +377,12 @@
     "wait": 3500
   },
   {
+    "name": "01e-speak",
+    "route": "/speak",
+    "ref": "Lektionen.png",
+    "onboarded": true
+  },
+  {
     "name": "01a-languages",
     "ref": "01a_Sprache_wechseln.png",
     "route": "/languages",

@@ -360,7 +360,16 @@
         "cta": "Practice"
       }
     },
-    "filters": ["For you", "Daily life", "Travel", "Friends"]
+    "filters": ["For you", "Daily life", "Travel", "Friends"],
+    "recent": {
+      "title": "Recent",
+      "read": "Reading · Mardi matin",
+      "readSub": "Section 2 of 3 · Continue",
+      "practice": "Practice · 5 tasks",
+      "practiceSub": "Repeat exercise",
+      "review": "Review · Café in Paris",
+      "reviewSub": "6 words · 4 paraphrased"
+    }
   },
   "languages": {
     "title": "Languages",
@@ -700,7 +709,8 @@
   "tabs": {
     "learn": "Learn",
     "course": "Course",
-    "profile": "Profile"
+    "profile": "Profile",
+    "speak": "Speak"
   },
   "auth": {
     "login": {
@@ -717,5 +727,17 @@
       "invalidEmail": "Please enter a valid email address.",
       "offline": "No connection. Check your network and try again."
     }
+  },
+  "speak": {
+    "title": "Free speaking",
+    "sub": "Pick a topic. Pip plays the situation through with you.",
+    "credits": "{{left}} of {{total}} conversations left",
+    "free": {
+      "kicker": "NO TOPIC",
+      "title": "Free conversation",
+      "sub": "Tell Pip whatever you like. Pip listens and asks back.",
+      "cta": "Speak"
+    },
+    "scenarios": "Scenarios"
   }
 }
