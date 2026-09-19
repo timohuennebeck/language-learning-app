@@ -188,8 +188,10 @@ translation, and spans that point at lexemes by id.
 - **`here`** is the contextual meaning of the inflected form; the lexeme's gloss is the dictionary
   meaning. The word screen shows both — `je suis allée · ich bin gegangen`, then `aller · gehen` —
   which is a better screen than the one the design has.
-- **`mark`** says "this is one of the ~7 chosen highlights of the section". Every span is tappable;
-  only marked spans get a tint. **The tint itself is not stored** — it is `tierOf(box)` at render.
+- **`mark`** says "this is one of the ~7 chosen highlights of the section". Every span is
+  tappable, and a span is tinted when it is marked **or** the learner has a card for the word —
+  the second case is requirement 3, and without it a word they know well reads exactly like a word
+  they have never met. **The tint itself is not stored** — it is `tierOf(box)` at render.
 - Every content word gets a span. Function words (`le`, `de`, `et`, `à`) do not.
 
 ### Tauschwörter mode is free
@@ -586,7 +588,38 @@ queried into. `database-plan.md` §3.6 made this call for `transcript` and it ho
 
 ---
 
-## 11 Later: per-learner word counts
+## 11 What shipped, and what it cost to find out
+
+Built as planned, with these differences worth knowing:
+
+- **Tinting is wider than §2 first said.** Only highlighting the chosen words left `café` at box 4
+  looking exactly like a word never met; a span is now tinted whenever there is a card behind it.
+- **`FailureScreen`** came out of the exercise error screen: same layout for both flows, and it
+  shows the failed row's real `error_code` rather than a hardcoded "Fehler 503".
+- **`useOpenReading`** is one hook because four screens offer reading. The second copy of "open the
+  unfinished text or start a new one" is the one that forgets to check and spends a day's
+  allowance on a text the learner is halfway through.
+- **`flashcards.lexeme_id` broke the deck's write path**, which upserts whole rows — caught by
+  `tsc`, not by reading the code.
+- **The word screen conflated "no card" with "a card never practised"**, showing "Neues Wort" next
+  to "In deinen Karteikarten". It now names the box instead.
+- **The seed moved to `scripts/gen-reading-seed.py`**, which owns every seeded lexeme so the deck
+  and the text cannot disagree about an id, and computes each span's offsets the way the validator
+  does. Regenerate with `python3 scripts/gen-reading-seed.py`.
+
+Verification: `npm test` covers the document builder against a misbehaving model (a quoted phrase
+that is not in the sentence, a highlight that is not in the translation, a word appearing twice).
+The migrations, RLS and `mark_section_read` were exercised against a real Postgres, and the screens
+were rendered from the seeded text through PostgREST.
+
+What is **not** verified: no model has ever run. `generate-reading`'s three calls, their prompts
+and the shape the models actually return are untested until `OPENAI_API_KEY` is set and a text is
+generated for real. Expect the first runs to fail validation and the prompts to need a pass — that
+is what `error`, `usage.dropped` and `prompt_version` on the row are there for.
+
+---
+
+## 12 Later: per-learner word counts
 
 Cut from v1 because nothing reads it yet. When the writer should know which words a learner keeps
 looking up but never saves, or when the tint should reflect "read twelve times, never carded" as

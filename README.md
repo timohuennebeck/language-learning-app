@@ -33,7 +33,9 @@ src/
     lessons              home, languages, lesson start, chapter + stations/ (card, row, chips)
     exercises            exercise flow: steps/ (FillOptions, FillFree, Build, TranslateFree),
                          useExerciseSession, FeedbackCard, MarkedRuns, preparing, error
-    reading              reading sections, tappable segments, word explanation
+    reading              generated Lesetexte: the document rendered from spans over each
+                         sentence, tinted by the learner's Leitner box (lib/tiers.ts), the word
+                         screen, and the preparing/error screens driven by the generating row
     flashcards           swipe deck on six Leitner boxes (lib/boxes.ts), reading and writing
                          the `flashcards` table: useDeck, useSwipeDeck, SwipeCard, done screen
     profile              profile (StreakCard, LevelCard, StatTiles, ProfileRow) + settings screens
@@ -74,6 +76,7 @@ Conventions: every tappable element is a `Tap` (haptics + button role); uppercas
 npm install
 npm run ios        # or: npm run android / npm run web
 npm run lint && npm run typecheck && npm run format:check
+npm test                  # the reading document builder (node:test, no runner to install)
 ```
 
 Open `/dev` in development for a list of all 67 screens. Onboarding state lives in AsyncStorage
@@ -134,6 +137,26 @@ npx supabase functions deploy start-conversation end-conversation
 `react-native-webrtc` is native code: run a development build (`npm run ios` / `npm run android`,
 the config plugin adds the microphone permission); Expo Go cannot open the call. On web the
 browser's WebRTC is used.
+
+### Reading texts (generated)
+
+"Lesetext erstellen" on Lernen calls `generate-reading`, which returns a row id at once and writes
+the text in the background while the app polls it (`features/reading/`, plan in
+`docs/lesetext-plan.md`). Three model calls: the writer produces the prose and a translation per
+sentence, a cheap helper names each content word's dictionary form, and after looking those up in
+the shared `lexemes` dictionary a second helper call explains only what is new. Nothing the last
+two return is trusted — `_shared/reading-document.ts` checks every quoted phrase against the prose
+the writer actually wrote before the row goes `ready` (`npm test`).
+
+The stored document holds no vocabulary, only spans pointing at `lexemes` by id, which is what
+lets a text show today's meanings and tint each word by the learner's current Leitner box. A
+flashcard points at the same row, so a card saved as "le carrefour" is found by a text containing
+"au carrefour".
+
+```
+npx supabase secrets set OPENAI_READING_WRITER_MODEL=… OPENAI_READING_HELPER_MODEL=…  # optional
+npx supabase functions deploy generate-reading
+```
 
 ## Visual verification against the design
 
