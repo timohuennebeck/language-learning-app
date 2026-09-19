@@ -75,6 +75,20 @@ npm run lint && npm run typecheck && npm run format:check
 Open `/dev` in development for a list of all 64 screens. Onboarding state lives in AsyncStorage
 (`yori.session.v1`); "Konto löschen" resets it.
 
+## Database (Supabase)
+
+The schema lives in `supabase/` (migrations are the source of truth, `seed.sql` holds reference
+data and a dev user); the reasoning is in `docs/database-plan.md`.
+
+```
+cp .env.example .env.local && cp supabase/.env.example supabase/.env.local
+npm run db:start          # local stack via Docker (API :54321, Studio :54323, Mailpit :54324)
+npm run db:reset          # replay migrations + seed
+npm run db:types          # regenerate src/shared/lib/database.types.ts
+```
+
+Dev login after `db:reset`: `dev@yori.app` / `password`.
+
 ## Visual verification against the design
 
 The design export was rendered headlessly and each device frame saved to `design/reference/`.

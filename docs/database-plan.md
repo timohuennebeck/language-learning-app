@@ -584,17 +584,24 @@ Not covered yet, by design: 08b Serie, 08 Tägliches Limit, the streak card and 
 
 ```
 supabase/migrations/
-  0001_extensions_enums.sql        moddatetime, enums, updated_at trigger function
-  0002_reference.sql               languages, app_config, legal_documents (+ RLS)
-  0003_profiles.sql                profiles, learner_languages (FK to conversations added in 0005)
-  0004_consent_devices.sql         legal_acceptances, devices
-  0005_conversations.sql           conversations (incl. device_id), flashcards, flashcard_reviews,
-                                   learner_languages.placement_conversation_id
-supabase/seed.sql                  languages (six app languages; fr/en/es learnable),
-                                   app_config (two keys), terms + privacy in all six locales
-                                   (placeholder text until legal copy exists),
-                                   a dev user (dev@yori.app / password) with onboarding done
+  20260919000001_extensions_enums.sql   moddatetime, enums
+  20260919000002_reference.sql          languages, app_config, legal_documents (+ RLS)
+  20260919000003_profiles.sql           profiles, learner_languages (+ RLS)
+  20260919000004_consent_devices.sql    legal_acceptances, devices (+ RLS)
+  20260919000005_conversations.sql      conversations (incl. device_id), flashcards, flashcard_reviews,
+                                        learner_languages.placement_conversation_id (+ RLS)
+supabase/seed.sql                       languages (six app languages; fr/en/es learnable),
+                                        app_config (three keys), terms + privacy in all six locales
+                                        (placeholder text until legal copy exists),
+                                        a dev user (dev@yori.app / password) with onboarding done,
+                                        six French flashcards
 ```
+
+Status: scaffolded on the branch (`supabase/config.toml`, the five migrations, `seed.sql`,
+`.env.example` files, `db:*` npm scripts). The full set was validated against the linked
+Supabase project (`language-learning-app`, eu-west-1) inside a rolled-back transaction: 10 tables,
+23 policies, seed rows all applied cleanly. Nothing was persisted there; `supabase db push` (or
+`db reset` locally) is the next step.
 
 Suggested build order in the app:
 
