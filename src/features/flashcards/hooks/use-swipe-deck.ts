@@ -23,6 +23,12 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
   const dx = useSharedValue(0);
   /** -1 / 1 while a card is flying out, 0 otherwise. Guards against double commits. */
   const leaving = useSharedValue(0);
+  /**
+   * Which card the two values above belong to. `commit` moves it on together with them, so the
+   * card that just flew out knows the reset is not meant for it: React renders its successor a
+   * frame or more later, and without this the swiped card snaps back to the centre until it does.
+   */
+  const activeIndex = useSharedValue(0);
 
   const card = cards[index];
 
@@ -35,6 +41,7 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
     setIndex((i) => i + 1);
     if (index + 1 >= cards.length) onFinish?.({ known: nextKnown, againIds: nextAgain });
     setFlipped(false);
+    activeIndex.value = index + 1;
     dx.value = 0;
     leaving.value = 0;
   };
@@ -65,5 +72,5 @@ export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) =
   const tap = Gesture.Tap().onEnd(() => runOnJS(onFlip)());
   const gesture = Gesture.Exclusive(pan, tap);
 
-  return { index, card, flipped, dx, leaving, gesture, flyOut };
+  return { index, card, flipped, dx, leaving, activeIndex, gesture, flyOut };
 }

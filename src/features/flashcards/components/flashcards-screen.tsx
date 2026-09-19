@@ -47,6 +47,8 @@ export function FlashcardsScreen() {
   });
   // `isPending` also covers the query that has not started yet (no user id), hence fetchStatus.
   const loading = deck.isPending && deck.fetchStatus !== 'idle';
+  // Nothing to swipe: the labels and the two buttons would be asking about a card that is not there.
+  const hasCards = cards.length > 0;
   // Worklets copy every captured value to the UI thread; capturing `d` would copy the gesture too.
   const { dx } = d;
 
@@ -87,10 +89,12 @@ export function FlashcardsScreen() {
           />
         ))}
       </View>
-      <View className="mt-[22px] flex-row justify-between">
-        <AnimatedText style={[HINT, leftHint]}>{t('flashcards.left')}</AnimatedText>
-        <AnimatedText style={[HINT, rightHint]}>{t('flashcards.right')}</AnimatedText>
-      </View>
+      {hasCards ? (
+        <View className="mt-[22px] flex-row justify-between">
+          <AnimatedText style={[HINT, leftHint]}>{t('flashcards.left')}</AnimatedText>
+          <AnimatedText style={[HINT, rightHint]}>{t('flashcards.right')}</AnimatedText>
+        </View>
+      ) : null}
       {/* The card owns the whole area between the labels and the two buttons. */}
       <View className="relative mt-[6px] flex-1" style={{ minHeight: 0 }}>
         {d.index + 1 < cards.length ? (
@@ -108,10 +112,12 @@ export function FlashcardsScreen() {
         {d.card ? (
           <SwipeCard
             card={d.card}
+            index={d.index}
             flipped={d.flipped}
             gesture={d.gesture}
             dx={d.dx}
             leaving={d.leaving}
+            activeIndex={d.activeIndex}
           />
         ) : null}
         {!d.card && (loading || deck.error || !cards.length) ? (
@@ -126,27 +132,29 @@ export function FlashcardsScreen() {
           </View>
         ) : null}
       </View>
-      <View className="flex-row items-center justify-center pt-[18px]" style={{ columnGap: 28 }}>
-        <Tap
-          haptic="light"
-          onPress={() => d.flyOut(-1)}
-          disabled={!d.card}
-          accessibilityLabel={t('flashcards.again')}
-          className="h-[68px] w-[68px] items-center justify-center rounded-full bg-surface"
-        >
-          <XIcon size={26} color={colors.sub} weight="regular" />
-        </Tap>
-        <View style={{ width: 80 }} />
-        <Tap
-          haptic="success"
-          onPress={() => d.flyOut(1)}
-          disabled={!d.card}
-          accessibilityLabel={t('flashcards.known')}
-          className="h-[68px] w-[68px] items-center justify-center rounded-full bg-accent-800"
-        >
-          <CheckIcon size={26} color={colors.accent[100]} weight="regular" />
-        </Tap>
-      </View>
+      {hasCards ? (
+        <View className="flex-row items-center justify-center pt-[18px]" style={{ columnGap: 28 }}>
+          <Tap
+            haptic="light"
+            onPress={() => d.flyOut(-1)}
+            disabled={!d.card}
+            accessibilityLabel={t('flashcards.again')}
+            className="h-[68px] w-[68px] items-center justify-center rounded-full bg-surface"
+          >
+            <XIcon size={26} color={colors.sub} weight="regular" />
+          </Tap>
+          <View style={{ width: 80 }} />
+          <Tap
+            haptic="success"
+            onPress={() => d.flyOut(1)}
+            disabled={!d.card}
+            accessibilityLabel={t('flashcards.known')}
+            className="h-[68px] w-[68px] items-center justify-center rounded-full bg-accent-800"
+          >
+            <CheckIcon size={26} color={colors.accent[100]} weight="regular" />
+          </Tap>
+        </View>
+      ) : null}
     </Screen>
   );
 }

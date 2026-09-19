@@ -3,6 +3,8 @@ import { FIRST_BOX, dueAfter, promote, today } from '@/features/flashcards/lib/b
 import type { Tables } from '@/shared/lib/database.types';
 import { supabase } from '@/shared/lib/supabase';
 
+// `example` is no longer on the card, but every row the deck writes back carries it: the run is
+// saved with an upsert, and a column left out of an upsert is written as null.
 const COLUMNS = 'id, user_id, language, front, back, back_language, example, box, reviews, lapses';
 
 /** Cards handed to one run. The rest waits for the next one. */
