@@ -15,7 +15,10 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.yori"
+      "bundleIdentifier": "app.yori",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Yori uses the microphone so you can talk to Pip."
+      }
     },
     "android": {
       "package": "app.yori",
