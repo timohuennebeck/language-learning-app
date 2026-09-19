@@ -11,7 +11,7 @@
 import { languageName } from './prompt.ts';
 import { POS } from './lexemes.ts';
 
-export const READING_PROMPT_VERSION = '2026-09-19.1';
+export const READING_PROMPT_VERSION = '2026-09-19.2';
 
 /** Words per text, by level. A two-minute read at learner pace is a little over 200 words. */
 const WORD_TARGET: Record<string, number> = { A1: 110, A2: 160, B1: 220, B2: 280 };
