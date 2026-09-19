@@ -625,18 +625,18 @@ Suggested build order in the app:
 
 ## 8. Deferred (cut from this plan on purpose)
 
-| Item                                                                                   | Comes back with                                                                                                                       |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `daily_activity` + streaks                                                             | **Lernen**: planned in `docs/lernen-plan.md` §3 (derived streak, no cached columns, no function)                                      |
-| `level_progress` ("62 % bis B1") and `level_assessments`                               | **Kurs** (progress is a course metric); re-assessments after N conversations                                                          |
-| `products`, `subscriptions`, `revenuecat_events`, `credit_ledger`                      | **Packs** (non-expiring credits need a balance) or the first time the app needs subscription state offline / in SQL                   |
-| `referral_codes`, `referrals`, `redeem_referral_code`, `referral_reward_conversations` | Referral feature                                                                                                                      |
-| `feedback`                                                                             | Rating screen goes live                                                                                                               |
-| `conversation_turns`, `conversation_items`, `saved_words`                              | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
-| `profiles.timezone`                                                                    | Streaks (day boundaries) or server-side reminders                                                                                     |
-| `profiles.fsrs_params`                                                                 | FSRS parameter optimisation per user (needs review history first)                                                                     |
-| `conversations.lesson_id` + `kind = 'lesson'`                                          | **Lernen** (`docs/lernen-plan.md` §1.1): the lesson start screen's "Live sprechen" needs it                                           |
-| Server push via `devices` + a scheduled function                                       | Reminders with content from the last conversation                                                                                     |
+| Item                                                                                               | Comes back with                                                                                                                       |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `daily_activity` + streaks                                                                         | **Lernen**: planned in `docs/lernen-plan.md` §3 (derived streak, no cached columns, no function)                                      |
+| `level_progress` ("62 % bis B1") and `level_assessments`                                           | **Kurs** (progress is a course metric); re-assessments after N conversations                                                          |
+| `products`, `subscriptions`, `revenuecat_events`, `credit_ledger`                                  | **Packs** (non-expiring credits need a balance) or the first time the app needs subscription state offline / in SQL                   |
+| `referral_codes`, `referrals`, `redeem_referral_code`, `referral_reward_conversations`             | Referral feature                                                                                                                      |
+| `feedback`                                                                                         | Rating screen goes live                                                                                                               |
+| `conversation_turns`, `conversation_items`, `saved_words`                                          | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
+| `profiles.timezone`                                                                                | Streaks (day boundaries) or server-side reminders                                                                                     |
+| `profiles.fsrs_params`                                                                             | FSRS parameter optimisation per user (needs review history first)                                                                     |
+| `conversations.scenario_id` + `kind = 'scenario'` (Lernen), `lesson_id` + `kind = 'lesson'` (Kurs) | `docs/lernen-plan.md` §1.1: scenario tiles are voice conversations with a briefing; Kurs adds its own foreign key later               |
+| Server push via `devices` + a scheduled function                                                   | Reminders with content from the last conversation                                                                                     |
 
 ---
 
