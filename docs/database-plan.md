@@ -602,11 +602,12 @@ supabase/seed.sql                       languages (six app languages; fr/en/es l
                                         six French flashcards
 ```
 
-Status: scaffolded on the branch (`supabase/config.toml`, the five migrations, `seed.sql`,
-`.env.example` files, `db:*` npm scripts). The full set was validated against the linked
-Supabase project (`language-learning-app`, eu-west-1) inside a rolled-back transaction: 10 tables,
-23 policies, seed rows all applied cleanly. Nothing was persisted there; `supabase db push` (or
-`db reset` locally) is the next step.
+Status: **applied to the hosted project** (`language-learning-app`, eu-west-1) on 2026-09-19:
+the five migrations are recorded in its migration history under the versions above, the reference
+data (languages, config, twelve legal documents) is seeded there, and the `delete-account` edge
+function is deployed. The app is wired to it (auth, profiles, learner languages, legal documents,
+account flows); `start-conversation` / `end-conversation` wait for the model details (open
+question 6). Locally, `npm run db:reset` replays the same files.
 
 Suggested build order in the app:
 
