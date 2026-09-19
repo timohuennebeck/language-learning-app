@@ -24,6 +24,7 @@ export function AssessmentReadingScreen() {
   return (
     <Screen
       bottom={6}
+      footerFade
       className="px-[22px]"
       footer={
         <Button

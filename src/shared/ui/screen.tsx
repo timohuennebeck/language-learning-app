@@ -13,6 +13,8 @@ export const PAGE_TOP = 8;
 /** Space between a pinned header and the scrolling content, and the fade drawn over that content. */
 const HEADER_GAP = 8;
 const HEADER_FADE = 18;
+/** Fade drawn over the bottom of scrolling content so it dissolves into the footer instead of cutting off. */
+const FOOTER_FADE = 56;
 
 interface ScreenProps extends ViewProps {
   className?: string;
@@ -37,6 +39,8 @@ interface ScreenProps extends ViewProps {
   footer?: ReactNode;
   /** Pinned top section (the tab header). Content scrolls underneath it. */
   header?: ReactNode;
+  /** Fade the scrolling content out towards the footer (long texts that end right above a button). */
+  footerFade?: boolean;
 }
 
 /** Full-height screen container with the app background and safe-area aware padding. */
@@ -51,6 +55,7 @@ export function Screen({
   keyboard = false,
   footer,
   header,
+  footerFade = false,
   children,
   ...props
 }: ScreenProps) {
@@ -72,7 +77,11 @@ export function Screen({
           <ScrollView
             className="flex-1"
             // Bleed the scroll area past the horizontal padding so shadows/rings are not clipped.
-            contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingHorizontal: 24,
+              paddingBottom: footerFade ? FOOTER_FADE : 0,
+            }}
             // Inside native tabs iOS insets the first scroll view for the tab bar and drives the
             // bar's transparent scroll-edge appearance; elsewhere the Screen pads for itself.
             contentInsetAdjustmentBehavior={tabRoot ? 'automatic' : 'never'}
@@ -88,6 +97,14 @@ export function Screen({
               colors={[colors.bg, 'rgba(243,245,254,0)']}
               className="absolute left-0 right-0 top-0"
               style={{ height: HEADER_FADE }}
+            />
+          ) : null}
+          {footerFade ? (
+            <Gradient
+              pointerEvents="none"
+              colors={['rgba(243,245,254,0)', colors.bg]}
+              className="absolute bottom-0 left-0 right-0"
+              style={{ height: FOOTER_FADE }}
             />
           ) : null}
         </View>
