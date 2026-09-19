@@ -91,8 +91,9 @@ Rules of the road:
 site_url = "yori://"
 additional_redirect_urls = ["yori://**", "exp://**"]
 enable_anonymous_sign_ins = true          # onboarding before the account exists (see §2)
+enable_manual_linking = true              # linkIdentity(): anonymous → Google / Apple
 [auth.email]
-enable_confirmations = false              # turn on before launch
+enable_confirmations = false              # see the open question on email confirmation
 [auth.external.apple]  enabled = true     # required on iOS when Google sign-in is offered
 [auth.external.google] enabled = true
 ```
@@ -117,6 +118,11 @@ step then writes to the user's own rows straight away, and the placement convers
 rows. Stale anonymous users (no `onboarding_completed_at` after 30 days) are removed by a scheduled
 edge function later.
 
+Caveat for the email path: with confirmations enabled, `updateUser({ email, password })` on an
+anonymous user only sends a verification mail and the account stays anonymous until the link is
+opened. Either launch with confirmations off (a typo in the address means no recovery) or add a
+"Bestätige deine E-Mail" state to onboarding. Open question 8.
+
 **Profile creation happens in the app, not in a trigger.** Right after `signInAnonymously()` the
 app runs `profiles.upsert({ id: user.id, app_language, first_name: '' })` and only continues when
 that succeeds; the same upsert runs on every cold start, so a profile can never be missing. A
@@ -131,7 +137,9 @@ stays as an offline cache. The route guard changes from `session.onboardingCompl
 **Where logic lives.** Plain table reads and writes from the app wherever row-level security is
 enough (profiles, learner languages, flashcards, consent). Edge functions wherever a secret or a
 third party is involved (the model provider, RevenueCat, auth admin). No database functions or
-triggers in this plan: every write is a call the app made and whose result it sees.
+triggers of our own in this plan: every write is a call the app made and whose result it sees.
+The one exception is the built-in `moddatetime` trigger that stamps `updated_at`; it cannot fail
+in a way the app would need to know about.
 
 ---
 
@@ -149,7 +157,7 @@ create type public.cefr_level          as enum ('A1','A2','B1','B2');
 create type public.reminder_repeat     as enum ('daily','weekdays','weekend');
 create type public.learning_goal       as enum ('travel','media','family','work','friends','fun');
 create type public.level_source        as enum ('self','placement');
-create type public.conversation_kind   as enum ('placement','lesson','free');
+create type public.conversation_kind   as enum ('placement','free');   -- 'lesson' added with Kurs
 create type public.conversation_status as enum ('active','ended','failed');
 create type public.legal_doc_kind      as enum ('terms','privacy');
 create type public.platform            as enum ('ios','android','web');
@@ -227,8 +235,7 @@ create table public.learner_languages (
   target_level              public.cefr_level not null default 'B1',
   goal                      public.learning_goal,       -- "Warum lernst du Französisch?"
   started_at                timestamptz not null default now(),
-  primary key (user_id, language),
-  check (target_level >= level)
+  primary key (user_id, language)
 );
 ```
 
@@ -237,6 +244,10 @@ Column notes:
 - `reminder_time` + `reminder_repeat` are the two controls on the reminder screens: the time
   wheel and the "Wiederholen" segments (Täglich / Mo–Fr / Wochenende). Both feed the local
   notification schedule; no server involvement.
+- No `target_level >= level` constraint: a placement can rate a user above the target they
+  picked, and a constraint would fail that write mid-call. `end-conversation` sets
+  `target_level = greatest(target_level, level)` instead, and the UI keeps offering only targets
+  above the current level.
 - `level`, `level_source`, `level_assessed_at` and `placement_conversation_id` replace a separate
   assessments table for now. The 09 "Dein Stand" screen reads the level here and the "3 Stellen"
   evidence from the placement conversation's `review` column (§3.6).
@@ -284,7 +295,8 @@ create table public.legal_acceptances (
 ```
 
 Acceptance is written when the anonymous user taps "Los geht's" (welcome) and again when the
-account is created, each time with the document version that was on screen.
+account is created, each time with the document version that was on screen. The second write for
+the same version hits the unique constraint, so the app uses `upsert(…, { ignoreDuplicates: true })`.
 
 ### 3.5 Subscription and the monthly conversation quota
 
@@ -322,21 +334,22 @@ create table public.conversations (
   user_id              uuid not null references public.profiles(id) on delete cascade,
   language             text not null references public.languages(code),   -- practised
   native_language      text not null references public.languages(code),   -- app language at call time
-  kind                 public.conversation_kind not null,   -- placement | lesson | free
+  kind                 public.conversation_kind not null,   -- placement | free (→ Kurs adds lesson + lesson_id FK)
   status               public.conversation_status not null default 'active',
   topic                text,                                -- 'Café in Paris' (Rückblick header)
-  lesson_ref           text,                                -- → Kurs: chapter/station id, later a FK
   level                public.cefr_level,                   -- learner level when the call started
   provider             text not null default 'openai',
   model                text,                                -- e.g. 'gpt-live-1'
   provider_session_id  text,
+  prompt_version       text,                                -- which system prompt produced this call
   max_seconds          int not null default 360,
   started_at           timestamptz not null default now(),
   ended_at             timestamptz,
   duration_seconds     int,
-  end_reason           text,                                -- 'user' | 'max_duration' | 'error'
-  transcript           jsonb,   -- [{role:'user'|'assistant', text, started_ms, ended_ms}, …]
-  review               jsonb,   -- output of end-conversation, see below
+  end_reason           text,        -- 'user' | 'max_duration' | 'error' | 'abandoned'
+  transcript           jsonb,       -- [{role:'user'|'assistant', text, started_ms, ended_ms}, …]
+  review               jsonb,       -- output of end-conversation, see below
+  usage                jsonb,       -- provider usage (audio seconds, tokens) → cost per user
   created_at           timestamptz not null default now()
 );
 create index on public.conversations (user_id, started_at desc);
@@ -381,6 +394,7 @@ create table public.flashcard_reviews (
   reviewed_at     timestamptz not null default now()
 );
 create index on public.flashcard_reviews (user_id, reviewed_at desc);
+create index on public.flashcard_reviews (card_id);
 ```
 
 **Scheduling.** FSRS (Free Spaced Repetition Scheduler, the algorithm Anki switched to; FSRS-6 is
@@ -435,6 +449,10 @@ Call flow:
    topic, learning language and native language (Pip speaks the learning language, explains and
    accepts mixed answers in the native one), mints the ephemeral realtime token, and returns
    `{ conversation_id, client_secret, max_seconds }`. Any failure is an HTTP error the app shows.
+   Before all that it closes the user's stale rows: any conversation still `active` and older than
+   `max_seconds` + 5 min becomes `status='ended'`, `end_reason='abandoned'`, `duration_seconds =
+   max_seconds` (the app crashed or lost the connection; the call is assumed used). Rows the app
+   itself reports as failed within 30 s stay free.
 2. The app connects, shows the timer and cuts off at `max_seconds`.
 3. **`end-conversation`**: body `{ conversation_id, transcript, end_reason }`. Stores the
    transcript, sets `ended_at` / `duration_seconds` / `status`, runs the analysis (words,
@@ -579,6 +597,7 @@ Suggested build order in the app:
 | `conversation_turns`, `conversation_items`, `saved_words`   | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
 | `profiles.timezone`                                         | Streaks (day boundaries) or server-side reminders |
 | `profiles.fsrs_params`                                      | FSRS parameter optimisation per user (needs review history first) |
+| `conversations.lesson_id` + `kind = 'lesson'`                | **Kurs**: a foreign key needs a `lessons` table to point at; a text placeholder now would mean a data migration later |
 | Server push via `devices` + a scheduled function            | Reminders with content from the last conversation |
 
 ---
@@ -614,3 +633,5 @@ Not database work, but the schema above assumes them:
    against it; the schema only stores `model` / `provider_session_id` as text.
 7. Should transcripts be kept indefinitely, or trimmed after N days once the review is stored
    (data-minimisation argument for the Datenschutzerklärung)?
+8. Email confirmation at sign-up: off at launch (simpler, no recovery from typos) or on with a
+   confirmation state in onboarding (§2)?
