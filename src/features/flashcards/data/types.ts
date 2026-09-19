@@ -5,7 +5,6 @@ export interface Flashcard {
   front: string;
   back: string;
   backLanguage: string;
-  example: string | null;
   /** Leitner box 1…6 the card is in right now (see lib/boxes.ts). */
   box: number;
   reviews: number;
