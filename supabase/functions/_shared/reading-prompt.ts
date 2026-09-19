@@ -160,6 +160,7 @@ export function annotatorInstructions(language: string, nativeLanguage: string):
   return [
     `You explain ${learning} words to a ${native}-speaking learner, one word at a time, in context.`,
     `For each word you are given the sentence it appears in and that sentence's ${native} translation.`,
+    'Every word is listed with a key in square brackets, like [s3w2]. Answer with one entry per word, and put that exact key in "word". Do not invent keys and do not answer about a word you were not given.',
     `"here": what this exact form means in this sentence, in ${native}. For "je suis allée" that is "ich bin gegangen", not "gehen".`,
     `"nativeMarks": the parts of the ${native} translation that render this word. Copy them from the translation character for character. Use several when the ${native} splits ("bin ich", "gegangen"); use an empty list if nothing in the translation corresponds.`,
     'If one of the offered dictionary entries is the right meaning for this sentence, put its id in "lexeme" and leave "gloss" null. Judge them by meaning: an entry filed under a different part of speech is still the right entry if it means this word, and reusing it is always better than writing a new one.',
@@ -181,8 +182,7 @@ export const ANNOTATOR_SCHEMA = {
       items: {
         type: 'object',
         properties: {
-          sentence: { type: 'string' },
-          surface: { type: 'string' },
+          word: { type: 'string' },
           here: { type: 'string' },
           nativeMarks: { type: 'array', items: { type: 'string' } },
           mark: { type: 'boolean' },
@@ -201,7 +201,7 @@ export const ANNOTATOR_SCHEMA = {
             additionalProperties: false,
           },
         },
-        required: ['sentence', 'surface', 'here', 'nativeMarks', 'mark', 'lexeme', 'gloss'],
+        required: ['word', 'here', 'nativeMarks', 'mark', 'lexeme', 'gloss'],
         additionalProperties: false,
       },
     },

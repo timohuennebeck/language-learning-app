@@ -53,7 +53,7 @@ const SPANS = new Map<string, AnnotatorSpan[]>([
     's1',
     [
       {
-        sentence: 's1',
+        word: 's1w1',
         surface: 'je suis allée',
         here: 'ich bin gegangen',
         nativeMarks: ['bin ich', 'gegangen', 'nicht im Text'],

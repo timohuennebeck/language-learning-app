@@ -201,11 +201,12 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
   const usage: Usage[] = [];
   const target = wordTarget(ctx.level);
   let complaint: string | null = null;
+  // Survives the retry: prose that was fine is annotated again rather than rewritten.
+  let text: WriterText | null = draft;
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      // 1 · the prose. Reused from `draft` when a previous run only failed later on.
-      let text = attempt === 0 ? draft : null;
+      // 1 · the prose, unless a previous run already produced some worth keeping.
       if (!text) {
         await db.from('reading_texts').update({ stage: STAGE.writing }).eq('id', textId);
         const written = await respondJsonWithUsage<WriterText>(
@@ -245,8 +246,16 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
       );
       usage.push(lemmatised.usage);
 
+      // Each word gets a key the annotator answers by. Asking it to echo the sentence id and the
+      // surface back instead cost a whole generation: the model returned the sentence's text where
+      // an id was wanted, nothing matched, and every span was silently dropped.
       const wordsBySentence = new Map<string, LemmatisedWord[]>();
-      for (const s of lemmatised.value.sentences) wordsBySentence.set(s.id, s.words ?? []);
+      const wordByKey = new Map<string, { word: LemmatisedWord; sentenceId: string }>();
+      for (const s of lemmatised.value.sentences) {
+        const words = s.words ?? [];
+        wordsBySentence.set(s.id, words);
+        words.forEach((word, i) => wordByKey.set(`${s.id}w${i + 1}`, { word, sentenceId: s.id }));
+      }
       const allWords = [...wordsBySentence.values()].flat();
 
       // 3 · what the dictionary already knows, so the annotator only writes what is new.
@@ -258,13 +267,13 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
         return [
           `${s.id} · ${ctx.language}: ${s.source}`,
           `${s.id} · ${ctx.nativeLanguage}: ${s.native}`,
-          ...words.map((w) => {
+          ...words.map((w, i) => {
             const known = candidates.get(toLemma(w.lemma, ctx.language)) ?? [];
             const offered = known
               .filter((c: Candidate) => c.trans)
               .map((c: Candidate) => `${c.id} = "${c.trans}" (${c.pos})`)
               .join('; ');
-            return `  - "${w.surface}" (${w.lemma}, ${w.pos})${offered ? ` · known meanings: ${offered}` : ''}`;
+            return `  [${s.id}w${i + 1}] "${w.surface}" (${w.lemma}, ${w.pos})${offered ? ` · known meanings: ${offered}` : ''}`;
           }),
           '',
         ];
@@ -286,14 +295,21 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
       // Resolve every annotated span to a dictionary entry, creating what is genuinely new.
       const spansBySentence = new Map<string, AnnotatorSpan[]>();
       const lexemeBySpan = new Map<string, string>();
+      const unmatched: string[] = [];
       for (const span of annotated.value.spans ?? []) {
-        const word = (wordsBySentence.get(span.sentence) ?? []).find(
-          (w) => w.surface === span.surface,
-        );
-        if (!word) continue;
-        const list = spansBySentence.get(span.sentence) ?? [];
-        list.push(span);
-        spansBySentence.set(span.sentence, list);
+        const hit = wordByKey.get(span.word);
+        if (!hit) {
+          // Not a key we offered. Never silent: a run where every key is wrong looks exactly like
+          // a text with nothing worth explaining, and that cost a whole generation to work out.
+          unmatched.push(span.word);
+          continue;
+        }
+        const { word, sentenceId } = hit;
+        const list = spansBySentence.get(sentenceId) ?? [];
+        // The surface comes from the lemmatiser, which copied it out of the sentence, so the
+        // offsets are computed against text that is really there whatever the annotator echoed.
+        list.push({ ...span, surface: word.surface });
+        spansBySentence.set(sentenceId, list);
         const id = await resolveLexeme(
           db,
           ctx.language,
@@ -301,7 +317,12 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
           { lemma: word.lemma, pos: word.pos, lexeme: span.lexeme, gloss: span.gloss },
           candidates,
         );
-        if (id) lexemeBySpan.set(`${span.sentence}\u0000${span.surface}`, id);
+        if (id) lexemeBySpan.set(`${sentenceId}\u0000${word.surface}`, id);
+      }
+      if (unmatched.length) {
+        console.warn(
+          `${textId}: ${unmatched.length}/${(annotated.value.spans ?? []).length} spans used a key that was never offered, e.g. ${JSON.stringify(unmatched.slice(0, 3))}`,
+        );
       }
 
       const result = buildDocument(
@@ -309,6 +330,7 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
         spansBySentence,
         (sentenceId, surface) => lexemeBySpan.get(`${sentenceId}\u0000${surface}`) ?? null,
       );
+      result.dropped.push(...unmatched.map((k) => `annotator used unknown key "${k}"`));
 
       // Did the text actually bring the learner's due words back? Every lemma the lemmatiser
       // found is a word the text contains, whether or not it ended up with a tappable span.
@@ -351,7 +373,11 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
       // provider error is not, because the same call will fail the same way.
       if (e instanceof InvalidText && attempt === 0) {
         complaint = e.message;
-        console.warn(`${textId} rejected, retrying: ${e.message}`);
+        // Only throw the prose away when the prose is what was wrong.
+        if (e.blames === 'writer') text = null;
+        console.warn(
+          `${textId} rejected, retrying the ${e.blames === 'writer' ? 'whole text' : 'annotation'}: ${e.message}`,
+        );
         continue;
       }
       const invalid = e instanceof InvalidText;

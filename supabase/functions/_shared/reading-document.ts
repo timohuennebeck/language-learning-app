@@ -18,7 +18,9 @@ export interface WriterText {
 }
 
 export interface AnnotatorSpan {
-  sentence: string;
+  /** The key of the word this explains, as it was offered ("s3w2"). */
+  word: string;
+  /** Filled in from the lemmatiser's word, not from the model: it copied this out of the sentence. */
   surface: string;
   here: string;
   nativeMarks: string[];
@@ -163,7 +165,21 @@ export function buildDocument(
   };
 }
 
-export class InvalidText extends Error {}
+/**
+ * A text we refuse to show. `blames` says which pass has to be re-run: re-writing the prose
+ * because the annotation came back thin wastes the one call that costs real money, and usually
+ * produces prose that is just as hard to annotate.
+ */
+export class InvalidText extends Error {
+  // Assigned in the body rather than as a parameter property: `npm test` runs these files through
+  // Node's type stripping, which does not support the shorthand.
+  blames: 'writer' | 'annotation';
+
+  constructor(message: string, blames: 'writer' | 'annotation' = 'writer') {
+    super(message);
+    this.blames = blames;
+  }
+}
 
 /**
  * The checks that make a text unfit to show, as opposed to merely thinner than hoped. Each one is
@@ -202,7 +218,10 @@ export function assertUsable(
     0,
   );
   if (spans < wordCount / 8) {
-    throw new InvalidText(`only ${spans} words could be explained out of ${wordCount}`);
+    throw new InvalidText(
+      `only ${spans} words could be explained out of ${wordCount}`,
+      'annotation',
+    );
   }
 
   // The point of the text is to bring the learner's due words back in prose.
