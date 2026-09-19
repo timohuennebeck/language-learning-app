@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import type { LearningGoal } from '@/features/auth/data/schemas';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { cn } from '@/shared/lib/cn';
@@ -12,7 +13,7 @@ import { CheckCircle } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-const GOALS: { id: string; pip: IllustrationName }[] = [
+const GOALS: { id: LearningGoal; pip: IllustrationName }[] = [
   { id: 'travel', pip: 'pip-baguette' },
   { id: 'media', pip: 'pip-headphones' },
   { id: 'family', pip: 'pip-heart' },

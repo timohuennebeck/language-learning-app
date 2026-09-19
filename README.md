@@ -87,7 +87,21 @@ npm run db:reset          # replay migrations + seed
 npm run db:types          # regenerate src/shared/lib/database.types.ts
 ```
 
-Dev login after `db:reset`: `dev@yori.app` / `password`.
+Dev login after `db:reset`: `dev@yori.app` / `password`. The hosted project's URL and publishable
+key are listed (commented out) in `.env.example`; the app refuses to start without both variables.
+
+How the app uses it: on first launch it signs in anonymously and upserts its own `profiles` row,
+so every onboarding step writes real rows; the account step turns the anonymous user into an
+email account (`SessionProvider` in `features/auth/lib/session-store.tsx`). Logout and account
+deletion (edge function `delete-account`) start a fresh anonymous session. Types come from
+`npm run db:types` (or the Supabase MCP) into `src/shared/lib/database.types.ts`.
+
+Edge functions live in `supabase/functions/` (Deno, excluded from the app's TypeScript project):
+
+```
+npm run functions:serve                      # local, reads supabase/.env.local
+npx supabase functions deploy delete-account # hosted
+```
 
 ## Visual verification against the design
 
@@ -101,6 +115,9 @@ npm run screens:app               # terminal 2 → design/compare/<screen>.png (
 npm run screens:measure 09b-profile 200   # pixel runs at x=200 for both images
 ```
 
+The screenshot script seeds the old AsyncStorage session; since the session now comes from
+Supabase, "onboarded" screens need a signed-in browser profile (or the dev user) to render.
+
 On web the app simulates iPhone 16 Pro safe-area insets so the layout matches the frames. The
 references were rendered without the design's Inter web font for semibold text (the exporter's
 fallback), so headings look wider there; the app uses the real Inter faces.
@@ -113,7 +130,8 @@ fallback), so headings look wider there; the app uses the real Inter faces.
 
 ## Next steps (not in scope yet)
 
-- Supabase: replace `features/auth/lib/session-store.tsx` and the `data/repository.ts` mocks;
-  the query keys and hooks stay.
+- Supabase: auth, profiles, learner languages, legal documents and flashcards are wired; the
+  live-conversation edge functions (`start-conversation`, `end-conversation`) and the lessons /
+  flashcard-deck repositories still use the design's sample data (see `docs/database-plan.md`).
 - RevenueCat: feed `PaywallScreen` / `TalkLimitScreen` plans from offerings.
 - PostHog: add the provider in `shared/components/app-providers.tsx`.

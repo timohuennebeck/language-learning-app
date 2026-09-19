@@ -48,7 +48,9 @@
     "close": "Close",
     "weekdayLetters": ["M", "T", "W", "T", "F", "S", "S"],
     "languagePill": "French · A2",
-    "reset": "Reset"
+    "reset": "Reset",
+    "noAccountYet": "New here?",
+    "createAccount": "Create account"
   },
   "splash": {
     "brand": "Yori"
@@ -85,7 +87,8 @@
         "h": "4. Takimata sanctus",
         "p": "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum."
       }
-    ]
+    ],
+    "stand": "Updated {{date}}"
   },
   "onboarding": {
     "appLanguage": {
@@ -674,7 +677,8 @@
       "sub": "86 words, a 12 day streak and all conversations will be deleted permanently.",
       "info": "Your Plus subscription continues through the App Store. Cancel it there or it keeps being charged.",
       "confirm": "Delete permanently",
-      "keep": "Keep account"
+      "keep": "Keep account",
+      "failed": "The account could not be deleted."
     },
     "logout": {
       "row": "Log out",
@@ -686,7 +690,8 @@
     },
     "settings": {
       "title": "Settings"
-    }
+    },
+    "noAccount": "No account linked"
   },
   "dev": {
     "title": "Screens",
@@ -696,5 +701,21 @@
     "learn": "Learn",
     "course": "Course",
     "profile": "Profile"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back.",
+      "sub": "Sign in with your email and password.",
+      "cta": "Log in"
+    },
+    "providerSoon": "Google and Apple sign-in are coming. Please use email and password for now.",
+    "errors": {
+      "generic": "That did not work. Please try again.",
+      "invalidCredentials": "Email or password is wrong.",
+      "emailTaken": "There is already an account for this email. Log in instead.",
+      "weakPassword": "The password does not meet the rules yet.",
+      "invalidEmail": "Please enter a valid email address.",
+      "offline": "No connection. Check your network and try again."
+    }
   }
 }

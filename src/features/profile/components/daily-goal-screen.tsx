@@ -4,19 +4,17 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import { useUpdateProfile } from '@/features/profile/hooks/use-profile';
 import { DailyGoalOptions, EtaCard } from '@/shared/components/daily-goal';
 import { Headline } from '@/shared/components/headline';
 import { Button } from '@/shared/ui/button';
 import { Screen } from '@/shared/ui/screen';
 import { TopBar } from '@/shared/ui/top-bar';
 
-/** 09g · Profil · Tägliche Lernzeit ändern. Saves optimistically. */
+/** 09g · Profil · Tägliche Lernzeit ändern. `update()` saves optimistically. */
 export function DailyGoalScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session, update } = useSession();
-  const updateProfile = useUpdateProfile();
   const [minutes, setMinutes] = useState(session.dailyGoalMinutes);
   return (
     <Screen top={0} bottom={6} scroll>
@@ -36,12 +34,7 @@ export function DailyGoalScreen() {
           size={17.5}
           label={t('profile.goalScreen.save', { min: minutes })}
           onPress={() => {
-            const previous = session.dailyGoalMinutes;
             update({ dailyGoalMinutes: minutes });
-            updateProfile.mutate(
-              { dailyGoalMinutes: minutes },
-              { onError: () => update({ dailyGoalMinutes: previous }) },
-            );
             router.back();
           }}
         />

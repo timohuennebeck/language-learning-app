@@ -12,9 +12,9 @@ Launch scope (confirmed):
 - **App languages (UI):** German, English, Spanish, French, Italian, Portuguese.
 - **Learning languages at launch:** French, English, Spanish. German, Italian and Portuguese show
   under "Bald verfügbar".
-- Any learning language can be paired with any app language. Everything the user *reads* (menus,
+- Any learning language can be paired with any app language. Everything the user _reads_ (menus,
   meanings, explanations, Pip's feedback, legal documents) is in the app language; everything they
-  *practise* is in the learning language.
+  _practise_ is in the learning language.
 
 Assumptions (please correct):
 
@@ -41,13 +41,13 @@ npx supabase start                      # Postgres, Auth, Storage, Studio, Mailp
 
 Local endpoints (defaults from `config.toml`):
 
-| Service                  | URL                                                 |
-| ------------------------ | --------------------------------------------------- |
-| API (from iOS simulator) | http://127.0.0.1:54321                              |
-| API (Android emulator)   | http://10.0.2.2:54321                               |
-| API (physical device)    | http://<LAN-IP>:54321                               |
-| Studio                   | http://127.0.0.1:54323                              |
-| Mailpit (auth mails)     | http://127.0.0.1:54324                              |
+| Service                  | URL                    |
+| ------------------------ | ---------------------- |
+| API (from iOS simulator) | http://127.0.0.1:54321 |
+| API (Android emulator)   | http://10.0.2.2:54321  |
+| API (physical device)    | http://<LAN-IP>:54321  |
+| Studio                   | http://127.0.0.1:54323 |
+| Mailpit (auth mails)     | http://127.0.0.1:54324 |
 
 Repo layout to add:
 
@@ -110,7 +110,7 @@ need SMS OTP (Twilio etc., paid per message); recommendation is to route that bu
 email screen for v1 or drop it.
 
 **Anonymous sign-in first.** Onboarding collects 9 steps of data and runs the placement call
-*before* the account is created (step 10). Instead of holding all of it in AsyncStorage and
+_before_ the account is created (step 10). Instead of holding all of it in AsyncStorage and
 replaying it on sign-up, the app calls `supabase.auth.signInAnonymously()` on first launch. Every
 step then writes to the user's own rows straight away, and the placement conversation has a real
 `user_id` to rate-limit against. At step 10 the anonymous user is converted into a permanent one
@@ -201,11 +201,11 @@ rows; the full device locale is stored on `devices.locale` for number/date forma
 `app_config` seed (two keys; if that feels thin, both can be constants in the app and the table
 can wait):
 
-| key                        | value     | used by                                          |
-| -------------------------- | --------- | ------------------------------------------------ |
-| `min_app_version`          | `"1.0.0"` | force-update gate                                |
-| `conversation_max_seconds` | `360`     | live call timer, `start-conversation` cut-off    |
-| `placement_max_seconds`    | `120`     | placement call ("Gespräch starten · 2 Min")      |
+| key                        | value     | used by                                       |
+| -------------------------- | --------- | --------------------------------------------- |
+| `min_app_version`          | `"1.0.0"` | force-update gate                             |
+| `conversation_max_seconds` | `360`     | live call timer, `start-conversation` cut-off |
+| `placement_max_seconds`    | `120`     | placement call ("Gespräch starten · 2 Min")   |
 
 Plans, prices and the trial are **not** in the database: RevenueCat offerings own them (§3.5).
 
@@ -309,7 +309,7 @@ answers that.
   Gespräche" all come from the RevenueCat SDK (`getCustomerInfo().entitlements.active.plus`,
   `expirationDate`, offerings). `Purchases.logIn(user.id)` ties the store account to the Supabase
   user. Conversations used this period = `select count(*) from conversations where kind <>
-  'placement' and status <> 'failed' and started_at >= <period start>` (RLS lets the user read
+'placement' and status <> 'failed' and started_at >= <period start>` (RLS lets the user read
   only their own rows).
 - **In `start-conversation` (server side, cannot be bypassed):** the edge function calls the
   RevenueCat REST API (`GET /v1/subscribers/{user.id}`) with the secret key, reads the active
@@ -402,7 +402,7 @@ create index on public.flashcard_reviews (card_id);
 
 **Scheduling.** FSRS (Free Spaced Repetition Scheduler, the algorithm Anki switched to; FSRS-6 is
 the current revision) predicts when a card is about to be forgotten from two numbers per card,
-*stability* and *difficulty*, instead of SM-2's fixed multipliers. The database does not know the
+_stability_ and _difficulty_, instead of SM-2's fixed multipliers. The database does not know the
 algorithm: the `ts-fsrs` npm package runs on the device with the default parameters, and the app
 only stores what it hands back.
 
@@ -410,7 +410,7 @@ only stores what it hands back.
   supports this two-button mode. After each swipe the app updates the card's FSRS columns and
   inserts a `flashcard_reviews` row (batched at the end of the deck, one `upsert` + one `insert`).
 - **Due**: `select … from flashcards where user_id = auth.uid() and language = :active and
-  due <= now() order by due limit 20`. New cards have `state = 0`; a per-day cap on new cards is
+due <= now() order by due limit 20`. New cards have `state = 0`; a per-day cap on new cards is
   a client constant.
 - **Retention target** (default 0.9), the 21 model weights and the new-cards-per-day cap are
   library defaults / client constants; nothing algorithm-related lives in the database.
@@ -428,15 +428,20 @@ log is what makes it "intelligent" over time, and it is cheap (one small row per
 ```json
 {
   "summary": "…",
-  "words":       [{ "term": "à emporter", "meaning": "zum Mitnehmen", "example": "un café à emporter" }],
-  "paraphrases": [{ "said": "le truc pour remuer", "term": "la cuillère", "meaning": "der Löffel" }],
-  "placement":   { "level": "A2", "evidence": [{ "text": "…", "note": "…", "score": 88, "status": "ok" }] }
+  "words": [{ "term": "à emporter", "meaning": "zum Mitnehmen", "example": "un café à emporter" }],
+  "paraphrases": [
+    { "said": "le truc pour remuer", "term": "la cuillère", "meaning": "der Löffel" }
+  ],
+  "placement": {
+    "level": "A2",
+    "evidence": [{ "text": "…", "note": "…", "score": 88, "status": "ok" }]
+  }
 }
 ```
 
 Why jsonb and not tables: the transcript is written once and read as a whole; the review is a
 candidate list the user picks from, not something queried across conversations. Both fit one row.
-If Lernen later needs "every sentence the user ever said with *prendre*", a `conversation_turns`
+If Lernen later needs "every sentence the user ever said with _prendre_", a `conversation_turns`
 table can be filled from `transcript` in one migration.
 
 Why `flashcards` carries `back_language`: a German user's "der Löffel" and an English user's "the
@@ -455,7 +460,7 @@ Call flow:
    `{ conversation_id, client_secret, max_seconds }`. Any failure is an HTTP error the app shows.
    Before all that it closes the user's stale rows: any conversation still `active` and older than
    `max_seconds` + 5 min becomes `status='ended'`, `end_reason='abandoned'`, `duration_seconds =
-   max_seconds` (the app crashed or lost the connection; the call is assumed used). Rows the app
+max_seconds` (the app crashed or lost the connection; the call is assumed used). Rows the app
    itself reports as failed within 30 s stay free.
 2. The app connects, shows the timer and cuts off at `max_seconds`.
 3. **`end-conversation`**: body `{ conversation_id, transcript, end_reason }`. Stores the
@@ -465,17 +470,17 @@ Call flow:
    `level_source`, `level_assessed_at`, `placement_conversation_id`. Returns the `review` so the
    app can show the Rückblick immediately. A call that ended in under 30 s is marked `failed` and
    does not count against the quota.
-**Placement limits.** The placement call is the only conversation that costs nothing, so it is
-the only thing worth abusing. `start-conversation` refuses a `placement` when any of these holds:
+   **Placement limits.** The placement call is the only conversation that costs nothing, so it is
+   the only thing worth abusing. `start-conversation` refuses a `placement` when any of these holds:
 
-1. `learner_languages` already has `placement_conversation_id` set for this user and language:
+4. `learner_languages` already has `placement_conversation_id` set for this user and language:
    one placement per language, ever. Switching languages back and forth never grants another one.
    With three learnable languages an account gets three placements in total.
-2. The user is anonymous and already has any `learner_languages` row with a placement: the
+5. The user is anonymous and already has any `learner_languages` row with a placement: the
    first language's placement is free during onboarding; **a second language requires a
    permanent account** (by then onboarding is done anyway). This closes the reinstall loop, where
    every fresh anonymous user would otherwise get three free calls.
-3. `conversations` has 3 or more placements with the same `device_id` in the last 30 days. The
+6. `conversations` has 3 or more placements with the same `device_id` in the last 30 days. The
    app sends a stable install id (`expo-application`: iOS vendor id / Android id) as
    `x-device-id`; it is stored on the row. Not tamper-proof, but it makes reinstalling pointless
    for a casual abuser. App Attest / Play Integrity can replace it later if needed.
@@ -523,13 +528,13 @@ create policy "own profile: update" on public.profiles for update using (auth.ui
 -- no delete policy: auth deletion cascades
 ```
 
-| Table                                        | read                   | client write                      |
-| -------------------------------------------- | ---------------------- | --------------------------------- |
-| `languages`, `app_config`, `legal_documents` | everyone (incl. anon)  | none (service role only)          |
-| `profiles`                                   | own                    | insert / update own               |
-| `learner_languages`, `flashcards`, `devices` | own                    | insert / update / delete own      |
-| `legal_acceptances`, `flashcard_reviews`     | own                    | insert own                        |
-| `conversations`                              | own                    | none (edge functions, service role) |
+| Table                                        | read                  | client write                        |
+| -------------------------------------------- | --------------------- | ----------------------------------- |
+| `languages`, `app_config`, `legal_documents` | everyone (incl. anon) | none (service role only)            |
+| `profiles`                                   | own                   | insert / update own                 |
+| `learner_languages`, `flashcards`, `devices` | own                   | insert / update / delete own        |
+| `legal_acceptances`, `flashcard_reviews`     | own                   | insert own                          |
+| `conversations`                              | own                   | none (edge functions, service role) |
 
 Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the extra
 restrictions (placement only, one language, the device cap) are enforced in `start-conversation`
@@ -539,12 +544,12 @@ restrictions (placement only, one language, the device cap) are enforced in `sta
 
 ## 5. Edge functions
 
-| Function              | Trigger        | Does                                                                          |
-| --------------------- | -------------- | ----------------------------------------------------------------------------- |
-| `start-conversation`  | app            | placement limit or RevenueCat quota check, insert conversation, mint token    |
-| `end-conversation`    | app            | store transcript, run analysis, write review, update level for placement      |
-| `delete-account`      | app (09e)      | `auth.admin.deleteUser(uid)` → cascades; RevenueCat is left alone (the copy already tells the user to cancel in the store) |
-| `cleanup-anonymous`   | schedule, later | delete anonymous users older than 30 days without completed onboarding       |
+| Function             | Trigger         | Does                                                                                                                       |
+| -------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `start-conversation` | app             | placement limit or RevenueCat quota check, insert conversation, mint token                                                 |
+| `end-conversation`   | app             | store transcript, run analysis, write review, update level for placement                                                   |
+| `delete-account`     | app (09e)       | `auth.admin.deleteUser(uid)` → cascades; RevenueCat is left alone (the copy already tells the user to cancel in the store) |
+| `cleanup-anonymous`  | schedule, later | delete anonymous users older than 30 days without completed onboarding                                                     |
 
 Each returns a JSON body or an HTTP error; the app never has to guess whether something happened.
 Analytics (PostHog) does not touch the database.
@@ -553,27 +558,27 @@ Analytics (PostHog) does not touch the database.
 
 ## 6. Screen → data map
 
-| Screen                                       | Reads                                              | Writes                                    |
-| -------------------------------------------- | -------------------------------------------------- | ----------------------------------------- |
-| 02b Welcome                                  | `legal_documents` (current versions)               | `signInAnonymously`, `profiles` upsert, `legal_acceptances` |
-| 02c Nutzungsbedingungen / Datenschutz        | `legal_documents`                                  |                                           |
-| 03 App-Sprache · 09d                         | `languages` (is_app_language)                      | `profiles.app_language`                   |
-| 03a Lernsprache · 09c · 01a Sprachen         | `languages` (learnable), `learner_languages`       | `profiles.active_language`, `learner_languages` row |
-| 03b Ziel                                     |                                                    | `learner_languages.goal`                  |
-| 04 Name                                      |                                                    | `profiles.first_name`                     |
-| 05 / 05a / 09f Erinnerung                    |                                                    | `profiles.reminder_time`, `reminder_repeat`; local notification |
-| 06 → 07 → 08 → 09 Einstufung                 | `conversations.review.placement`                   | `start-conversation` / `end-conversation` (placement) |
-| 06a Level selbst                             |                                                    | `learner_languages.level` (source self)   |
-| 09g Ziel-Level                               |                                                    | `learner_languages.target_level`          |
-| 09h / 09g Lernzeit                           |                                                    | `profiles.daily_goal_minutes`             |
-| 11f Paywall · 13 Plus aktiv                  | RevenueCat offerings + customer info               | purchase via RevenueCat SDK               |
-| 12 / 12b Konto                               |                                                    | `updateUser` / `linkIdentity`, `legal_acceptances`, `onboarding_completed_at` |
-| 09b Profil                                   | `profiles`, `learner_languages`, `flashcards` count, `conversations` count | |
-| 09i Einstellungen                            | `profiles`, RevenueCat customer info               |                                           |
-| 09e Konto löschen · 41a Abmelden             |                                                    | `delete-account` / `signOut`              |
-| 02c Live-Konversation                        | RevenueCat customer info, `conversations` count    | `start-conversation`, `end-conversation`  |
-| 3h Rückblick                                 | `conversations.review`                             | `flashcards`                              |
-| 30a Gespräche aufgebraucht                   | RevenueCat customer info (`expirationDate`)        | (packs later, §8)                         |
+| Screen                                | Reads                                                                      | Writes                                                                        |
+| ------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 02b Welcome                           | `legal_documents` (current versions)                                       | `signInAnonymously`, `profiles` upsert, `legal_acceptances`                   |
+| 02c Nutzungsbedingungen / Datenschutz | `legal_documents`                                                          |                                                                               |
+| 03 App-Sprache · 09d                  | `languages` (is_app_language)                                              | `profiles.app_language`                                                       |
+| 03a Lernsprache · 09c · 01a Sprachen  | `languages` (learnable), `learner_languages`                               | `profiles.active_language`, `learner_languages` row                           |
+| 03b Ziel                              |                                                                            | `learner_languages.goal`                                                      |
+| 04 Name                               |                                                                            | `profiles.first_name`                                                         |
+| 05 / 05a / 09f Erinnerung             |                                                                            | `profiles.reminder_time`, `reminder_repeat`; local notification               |
+| 06 → 07 → 08 → 09 Einstufung          | `conversations.review.placement`                                           | `start-conversation` / `end-conversation` (placement)                         |
+| 06a Level selbst                      |                                                                            | `learner_languages.level` (source self)                                       |
+| 09g Ziel-Level                        |                                                                            | `learner_languages.target_level`                                              |
+| 09h / 09g Lernzeit                    |                                                                            | `profiles.daily_goal_minutes`                                                 |
+| 11f Paywall · 13 Plus aktiv           | RevenueCat offerings + customer info                                       | purchase via RevenueCat SDK                                                   |
+| 12 / 12b Konto                        |                                                                            | `updateUser` / `linkIdentity`, `legal_acceptances`, `onboarding_completed_at` |
+| 09b Profil                            | `profiles`, `learner_languages`, `flashcards` count, `conversations` count |                                                                               |
+| 09i Einstellungen                     | `profiles`, RevenueCat customer info                                       |                                                                               |
+| 09e Konto löschen · 41a Abmelden      |                                                                            | `delete-account` / `signOut`                                                  |
+| 02c Live-Konversation                 | RevenueCat customer info, `conversations` count                            | `start-conversation`, `end-conversation`                                      |
+| 3h Rückblick                          | `conversations.review`                                                     | `flashcards`                                                                  |
+| 30a Gespräche aufgebraucht            | RevenueCat customer info (`expirationDate`)                                | (packs later, §8)                                                             |
 
 Not covered yet, by design: 08b Serie, 08 Tägliches Limit, the streak card and "Heute schon 6 von
 15 Min" (→ Lernen, §8), 10a Bewertung (§8), 15 Code teilen / 11b Code einlösen (§8).
@@ -584,11 +589,11 @@ Not covered yet, by design: 08b Serie, 08 Tägliches Limit, the streak card and 
 
 ```
 supabase/migrations/
-  20260919000001_extensions_enums.sql   moddatetime, enums
-  20260919000002_reference.sql          languages, app_config, legal_documents (+ RLS)
-  20260919000003_profiles.sql           profiles, learner_languages (+ RLS)
-  20260919000004_consent_devices.sql    legal_acceptances, devices (+ RLS)
-  20260919000005_conversations.sql      conversations (incl. device_id), flashcards, flashcard_reviews,
+  20260919092652_extensions_enums.sql   moddatetime, enums
+  20260919092707_reference.sql          languages, app_config, legal_documents (+ RLS)
+  20260919092726_profiles.sql           profiles, learner_languages (+ RLS)
+  20260919092739_consent_devices.sql    legal_acceptances, devices (+ RLS)
+  20260919092804_conversations.sql      conversations (incl. device_id), flashcards, flashcard_reviews,
                                         learner_languages.placement_conversation_id (+ RLS)
 supabase/seed.sql                       languages (six app languages; fr/en/es learnable),
                                         app_config (three keys), terms + privacy in all six locales
@@ -618,18 +623,18 @@ Suggested build order in the app:
 
 ## 8. Deferred (cut from this plan on purpose)
 
-| Item                                                        | Comes back with                                  |
-| ----------------------------------------------------------- | ------------------------------------------------ |
+| Item                                                                                                                     | Comes back with                                                                                                                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `daily_activity` + streak columns (`streak_current`, `streak_longest`, `streak_last_day`) and the `log_activity()` write | **Lernen**: almost all minutes come from exercises, cards and reading; designing the day/streak model before that exists means redoing it. Until then the profile can show conversation days or hide the streak card. |
-| `level_progress` ("62 % bis B1") and `level_assessments`    | **Kurs** (progress is a course metric); re-assessments after N conversations |
-| `products`, `subscriptions`, `revenuecat_events`, `credit_ledger` | **Packs** (non-expiring credits need a balance) or the first time the app needs subscription state offline / in SQL |
-| `referral_codes`, `referrals`, `redeem_referral_code`, `referral_reward_conversations` | Referral feature                                 |
-| `feedback`                                                  | Rating screen goes live                          |
-| `conversation_turns`, `conversation_items`, `saved_words`   | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
-| `profiles.timezone`                                         | Streaks (day boundaries) or server-side reminders |
-| `profiles.fsrs_params`                                      | FSRS parameter optimisation per user (needs review history first) |
-| `conversations.lesson_id` + `kind = 'lesson'`                | **Kurs**: a foreign key needs a `lessons` table to point at; a text placeholder now would mean a data migration later |
-| Server push via `devices` + a scheduled function            | Reminders with content from the last conversation |
+| `level_progress` ("62 % bis B1") and `level_assessments`                                                                 | **Kurs** (progress is a course metric); re-assessments after N conversations                                                                                                                                          |
+| `products`, `subscriptions`, `revenuecat_events`, `credit_ledger`                                                        | **Packs** (non-expiring credits need a balance) or the first time the app needs subscription state offline / in SQL                                                                                                   |
+| `referral_codes`, `referrals`, `redeem_referral_code`, `referral_reward_conversations`                                   | Referral feature                                                                                                                                                                                                      |
+| `feedback`                                                                                                               | Rating screen goes live                                                                                                                                                                                               |
+| `conversation_turns`, `conversation_items`, `saved_words`                                                                | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens                                                                                 |
+| `profiles.timezone`                                                                                                      | Streaks (day boundaries) or server-side reminders                                                                                                                                                                     |
+| `profiles.fsrs_params`                                                                                                   | FSRS parameter optimisation per user (needs review history first)                                                                                                                                                     |
+| `conversations.lesson_id` + `kind = 'lesson'`                                                                            | **Kurs**: a foreign key needs a `lessons` table to point at; a text placeholder now would mean a data migration later                                                                                                 |
+| Server push via `devices` + a scheduled function                                                                         | Reminders with content from the last conversation                                                                                                                                                                     |
 
 ---
 
@@ -645,17 +650,17 @@ Not database work, but the schema above assumes them:
 - French-specific copy is parameterised by the learning language: "Warum lernst du Französisch?",
   the goal options ("Reise nach Frankreich", "Freunde in Frankreich"), "B1 in etwa 8 Monaten",
   `common.languagePill` ("Französisch · A2"), the level-self examples (`bonjour`, `merci
-  beaucoup`, …), the placement questions and the widget sentence. The `learning_goal` enum keeps
+beaucoup`, …), the placement questions and the widget sentence. The `learning_goal` enum keeps
   the same six semantic options; only the labels change per language.
-- Everything shown *about* the learning language (level names, blurbs, CTAs) is keyed by
-  `app_language`; everything *in* the learning language (examples, prompts) by `active_language`.
+- Everything shown _about_ the learning language (level names, blurbs, CTAs) is keyed by
+  `app_language`; everything _in_ the learning language (examples, prompts) by `active_language`.
 - **Adding a language after onboarding** (09c "Lernsprache", 01a "Neue Sprache"): today the
   screens only flip `learningLanguage` and go back, and the single global `level` would be shown
   for the new language. With per-language rows the app runs a short sub-flow of the three
   language-specific steps, reusing the onboarding components: goal (03b) → level (06 placement
   or 06a self) → target level (09g), then inserts the `learner_languages` row and sets
   `profiles.active_language`. Name, reminder, daily goal, app language and account are per user
-  and are not asked again. Switching *back* to a language that already has a row is a single
+  and are not asked again. Switching _back_ to a language that already has a row is a single
   update of `active_language`.
 
 ---

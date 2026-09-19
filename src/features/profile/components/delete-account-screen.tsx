@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { useState } from 'react';
+import { Alert, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -13,7 +14,20 @@ import { Text } from '@/shared/ui/text';
 export function DeleteAccountScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { session, reset } = useSession();
+  const { session, deleteAccount } = useSession();
+  const [busy, setBusy] = useState(false);
+  const confirm = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      // The edge function deletes the auth user; every row cascades. The provider then starts
+      // a fresh anonymous session and the app remounts at "/".
+      await deleteAccount();
+    } catch (e) {
+      setBusy(false);
+      Alert.alert(t('profile.delete.failed'), e instanceof Error ? e.message : undefined);
+    }
+  };
   return (
     <Screen edgeToEdgeTop bottom={6} className="px-[22px]">
       <GradientHeader
@@ -53,12 +67,11 @@ export function DeleteAccountScreen() {
         <Button
           height={60}
           size={17.5}
+          variant={busy ? 'disabled' : 'primary'}
+          disabled={busy}
           label={t('profile.delete.confirm')}
           haptic="warning"
-          onPress={() => {
-            reset();
-            router.replace('/');
-          }}
+          onPress={() => void confirm()}
         />
         <TextButton
           className="h-[56px]"

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
@@ -9,7 +9,10 @@ import { Illustration } from '@/shared/ui/illustration';
 import { GoogleLogo, PhoneDevice } from '@/shared/ui/icons';
 import { Text } from '@/shared/ui/text';
 
-/** 12 · Konto (10 von 13). */
+/**
+ * 12 · Konto (10 von 13). Both buttons lead to the email screen for now: phone sign-in needs an
+ * SMS provider and Google/Apple need native sign-in modules (see docs/database-plan.md §2).
+ */
 export function AccountStep() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -55,7 +58,7 @@ export function AccountStep() {
           variant="white"
           label={t('onboarding.account.google')}
           left={<GoogleLogo />}
-          onPress={() => router.push('/(onboarding)/plus-active')}
+          onPress={() => Alert.alert(t('auth.providerSoon'))}
         />
       </View>
     </OnboardingFrame>

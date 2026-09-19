@@ -48,7 +48,9 @@
     "close": "Schließen",
     "weekdayLetters": ["M", "D", "M", "D", "F", "S", "S"],
     "languagePill": "Französisch · A2",
-    "reset": "Zurücksetzen"
+    "reset": "Zurücksetzen",
+    "noAccountYet": "Noch kein Konto?",
+    "createAccount": "Konto anlegen"
   },
   "splash": {
     "brand": "Yori"
@@ -85,7 +87,8 @@
         "h": "4. Takimata sanctus",
         "p": "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum."
       }
-    ]
+    ],
+    "stand": "Stand {{date}}"
   },
   "onboarding": {
     "appLanguage": {
@@ -683,7 +686,8 @@
       "sub": "86 Wörter, 12 Tage Serie und alle Gespräche werden endgültig gelöscht.",
       "info": "Dein Plus-Abo läuft über den App Store weiter. Kündige es dort, sonst wird es weiter abgebucht.",
       "confirm": "Endgültig löschen",
-      "keep": "Konto behalten"
+      "keep": "Konto behalten",
+      "failed": "Konto konnte nicht gelöscht werden."
     },
     "logout": {
       "row": "Abmelden",
@@ -695,7 +699,8 @@
     },
     "settings": {
       "title": "Einstellungen"
-    }
+    },
+    "noAccount": "Kein Konto verknüpft"
   },
   "dev": {
     "title": "Screens",
@@ -705,5 +710,21 @@
     "learn": "Lernen",
     "course": "Kurs",
     "profile": "Profil"
+  },
+  "auth": {
+    "login": {
+      "title": "Willkommen zurück.",
+      "sub": "Melde dich mit E-Mail und Passwort an.",
+      "cta": "Einloggen"
+    },
+    "providerSoon": "Anmeldung mit Google und Apple folgt. Bitte nutze vorerst E-Mail und Passwort.",
+    "errors": {
+      "generic": "Das hat nicht geklappt. Bitte versuche es noch einmal.",
+      "invalidCredentials": "E-Mail oder Passwort stimmt nicht.",
+      "emailTaken": "Für diese E-Mail gibt es schon ein Konto. Logge dich ein.",
+      "weakPassword": "Das Passwort erfüllt die Regeln noch nicht.",
+      "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
+      "offline": "Keine Verbindung. Prüfe dein Netz und versuche es erneut."
+    }
   }
 }

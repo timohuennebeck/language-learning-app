@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import { useProfile } from '@/features/profile/hooks/use-profile';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Avatar, Illustration } from '@/shared/ui/illustration';
@@ -16,7 +16,7 @@ export function LogoutScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session, reset } = useSession();
-  const profile = useProfile();
+  const [busy, setBusy] = useState(false);
   return (
     <Screen
       top={0}
@@ -36,10 +36,11 @@ export function LogoutScreen() {
             color="text-sub"
             size={15.5}
             haptic="warning"
+            disabled={busy}
             onPress={() => {
-              // Mock session only; Supabase signOut replaces `reset()` later.
-              reset();
-              router.replace('/');
+              // Signs out; the provider starts a fresh anonymous session and the app remounts at "/".
+              setBusy(true);
+              reset().catch(() => setBusy(false));
             }}
           />
         </View>
@@ -71,7 +72,7 @@ export function LogoutScreen() {
             {session.name}
           </Text>
           <Text className="mt-[1px] text-muted" style={{ fontSize: 13.5 }}>
-            {profile.data?.email ?? t('profile.email')}
+            {session.email ?? t('profile.noAccount')}
           </Text>
         </View>
       </View>

@@ -1,9 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSession } from '@/features/auth/hooks/use-session';
+import { sectionsOf } from '@/features/legal/data/repository';
+import { useLegalDocument } from '@/features/legal/hooks/use-legal-document';
 import { useBack } from '@/shared/hooks/use-back';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
@@ -13,18 +16,33 @@ import { ChevronDown, ChevronUp, CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-/** 02c · Nutzungsbedingungen (+ 02c-ii with the document picker open). */
+/**
+ * 02c · Nutzungsbedingungen (+ 02c-ii with the document picker open). The text comes from
+ * `legal_documents` in the app language; the bundled placeholder shows while it loads.
+ */
 export function TermsScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const back = useBack();
   const insets = useSafeAreaInsets();
+  const { session } = useSession();
   const params = useLocalSearchParams<{ open?: string; doc?: string }>();
   const [open, setOpen] = useState(params.open === '1');
   const [doc, setDoc] = useState<'terms' | 'privacy'>(
     params.doc === 'privacy' ? 'privacy' : 'terms',
   );
-  const sections = t('terms.sections', { returnObjects: true }) as { h: string; p: string }[];
+  const document = useLegalDocument(doc, session.appLanguage);
+  const fallback = t('terms.sections', { returnObjects: true }) as { h: string; p: string }[];
+  const sections = document.data ? sectionsOf(document.data) : fallback;
   const docLabel = doc === 'terms' ? t('common.terms') : t('common.privacy');
+  const meta = document.data
+    ? t('terms.stand', {
+        date: new Date(document.data.effective_at).toLocaleDateString(i18n.language, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+      })
+    : t('terms.meta');
 
   return (
     <View className="relative flex-1 overflow-hidden bg-bg">
@@ -48,16 +66,25 @@ export function TermsScreen() {
           </Tap>
         </View>
       </View>
-      <View className="flex-1 overflow-hidden px-[22px] pt-[20px]" style={{ rowGap: 18 }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          paddingHorizontal: 22,
+          paddingTop: 20,
+          paddingBottom: 120,
+          rowGap: 18,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={{ rowGap: 6 }}>
           <Text
             className="font-semibold text-ink"
             style={{ fontSize: 28, lineHeight: 30.2, letterSpacing: -0.84 }}
           >
-            {docLabel}
+            {document.data?.title ?? docLabel}
           </Text>
           <Text className="text-faint" style={{ fontSize: 13.5 }}>
-            {t('terms.meta')}
+            {meta}
           </Text>
         </View>
         {sections.map((s) => (
@@ -70,11 +97,11 @@ export function TermsScreen() {
             </Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
       <Gradient
         colors={['rgba(243,245,254,0)', '#f3f5fe']}
         locations={[0, 0.44]}
-        className="px-[22px] pt-[14px]"
+        className="absolute bottom-0 left-0 right-0 px-[22px] pt-[14px]"
         style={{ paddingBottom: insets.bottom - 4 }}
       >
         <Button height={56} label={t('common.understood')} onPress={back} />

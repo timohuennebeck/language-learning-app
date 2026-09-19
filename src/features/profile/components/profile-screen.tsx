@@ -7,7 +7,7 @@ import { ProfileRow } from '@/features/profile/components/profile-row';
 import { LevelCard } from '@/features/profile/components/level-card';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/features/profile/components/streak-card';
-import { useProfile, useProgress } from '@/features/profile/hooks/use-profile';
+import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
 import { Avatar } from '@/shared/ui/illustration';
 import { CogIcon } from '@/shared/ui/icons';
@@ -51,7 +51,6 @@ export function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useSession();
-  const profile = useProfile();
   const p = useProgress().data ?? FALLBACK;
 
   return (
@@ -71,7 +70,7 @@ export function ProfileScreen() {
               <VerifiedMark />
             </View>
             <Text className="mt-[2px] text-muted" style={{ fontSize: 14.5 }}>
-              {profile.data?.email ?? t('profile.email')}
+              {session.email ?? t('profile.noAccount')}
             </Text>
           </View>
         </View>

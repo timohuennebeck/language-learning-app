@@ -3,6 +3,7 @@ import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSession } from '@/features/auth/hooks/use-session';
 import { MarkedHeadline } from '@/shared/components/marked-headline';
 import { Button } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
@@ -16,6 +17,7 @@ export function WelcomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { acceptLegal } = useSession();
   // The design is laid out for 402pt; shrink the headline on narrower phones so the mark fits.
   const { width } = useWindowDimensions();
   const h = Math.min(1, width / 402) * 33;
@@ -58,13 +60,22 @@ export function WelcomeScreen() {
         height={62}
         size={18}
         label={t('welcome.cta')}
-        onPress={() => router.push('/(onboarding)/app-language')}
+        onPress={() => {
+          // "Mit Los geht's akzeptierst du …": record the consent, don't hold up the flow for it.
+          acceptLegal().catch(() => {});
+          router.push('/(onboarding)/app-language');
+        }}
       />
       <View className="mt-[16px] flex-row items-center justify-center">
         <Text className="text-ink2" style={{ fontSize: 16 }}>
           {t('common.alreadyMember')}{' '}
         </Text>
-        <Tap haptic="light" onPress={() => router.push('/(onboarding)/account-email')}>
+        <Tap
+          haptic="light"
+          onPress={() =>
+            router.push({ pathname: '/(onboarding)/account-email', params: { mode: 'login' } })
+          }
+        >
           <Text className="font-semibold text-accent-800" style={{ fontSize: 16 }}>
             {t('common.login')}
           </Text>
