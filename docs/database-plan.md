@@ -572,7 +572,12 @@ supabase/migrations/
                                         learner_languages.placement_conversation_id (+ RLS)
   20260919094818_goal_minutes_and_legal_title.sql
                                         profiles.goal_minutes (was daily_goal_minutes); legal_documents.title dropped
-  …                                     scenarios, placement, profile avatars (0007–0012)
+  20260919104439_scenarios.sql          scenarios (+ RLS, storage bucket)
+  20260919105348_scenarios_key_to_kind.sql
+  20260919105706_scenarios_kind_to_slug.sql
+  20260919110248_scenario_placement.sql scenarios.is_placement
+  20260919121822_drop_devices_provider.sql
+  20260919140000_profile_avatars.sql    profiles.avatar_storage_path, avatars bucket, owner-only policies
   20260919143241_flashcards_leitner.sql flashcards on six Leitner boxes (box, due date, reviews);
                                         FSRS columns and flashcard_reviews dropped
 supabase/seed.sql                       languages (six app languages; fr/en/es learnable),
@@ -583,15 +588,20 @@ supabase/seed.sql                       languages (six app languages; fr/en/es l
 ```
 
 Status: **applied to the hosted project** (`language-learning-app`, eu-west-1) on 2026-09-19:
-the five migrations are recorded in its migration history under the versions above, the reference
+all thirteen migrations are recorded in its migration history under the versions above, the reference
 data (languages, config, twelve legal documents) is seeded there, and the `delete-account` edge
 function is deployed. The app is wired to it (auth, profiles, learner languages, legal documents,
 account flows); `start-conversation` / `end-conversation` wait for the model details (open
 question 6). Locally, `npm run db:reset` replays the same files.
 
-`20260919143241_flashcards_leitner.sql` is applied there too (both tables were empty, so the drop
-cost nothing). Its filename carries the version the hosted history recorded, so a later
-`supabase db push` sees it as done.
+Every file above is named after the version the hosted history recorded, and its contents hash
+equal to the statements that ran, so `supabase db push` sees the project as up to date. Keeping it
+that way took one repair: three scenario migrations had been recorded under different timestamps
+than their filenames (renamed here, the SQL was identical), and `profile_avatars` had run as two
+steps — a public read policy, then a migration replacing it with an owner-only one — which the repo
+had already squashed into the single commented file. Since that file produces the end state the
+project is actually in (checked against `pg_policy`), the two rows were replaced by one recording
+the squashed file, which is what `supabase migration repair` does.
 
 Suggested build order in the app:
 
