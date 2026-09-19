@@ -87,6 +87,7 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
             <Tap
               key={o}
               haptic="selection"
+              sound="none"
               disabled={!task}
               onPress={() => setAnswer(o)}
               className="h-[56px] flex-row items-center justify-between rounded-[14px] px-[16px]"

@@ -47,6 +47,7 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
             <Tap
               key={piece + i}
               haptic="selection"
+              sound="none"
               onPress={() => setAnswer(answer.filter((_, j) => j !== i))}
               className="rounded-[14px] bg-white px-[14px] py-[10px]"
               style={{ boxShadow: ring(1, colors.neutral[200]) }}
@@ -82,6 +83,7 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
                 <Tap
                   key={piece}
                   haptic="selection"
+                  sound="none"
                   disabled={used}
                   onPress={() => setAnswer([...answer, piece])}
                   className="rounded-[14px] px-[16px] py-[11px]"
