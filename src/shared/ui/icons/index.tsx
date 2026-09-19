@@ -11,10 +11,10 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ClipboardDocumentCheckIcon,
   ClockIcon,
   Cog6ToothIcon,
   EyeIcon,
+  ListBulletIcon,
   XMarkIcon,
 } from 'react-native-heroicons/outline';
 import { LockClosedIcon, PlayIcon, StarIcon as HiStar } from 'react-native-heroicons/solid';
@@ -122,13 +122,13 @@ export function Subtitles({ size = 26, color = colors.accent[900] }: IconProps) 
   );
 }
 
-/** Clipboard with a check: the conversation's task list (call top bar). */
+/** Bulleted list: the conversation's task list (call top bar). */
 export function ChecklistIcon({
   size = 20,
   color = colors.accent[900],
   strokeWidth = 1.9,
 }: IconProps) {
-  return <ClipboardDocumentCheckIcon size={size} color={color} strokeWidth={strokeWidth} />;
+  return <ListBulletIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 /** Microphone on the "Konversation starten" onboarding button. */
