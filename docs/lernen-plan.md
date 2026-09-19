@@ -82,6 +82,10 @@ create index exercise_attempts_user_idx on public.exercise_attempts (user_id, at
 
 ## 4 Reading texts
 
+> Superseded by `docs/lesetext-plan.md`, which takes this table forward (lemma join to the deck,
+> tier derived from the Leitner box, two-pass generation, model choice). The sketch below stays
+> for the record.
+
 ```sql
 create table public.reading_texts (
   id                      uuid primary key default gen_random_uuid(),
