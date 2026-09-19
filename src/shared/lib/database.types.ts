@@ -44,7 +44,6 @@ export type Database = {
           model: string | null;
           native_language: string;
           prompt_version: string | null;
-          provider: string;
           provider_session_id: string | null;
           review: Json | null;
           scenario_id: string | null;
@@ -69,7 +68,6 @@ export type Database = {
           model?: string | null;
           native_language: string;
           prompt_version?: string | null;
-          provider?: string;
           provider_session_id?: string | null;
           review?: Json | null;
           scenario_id?: string | null;
@@ -94,7 +92,6 @@ export type Database = {
           model?: string | null;
           native_language?: string;
           prompt_version?: string | null;
-          provider?: string;
           provider_session_id?: string | null;
           review?: Json | null;
           scenario_id?: string | null;
@@ -129,50 +126,6 @@ export type Database = {
           },
           {
             foreignKeyName: 'conversations_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      devices: {
-        Row: {
-          app_version: string | null;
-          expo_push_token: string | null;
-          id: string;
-          last_seen_at: string;
-          locale: string | null;
-          platform: Database['public']['Enums']['platform'];
-          push_enabled: boolean;
-          timezone: string | null;
-          user_id: string;
-        };
-        Insert: {
-          app_version?: string | null;
-          expo_push_token?: string | null;
-          id?: string;
-          last_seen_at?: string;
-          locale?: string | null;
-          platform: Database['public']['Enums']['platform'];
-          push_enabled?: boolean;
-          timezone?: string | null;
-          user_id: string;
-        };
-        Update: {
-          app_version?: string | null;
-          expo_push_token?: string | null;
-          id?: string;
-          last_seen_at?: string;
-          locale?: string | null;
-          platform?: Database['public']['Enums']['platform'];
-          push_enabled?: boolean;
-          timezone?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'devices_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';

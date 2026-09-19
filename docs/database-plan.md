@@ -196,7 +196,7 @@ create table public.app_config (
 | pt   | Português   | true            | false     |
 
 Codes are two-letter ISO 639-1. Regional variants (pt-BR / pt-PT, es-ES / es-419) are not separate
-rows; the full device locale is stored on `devices.locale` for number/date formatting only.
+rows.
 
 `app_config` seed (two keys; if that feels thin, both can be constants in the app and the table
 can wait):
@@ -338,7 +338,6 @@ create table public.conversations (
   status               public.conversation_status not null default 'active',
   topic                text,                                -- 'Café in Paris' (Rückblick header)
   level                public.cefr_level,                   -- learner level when the call started
-  provider             text not null default 'openai',
   model                text,                                -- Live model id (OPENAI_LIVE_MODEL, 'gpt-live-1')
   provider_session_id  text,
   prompt_version       text,                                -- which system prompt produced this call
@@ -492,26 +491,13 @@ no limit.
    inserts the picked ones into `flashcards` (`back_language = native_language`). Already-saved
    words ("Gespeichert") are found by `(user_id, language, front)`.
 
-### 3.7 Devices
-
-```sql
-create table public.devices (
-  id               uuid primary key default gen_random_uuid(),
-  user_id          uuid not null references public.profiles(id) on delete cascade,
-  expo_push_token  text unique,
-  platform         public.platform not null,
-  app_version      text,
-  locale           text,
-  timezone         text,
-  push_enabled     boolean not null default false,
-  last_seen_at     timestamptz not null default now()
-);
-```
+### 3.7 Devices (dropped)
 
 The daily reminder is a **local scheduled notification** (expo-notifications) in v1: no server,
-works offline, respects the repeat option. `devices` exists so a server push ("Eine Lücke von
-heute … un café ___") can be added later without a schema change; it is the next candidate to cut
-if it feels early.
+works offline, respects the repeat option. A `devices` table (push token, platform, app version,
+locale, timezone) was created for a later server push and dropped again in
+`20260919121822_drop_devices_provider.sql` because nothing wrote to it; it returns with its own
+migration when server push is built.
 
 ---
 
@@ -531,7 +517,7 @@ create policy "own profile: update" on public.profiles for update using (auth.ui
 | -------------------------------------------- | --------------------- | --------------------------------- |
 | `languages`, `app_config`, `legal_documents` | everyone (incl. anon) | none (secret key only)            |
 | `profiles`                                   | own                   | insert / update own               |
-| `learner_languages`, `flashcards`, `devices` | own                   | insert / update / delete own      |
+| `learner_languages`, `flashcards`            | own                   | insert / update / delete own      |
 | `legal_acceptances`, `flashcard_reviews`     | own                   | insert own                        |
 | `conversations`                              | own                   | none (edge functions, secret key) |
 
@@ -591,7 +577,7 @@ supabase/migrations/
   20260919092652_extensions_enums.sql   moddatetime, enums
   20260919092707_reference.sql          languages, app_config, legal_documents (+ RLS)
   20260919092726_profiles.sql           profiles, learner_languages (+ RLS)
-  20260919092739_consent_devices.sql    legal_acceptances, devices (+ RLS)
+  20260919092739_consent_devices.sql    legal_acceptances, devices (+ RLS; devices dropped in 0011)
   20260919092804_conversations.sql      conversations (incl. device_id), flashcards, flashcard_reviews,
                                         learner_languages.placement_conversation_id (+ RLS)
   20260919094818_goal_minutes_and_legal_title.sql
@@ -636,7 +622,7 @@ Suggested build order in the app:
 | `profiles.timezone`                                                                                | Streaks (day boundaries) or server-side reminders                                                                                     |
 | `profiles.fsrs_params`                                                                             | FSRS parameter optimisation per user (needs review history first)                                                                     |
 | `conversations.scenario_id` + `kind = 'scenario'` (Lernen), `lesson_id` + `kind = 'lesson'` (Kurs) | `docs/sprechen-plan.md`: scenario tiles are voice conversations with a briefing; Kurs adds its own foreign key later                  |
-| Server push via `devices` + a scheduled function                                                   | Reminders with content from the last conversation                                                                                     |
+| Server push (a `devices` token table) + a scheduled function                                       | Reminders with content from the last conversation                                                                                     |
 
 ---
 

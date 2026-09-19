@@ -136,7 +136,6 @@ serveWithUser<Body>(async ({ userId, isAnonymous, db, body }) => {
       scenario_id: scenario?.id ?? null,
       topic: scenario?.title ?? null,
       level,
-      provider: 'openai',
       prompt_version: PROMPT_VERSION,
       device_id: deviceId,
       max_seconds: maxSeconds,
