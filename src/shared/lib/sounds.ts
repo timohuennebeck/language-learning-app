@@ -25,7 +25,8 @@ export function playSound(kind: SoundKind): void {
       );
     }
     const player = (players[kind] ??= createAudioPlayer(sources[kind]));
-    player.seekTo(0).catch(() => {});
+    // Rewind only a player that has run before: seeking a fresh item makes AVFoundation log noise.
+    if (player.currentTime > 0) player.seekTo(0).catch(() => {});
     player.play();
   } catch {
     /* sounds are best-effort */

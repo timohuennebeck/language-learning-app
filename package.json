@@ -68,5 +68,8 @@
     "screens:app": "node scripts/app-shots.js",
     "screens:measure": "node scripts/measure-shots.js"
   },
+  "engines": {
+    "node": "^22.13.0 || >=24.3.0"
+  },
   "private": true
 }
