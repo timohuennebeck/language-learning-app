@@ -133,122 +133,53 @@ export type Database = {
           },
         ];
       };
-      flashcard_reviews: {
-        Row: {
-          card_id: string;
-          difficulty: number;
-          elapsed_days: number;
-          id: number;
-          rating: number;
-          reviewed_at: string;
-          scheduled_days: number;
-          stability: number;
-          state: number;
-          user_id: string;
-        };
-        Insert: {
-          card_id: string;
-          difficulty: number;
-          elapsed_days: number;
-          id?: never;
-          rating: number;
-          reviewed_at?: string;
-          scheduled_days: number;
-          stability: number;
-          state: number;
-          user_id: string;
-        };
-        Update: {
-          card_id?: string;
-          difficulty?: number;
-          elapsed_days?: number;
-          id?: never;
-          rating?: number;
-          reviewed_at?: string;
-          scheduled_days?: number;
-          stability?: number;
-          state?: number;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'flashcard_reviews_card_id_fkey';
-            columns: ['card_id'];
-            isOneToOne: false;
-            referencedRelation: 'flashcards';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'flashcard_reviews_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
       flashcards: {
         Row: {
           back: string;
           back_language: string;
+          box: number;
           created_at: string;
-          difficulty: number;
           due: string;
-          elapsed_days: number;
           example: string | null;
           front: string;
           id: string;
           language: string;
           lapses: number;
           last_reviewed_at: string | null;
-          learning_steps: number;
-          reps: number;
-          scheduled_days: number;
+          reviews: number;
           source_conversation_id: string | null;
-          stability: number;
-          state: number;
           user_id: string;
         };
         Insert: {
           back: string;
           back_language: string;
+          box?: number;
           created_at?: string;
-          difficulty?: number;
           due?: string;
-          elapsed_days?: number;
           example?: string | null;
           front: string;
           id?: string;
           language: string;
           lapses?: number;
           last_reviewed_at?: string | null;
-          learning_steps?: number;
-          reps?: number;
-          scheduled_days?: number;
+          reviews?: number;
           source_conversation_id?: string | null;
-          stability?: number;
-          state?: number;
           user_id: string;
         };
         Update: {
           back?: string;
           back_language?: string;
+          box?: number;
           created_at?: string;
-          difficulty?: number;
           due?: string;
-          elapsed_days?: number;
           example?: string | null;
           front?: string;
           id?: string;
           language?: string;
           lapses?: number;
           last_reviewed_at?: string | null;
-          learning_steps?: number;
-          reps?: number;
-          scheduled_days?: number;
+          reviews?: number;
           source_conversation_id?: string | null;
-          stability?: number;
-          state?: number;
           user_id?: string;
         };
         Relationships: [

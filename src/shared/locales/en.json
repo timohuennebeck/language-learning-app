@@ -603,20 +603,16 @@
     "cta": "Save {{n}} words"
   },
   "flashcards": {
-    "title": "Review",
-    "left": "← Still learning",
-    "right": "I know it →",
+    "title": "Flashcards",
+    "box": "Box {{n}} of {{total}}",
     "flip": "Tap to flip",
     "again": "Again",
     "known": "Known",
     "result": {
       "title": "Well done, {{name}}.",
       "badge": "{{known}} of {{total}}",
-      "sub": "Pip highlights cards you mixed up 3× or more.",
-      "group3": "3× and more",
-      "group2": "2×",
-      "group1": "1×",
-      "times": "{{n}}×",
+      "sub": "{{up}} cards move up a box, {{back}} go back to box 1.",
+      "backToBox": "Back in box 1",
       "retry": "Repeat {{n}} flashcards",
       "finish": "Done"
     }

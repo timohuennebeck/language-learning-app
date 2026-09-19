@@ -114,9 +114,9 @@ vs "Übung wiederholen · 5 Aufgaben".
 
 ## 5 Flashcards and activity
 
-Flashcards: `flashcards` + `flashcard_reviews` already exist; the deck adds the due query
-(`due <= now()`, plus N new cards per day), `ts-fsrs` on the device, batched writes, and 42d
-computed from the run grouped by `lapses`.
+Flashcards: `flashcards` already exists and carries the six Leitner boxes; the deck adds the due
+query (`due <= current_date`, plus N new cards per day), the box move per swipe (right: one box up,
+wrong: back to box 1) and one batched `update` per card at the end of the run.
 
 Activity (moved here from the database plan's deferred list): one row per user and local day; the
 streak is derived on the client from the rows, no cached columns, no function.

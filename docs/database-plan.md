@@ -362,7 +362,7 @@ create table public.conversations (
 create index on public.conversations (user_id, started_at desc);
 create index on public.conversations (device_id, started_at desc) where kind = 'placement';
 
--- The learner's vocabulary, scheduled with FSRS (see "Scheduling" below).
+-- The learner's vocabulary in a six-box Leitner file (see "Scheduling" below).
 create table public.flashcards (
   id                      uuid primary key default gen_random_uuid(),
   user_id                 uuid not null references public.profiles(id) on delete cascade,
@@ -372,61 +372,42 @@ create table public.flashcards (
   back_language           text not null references public.languages(code),  -- of `back`
   example                 text,                 -- 'un café à emporter'
   source_conversation_id  uuid references public.conversations(id) on delete set null,
-  -- FSRS card state (mirrors the ts-fsrs `Card` type; the app writes it back after each review)
-  due                     timestamptz not null default now(),   -- next review; new cards are due now
-  stability               real not null default 0,             -- days until recall drops to 90 %
-  difficulty              real not null default 0,             -- 1..10
-  state                   smallint not null default 0,         -- 0 new · 1 learning · 2 review · 3 relearning
-  reps                    int not null default 0,
-  lapses                  int not null default 0,              -- times forgotten (the old `misses`)
-  scheduled_days          int not null default 0,
-  elapsed_days            int not null default 0,
-  learning_steps          smallint not null default 0,         -- short-term steps taken today (ts-fsrs ≥ 4)
+  -- Leitner state: which box the card is in and the day it comes back
+  box                     smallint not null default 1 check (box between 1 and 6),
+  due                     date not null default current_date,   -- new cards are due today
+  reviews                 int not null default 0,               -- times answered at all
+  lapses                  int not null default 0,               -- times it fell back into box 1
   last_reviewed_at        timestamptz,
   created_at              timestamptz not null default now(),
   unique (user_id, language, front)
 );
 create index on public.flashcards (user_id, language, due);   -- "12 Karten fällig"
-
--- One row per swipe. Needed to optimise the FSRS parameters per user later; never updated.
-create table public.flashcard_reviews (
-  id              bigint generated always as identity primary key,
-  card_id         uuid not null references public.flashcards(id) on delete cascade,
-  user_id         uuid not null references public.profiles(id) on delete cascade,
-  rating          smallint not null check (rating between 1 and 4),  -- 1 again · 2 hard · 3 good · 4 easy
-  state           smallint not null,          -- card state before this review
-  stability       real not null,              -- card values after this review
-  difficulty      real not null,
-  elapsed_days    int not null,
-  scheduled_days  int not null,
-  reviewed_at     timestamptz not null default now()
-);
-create index on public.flashcard_reviews (user_id, reviewed_at desc);
-create index on public.flashcard_reviews (card_id);
 ```
 
-**Scheduling.** FSRS (Free Spaced Repetition Scheduler, the algorithm Anki switched to; FSRS-6 is
-the current revision) predicts when a card is about to be forgotten from two numbers per card,
-_stability_ and _difficulty_, instead of SM-2's fixed multipliers. The database does not know the
-algorithm: the `ts-fsrs` npm package runs on the device with the default parameters, and the app
-only stores what it hands back.
+**Scheduling.** The deck is a Leitner file with six boxes: a card starts in box 1, a right swipe
+moves it one box up (box 6 stays box 6), a wrong swipe drops it back into box 1, and the box says
+when it comes back — each box waits twice as long as the one before it.
 
-- **Review**: the swipe deck maps right swipe → `Good` (3) and left swipe → `Again` (1); ts-fsrs
-  supports this two-button mode. After each swipe the app updates the card's FSRS columns and
-  inserts a `flashcard_reviews` row (batched at the end of the deck, one `upsert` + one `insert`).
+| Box  |   1 |   2 |   3 |   4 |   5 |   6 |
+| ---- | --: | --: | --: | --: | --: | --: |
+| Days |   1 |   2 |   4 |   8 |  16 |  32 |
+
+- **Review**: one `update` per card at the end of the deck — `box`, `due = today + BOX_DAYS[box]`,
+  `reviews + 1`, `lapses + 1` on a wrong answer, `last_reviewed_at = now()`. No second table, no
+  per-swipe log.
 - **Due**: `select … from flashcards where user_id = auth.uid() and language = :active and
-due <= now() order by due limit 20`. New cards have `state = 0`; a per-day cap on new cards is
-  a client constant.
-- **Retention target** (default 0.9), the 21 model weights and the new-cards-per-day cap are
-  library defaults / client constants; nothing algorithm-related lives in the database.
-- **Undo last swipe** is done in memory inside the deck before the batched write; the library's
-  `rollback()` would need `due` and `last_elapsed_days` in the log, so it is not used.
-- **Later** (→ Lernen): run the FSRS optimiser over `flashcard_reviews` once a user has a few
-  hundred reviews and store the 21 fitted parameters in a `fsrs_params jsonb` column on
-  `profiles`. Nothing in the schema changes for that.
+due <= current_date order by box, due limit 20`. A card the user has never seen is simply a
+  box-1 card due today; a per-day cap on new cards stays a client constant.
+- **The intervals** (`BOX_DAYS = [1, 2, 4, 8, 16, 32]`) are a client constant, so tuning them is a
+  release, not a migration. Nothing algorithm-related lives in the database.
+- **Undo last swipe** is done in memory inside the deck before the batched write.
 
-Trade-off: FSRS needs ~10 columns and a review log where SM-2 needs three columns and no log. The
-log is what makes it "intelligent" over time, and it is cheap (one small row per swipe).
+Trade-off against FSRS (the previous plan, migration 0013 removed it): FSRS needs ten state
+columns plus a `flashcard_reviews` log per swipe to feed its optimiser, and the user has to trust
+a number they cannot see. Leitner needs two columns, no log, and the app can show the learner
+exactly where a card sits ("Fach 3 von 6"). What is given up is the per-user parameter fitting;
+the intervals are the same for everyone. If that ever becomes the limit, the FSRS columns can come
+back in one migration — the vocabulary itself (`front`, `back`, `example`) is untouched by either.
 
 `review` shape (written once by `end-conversation`, read by the Rückblick and level-result screens):
 
@@ -525,7 +506,7 @@ create policy "own profile: update" on public.profiles for update using (auth.ui
 | `languages`, `app_config`, `legal_documents` | everyone (incl. anon) | none (secret key only)            |
 | `profiles`                                   | own                   | insert / update own               |
 | `learner_languages`, `flashcards`            | own                   | insert / update / delete own      |
-| `legal_acceptances`, `flashcard_reviews`     | own                   | insert own                        |
+| `legal_acceptances`                          | own                   | insert own                        |
 | `conversations`                              | own                   | none (edge functions, secret key) |
 
 Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the extra
@@ -589,11 +570,14 @@ supabase/migrations/
                                         learner_languages.placement_conversation_id (+ RLS)
   20260919094818_goal_minutes_and_legal_title.sql
                                         profiles.goal_minutes (was daily_goal_minutes); legal_documents.title dropped
+  …                                     scenarios, placement, profile avatars (0007–0012)
+  20260919150000_flashcards_leitner.sql flashcards on six Leitner boxes (box, due date, reviews);
+                                        FSRS columns and flashcard_reviews dropped
 supabase/seed.sql                       languages (six app languages; fr/en/es learnable),
                                         app_config (three keys), terms + privacy in all six locales
                                         (placeholder text until legal copy exists),
                                         a dev user (dev@yori.app / password) with onboarding done,
-                                        six French flashcards
+                                        fifteen French flashcards across the six boxes (twelve due today)
 ```
 
 Status: **applied to the hosted project** (`language-learning-app`, eu-west-1) on 2026-09-19:
@@ -603,6 +587,10 @@ function is deployed. The app is wired to it (auth, profiles, learner languages,
 account flows); `start-conversation` / `end-conversation` wait for the model details (open
 question 6). Locally, `npm run db:reset` replays the same files.
 
+`20260919150000_flashcards_leitner.sql` is **not applied to the hosted project yet** — it drops
+`flashcard_reviews` and seven columns of `flashcards`, so it wants a deliberate `supabase db push`
+(nothing writes those columns today, so no data is lost).
+
 Suggested build order in the app:
 
 1. `supabase init`, migrations 0001–0004, client + anonymous auth, profile upsert,
@@ -611,7 +599,7 @@ Suggested build order in the app:
 2. 0005 + `start-conversation` / `end-conversation`: placement call end-to-end, live call,
    Rückblick → `flashcards`, `delete-account`.
 3. RevenueCat SDK in the paywall, `Purchases.logIn`, quota check in `start-conversation`.
-4. Then **Lernen** (activity + streaks, the flashcard deck on FSRS, exercises, reading), then
+4. Then **Lernen** (activity + streaks, the flashcard deck on the Leitner boxes, exercises, reading), then
    **Kurs**, then the deferred items below as they are needed.
 
 ---
@@ -627,7 +615,7 @@ Suggested build order in the app:
 | `feedback`                                                                                         | Rating screen goes live                                                                                                               |
 | `conversation_turns`, `conversation_items`, `saved_words`                                          | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
 | `profiles.timezone`                                                                                | Streaks (day boundaries) or server-side reminders                                                                                     |
-| `profiles.fsrs_params`                                                                             | FSRS parameter optimisation per user (needs review history first)                                                                     |
+| `flashcard_reviews`, `profiles.fsrs_params`                                                        | Only if the Leitner boxes stop being enough: a per-swipe log is what an FSRS-style scheduler needs before it can fit anything         |
 | `conversations.scenario_id` + `kind = 'scenario'` (Lernen), `lesson_id` + `kind = 'lesson'` (Kurs) | `docs/sprechen-plan.md`: scenario tiles are voice conversations with a briefing; Kurs adds its own foreign key later                  |
 | Server push (a `devices` token table) + a scheduled function                                       | Reminders with content from the last conversation                                                                                     |
 

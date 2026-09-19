@@ -8,7 +8,6 @@ import type { DeckResult } from '@/features/flashcards/data/types';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
 import { ResultHero } from '@/shared/components/result-hero';
 import { useBack } from '@/shared/hooks/use-back';
-import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
@@ -17,51 +16,7 @@ import { NavCircle } from '@/shared/ui/nav-circle';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
-/** Cards missed this often are drawn as filled chips with their count. */
-const EMPHASIS_AT = 3;
-
-type RepeatCard = DeckResult['again'][number];
-
-function Chip({ card }: { card: RepeatCard }) {
-  const { t } = useTranslation();
-  const strong = card.misses >= EMPHASIS_AT;
-  return (
-    <View
-      className={cn(
-        'flex-row items-center rounded-pill px-[14px]',
-        strong ? 'bg-accent-800' : 'bg-surface',
-      )}
-      style={{ height: 40, columnGap: 5 }}
-    >
-      <Text className={strong ? 'text-accent-100' : 'text-ink'} style={{ fontSize: 17 }}>
-        {card.word}
-      </Text>
-      {strong ? (
-        <Text className="text-lilac" style={{ fontSize: 17 }}>
-          {t('flashcards.result.times', { n: card.misses })}
-        </Text>
-      ) : null}
-    </View>
-  );
-}
-
-function Group({ title, cards, first }: { title: string; cards: RepeatCard[]; first: boolean }) {
-  if (!cards.length) return null;
-  return (
-    <View style={{ marginTop: first ? 0 : 20 }}>
-      <Kicker size={13} tracking={0.1} className={first ? undefined : 'text-muted'}>
-        {title}
-      </Kicker>
-      <View className="mt-[10px] flex-row flex-wrap" style={{ gap: 8 }}>
-        {cards.map((c) => (
-          <Chip key={c.id} card={c} />
-        ))}
-      </View>
-    </View>
-  );
-}
-
-/** 42d · Karteikarten · Stapel geschafft (ring, headline, repeat cards grouped by misses). */
+/** 42d · Karteikarten · Stapel geschafft (ring, headline, the cards that went back to box 1). */
 export function FlashcardsDoneScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -81,17 +36,11 @@ export function FlashcardsDoneScreen() {
       again: ids
         .map((id) => cards.find((c) => c.id === id))
         .filter((c) => c !== undefined)
-        .map((c) => ({ id: c.id, word: c.front, misses: c.misses + 1 }))
-        .sort((a, b) => b.misses - a.misses),
+        .map((c) => ({ id: c.id, word: c.front })),
     };
   }
   const againCount = result.againCount ?? result.again.length;
   const againIds = result.again.map((c) => c.id).join(',');
-  const groups: [string, RepeatCard[]][] = [
-    [t('flashcards.result.group3'), result.again.filter((c) => c.misses >= EMPHASIS_AT)],
-    [t('flashcards.result.group2'), result.again.filter((c) => c.misses === 2)],
-    [t('flashcards.result.group1'), result.again.filter((c) => c.misses <= 1)],
-  ];
   const progress = result.total ? result.known / result.total : 0;
 
   return (
@@ -103,7 +52,7 @@ export function FlashcardsDoneScreen() {
         progress={progress}
         badge={t('flashcards.result.badge', { known: result.known, total: result.total })}
         title={t('flashcards.result.title', { name: session.name })}
-        sub={t('flashcards.result.sub')}
+        sub={t('flashcards.result.sub', { up: result.known, back: againCount })}
       />
       {result.again.length ? (
         <View className="mt-[30px] flex-1 overflow-hidden" style={{ minHeight: 120 }}>
@@ -111,9 +60,22 @@ export function FlashcardsDoneScreen() {
             contentContainerStyle={{ paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
           >
-            {groups.map(([title, cards], i) => (
-              <Group key={title} title={title} cards={cards} first={i === 0} />
-            ))}
+            <Kicker size={13} tracking={0.1}>
+              {t('flashcards.result.backToBox')}
+            </Kicker>
+            <View className="mt-[10px] flex-row flex-wrap" style={{ gap: 8 }}>
+              {result.again.map((c) => (
+                <View
+                  key={c.id}
+                  className="justify-center rounded-pill bg-surface px-[14px]"
+                  style={{ height: 40 }}
+                >
+                  <Text className="text-ink" style={{ fontSize: 17 }}>
+                    {c.word}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </ScrollView>
           {/* Fade the list out towards the button so it reads as scrollable. */}
           <Gradient

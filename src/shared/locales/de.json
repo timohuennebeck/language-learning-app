@@ -623,20 +623,16 @@
     "cta": "{{n}} Wörter speichern"
   },
   "flashcards": {
-    "title": "Wiederholen",
-    "left": "← Noch lernen",
-    "right": "Ich weiß es →",
+    "title": "Karteikarten",
+    "box": "Fach {{n}} von {{total}}",
     "flip": "Tippen zum Umdrehen",
     "again": "Nochmal",
     "known": "Gewusst",
     "result": {
       "title": "Gut gemacht, {{name}}.",
       "badge": "{{known}} von {{total}}",
-      "sub": "Pip hebt Karten hervor, die du 3× oder öfter verwechselt hast.",
-      "group3": "3× und öfter",
-      "group2": "2×",
-      "group1": "1×",
-      "times": "{{n}}×",
+      "sub": "{{up}} Karten wandern ein Fach weiter, {{back}} zurück in Fach 1.",
+      "backToBox": "Zurück in Fach 1",
       "retry": "{{n}} Karteikarten wiederholen",
       "finish": "Fertig"
     }
