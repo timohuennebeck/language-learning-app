@@ -60,6 +60,7 @@ create table public.scenarios (
   level_max     public.cefr_level not null default 'B2',
   minutes       smallint not null default 5,            -- "3–5 Min" on the preview
   illustration_storage_path  text not null,             -- 'scenarios/cafe.webp' in the public `scenarios` bucket
+  subtitle      jsonb not null default '{}',            -- { "de": "Bestellen und bezahlen", "en": "Order and pay" }
   brief         jsonb not null default '{}',            -- { "de": "Du sitzt in einem Café in Paris. …" } · shown on the preview
   tasks         jsonb not null default '[]',            -- [{ "id": "order", "level": "A1", "text": { "de": "Bestelle einen Kaffee" }, "hint": "un café, s’il vous plaît" }]
   pip_prompt    text not null,                          -- Pip's role and the situation, in the learning language
@@ -71,16 +72,9 @@ create index scenarios_feed_idx on public.scenarios (language, active, sort_orde
 ```
 
 Why jsonb for the localized strings: six locales times a handful of short strings per scenario do
-not justify a translations table; the app reads the whole row and picks `brief[app_language]`
+not justify a translations table; the app reads the whole row and picks `subtitle[app_language]`
 with an `en` fallback. The `tasks` shape gets a Zod schema in
 `features/speak/data/schemas.ts`, which is also what the content check below runs.
-
-What the learner sees: the tile shows the title in the learning language over "A1–A2 · 5 Min"
-(level window and minutes, no subtitle); the illustration and the theme chip carry the meaning.
-The preview shows the same header, then the `brief` and the tasks in the app language, so an A1
-learner knows what they are about to do before Pip speaks. `brief` and the task `text` are
-therefore the only per-locale columns; `title`, `pip_prompt` and the task `hint` are in the
-learning language.
 
 Read-only for clients (`select` for `anon, authenticated`), written by the seed.
 
@@ -88,15 +82,15 @@ Read-only for clients (`select` for `anon, authenticated`), written by the seed.
 
 For the MVP the catalogue lives in the database and nowhere else.
 
-- **Editing**: rows are added and changed in Supabase Studio. The jsonb columns (`brief`,
-  `tasks`) are edited as JSON there; at 24 scenarios per language that is manageable.
+- **Editing**: rows are added and changed in Supabase Studio. The jsonb columns (`subtitle`,
+  `brief`, `tasks`) are edited as JSON there; at 24 scenarios per language that is manageable.
 - **Local copy**: `supabase db dump --data-only --schema public -f supabase/seed/scenarios.sql`
   after every catalogue change; `seed.sql` includes that file, so `db reset` has the same rows as
   the hosted project.
 - **Illustrations**: uploaded by hand to the public Storage bucket `scenarios`, one file per key
   (`scenarios/cafe.webp`, ~600 px, no text baked in); the row stores the path.
 - **Completeness check**: a view instead of a script. It lists every key that lacks a row for a
-  language with `learnable = true`, and every row whose `brief` or task `text` lacks
+  language with `learnable = true`, and every row whose `subtitle`, `brief` or task `text` lacks
   one of the six app locales. Look at it before a release; later it can run in CI against the
   hosted project.
 
@@ -109,6 +103,10 @@ from keys k cross join (select code from public.languages where learnable) l
 left join public.scenarios s on s.key = k.key and s.language = l.code
 where s.id is null
 union all
+select s.key, s.language, 'subtitle lacks ' || loc.code
+from public.scenarios s cross join locales loc
+where not (s.subtitle ? loc.code)
+union all
 select s.key, s.language, 'brief lacks ' || loc.code
 from public.scenarios s cross join locales loc
 where not (s.brief ? loc.code)
@@ -119,7 +117,7 @@ where not ((t -> 'text') ? loc.code);
 ```
 
 A scenario is authored once per key across the three learning languages: the situation, theme,
-level window and brief are the same in every row; the title, Pip's prompt and the task
+level window, subtitle and brief are the same in every row; the title, Pip's prompt and the task
 hints are written per learning language. First drafts of the translations can be model-generated
 from the German master and reviewed by a native speaker; the view proves presence, not quality.
 

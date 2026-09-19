@@ -122,7 +122,7 @@ export function SpeakScreen() {
                 {s.title}
               </Text>
               <Text className="mt-[2px] text-muted" style={{ fontSize: 13 }} numberOfLines={1}>
-                {t('speak.tileMeta', { level: 'A1–A2', minutes: s.meta.match(/\d+/)?.[0] ?? 5 })}
+                {s.meta}
               </Text>
             </Tap>
           ))}
