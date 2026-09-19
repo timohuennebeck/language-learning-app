@@ -554,6 +554,7 @@ export type Database = {
           brief: Json;
           id: string;
           illustration_storage_path: string;
+          is_placement: boolean;
           slug: string;
           language: string;
           level_max: Database['public']['Enums']['cefr_level'];
@@ -571,6 +572,7 @@ export type Database = {
           brief?: Json;
           id?: string;
           illustration_storage_path: string;
+          is_placement?: boolean;
           slug: string;
           language: string;
           level_max?: Database['public']['Enums']['cefr_level'];
@@ -588,6 +590,7 @@ export type Database = {
           brief?: Json;
           id?: string;
           illustration_storage_path?: string;
+          is_placement?: boolean;
           slug?: string;
           language?: string;
           level_max?: Database['public']['Enums']['cefr_level'];

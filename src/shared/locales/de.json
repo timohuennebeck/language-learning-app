@@ -146,7 +146,9 @@
       "stage": "Stufe 1 · Präsens",
       "stagesLabel": "Die fünf Stufen",
       "stages": ["Heute", "Gestern", "Morgen", "Eventuell", "Träume"],
-      "cta": "Gespräch starten · 2 Min"
+      "cta": "Gespräch starten · 2 Min",
+      "stageOf": "Stufe {{n}} · {{name}}",
+      "ctaMinutes": "Gespräch starten · {{minutes}} Min"
     },
     "levelSelf": {
       "title": "Wie gut ist dein Französisch?",

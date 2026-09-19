@@ -76,6 +76,13 @@ not justify a translations table; the app reads the whole row and picks `subtitl
 with an `en` fallback. The `tasks` shape gets a Zod schema in
 `features/speak/data/schemas.ts`, which is also what the content check below runs.
 
+**The placement call is a scenario too.** `is_placement = true` marks one row per learning
+language (`slug = 'placement'`, partial unique index on `language`): its `brief` is the intro
+copy, its `tasks` are the five staged questions (level A1 → B2, text = the stage name in the app
+language, hint = the question in the learning language), its `pip_prompt` is the interviewer
+brief. The Sprechen catalogue excludes it; the onboarding intro reads it, so the script can
+change without an app release.
+
 Read-only for clients (`select` for `anon, authenticated`), written by the seed.
 
 ## 3 Content management: the table is the source of truth
@@ -167,10 +174,10 @@ the current lesson start screen for scenarios. The `lessons` sample data and the
 
 ## 6 Status
 
-Applied to the hosted project on 2026-09-19 (migrations `20260919104439_scenarios` and `20260919105432_scenarios_key_to_kind`, `20260919110215_scenarios_kind_to_slug`): the table,
+Applied to the hosted project on 2026-09-19 (migrations `20260919104439_scenarios` and `20260919105432_scenarios_key_to_kind`, `20260919110215_scenarios_kind_to_slug`, `20260919111000_scenario_placement`): the table,
 its RLS policy, the `scenario_content_gaps` view, `conversations.scenario_id`, the `scenario`
 slug and the public `scenarios` bucket. Seeded with the four design scenarios in fr / en / es
-(12 rows, gaps view empty) from `scripts/gen-seed-scenarios.py` → `supabase/seed/scenarios.sql`.
+(12 catalogue rows + 3 placement rows, gaps view empty) from `scripts/gen-seed-scenarios.py` → `supabase/seed/scenarios.sql`.
 The app reads them: `features/speak/` (schemas, repository, query keys, hooks), the Sprechen
 tab renders the catalogue with theme chips and the level window, and `/scenario/[slug]` is the
 preview with the brief and the tasks for the learner's level. Illustrations are not uploaded yet;

@@ -13,3 +13,7 @@ export function useScenarios(language: LearningLanguage) {
 export function useScenario(slug: string, language: LearningLanguage) {
   return useQuery({ ...queries.speak.scenario(slug, language), staleTime: CATALOGUE_STALE_MS });
 }
+
+export function usePlacementScenario(language: LearningLanguage) {
+  return useQuery({ ...queries.speak.placement(language), staleTime: CATALOGUE_STALE_MS });
+}

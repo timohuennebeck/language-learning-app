@@ -37,6 +37,8 @@ export const ScenarioSchema = z.object({
   levelMax: LevelSchema,
   minutes: z.number().int(),
   illustrationUrl: z.string(),
+  /** The Einstufungsgespräch: one per language, never listed on the Sprechen tab. */
+  isPlacement: z.boolean(),
   subtitle: LocalizedSchema,
   brief: LocalizedSchema,
   tasks: z.array(ScenarioTaskSchema),

@@ -146,7 +146,9 @@
       "stage": "Stage 1 · Present",
       "stagesLabel": "The five stages",
       "stages": ["Today", "Yesterday", "Tomorrow", "Maybe", "Dreams"],
-      "cta": "Start conversation · 2 min"
+      "cta": "Start conversation · 2 min",
+      "stageOf": "Stage {{n}} · {{name}}",
+      "ctaMinutes": "Start conversation · {{minutes}} min"
     },
     "levelSelf": {
       "title": "How good is your French?",
