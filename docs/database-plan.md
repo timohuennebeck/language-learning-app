@@ -6,10 +6,22 @@ billing and referral credits, and the local-development workflow. **Lernen** (ex
 flashcards, reading, grammar) and **Kurs** (chapters, stations) are out of scope and get their own
 plan later; where they touch the tables below, the seam is marked with `→ Lernen` / `→ Kurs`.
 
+Launch scope (confirmed):
+
+- **App languages (UI):** German, English, Spanish, French, Italian, Portuguese.
+- **Learning languages at launch:** French, English, Spanish. German, Italian and Portuguese show
+  under "Bald verfügbar".
+- Any learning language can be paired with any app language (a Spanish-speaking user learning
+  English, an Italian user learning French, …). Everything the user *reads* (menus, meanings,
+  explanations, Pip's feedback, legal documents) is in the app language; everything they
+  *practise* is in the learning language.
+
 Assumptions (please correct):
 
-- Launch in the DACH / EU market → Supabase project in **eu-central-1 (Frankfurt)**, prices in EUR,
-  GDPR applies (consent records, in-app account deletion, data minimisation).
+- Supabase project in **eu-central-1 (Frankfurt)**: EU users are the core, GDPR applies (consent
+  records, in-app account deletion, data minimisation). Users in the Americas (en/es/pt) only pay
+  ~100 ms extra on API calls; the voice stream goes to the model provider directly, not via
+  Supabase, so call latency is unaffected.
 - One learning language at a time, but progress per language is kept ("Dein Fortschritt in
   Französisch bleibt gespeichert").
 - The unit of billing is **one conversation** ("Gespräch", up to 6 minutes). Referral rewards
@@ -159,6 +171,20 @@ create table public.app_config (
 );
 ```
 
+`languages` seed:
+
+| code | name_native | is_app_language | learnable |
+| ---- | ----------- | --------------- | --------- |
+| de   | Deutsch     | true            | false     |
+| en   | English     | true            | true      |
+| es   | Español     | true            | true      |
+| fr   | Français    | true            | true      |
+| it   | Italiano    | true            | false     |
+| pt   | Português   | true            | false     |
+
+Codes are two-letter ISO 639-1. Regional variants (pt-BR / pt-PT, es-ES / es-419) are not separate
+rows; the full device locale is stored on `devices.locale` for number/date formatting only.
+
 Initial `app_config` keys (seed):
 
 | key                                  | value                              | used by                     |
@@ -179,9 +205,9 @@ Initial `app_config` keys (seed):
 create table public.profiles (
   id                       uuid primary key references auth.users(id) on delete cascade,
   display_name             text not null default '' check (char_length(display_name) <= 40),
-  app_language             text not null default 'de' references public.languages(code),
+  app_language             text not null default 'en' references public.languages(code),
   active_language          text references public.languages(code),   -- currently learning
-  timezone                 text not null default 'Europe/Berlin',      -- from expo-localization
+  timezone                 text not null default 'UTC',                -- set from the device on sign-in
   daily_goal_minutes       smallint not null default 15 check (daily_goal_minutes in (5,10,15,30)),
   reminder_time            time,                                       -- null = reminders off
   reminder_repeat          public.reminder_repeat not null default 'daily',
@@ -222,6 +248,13 @@ create table public.level_assessments (
 );
 ```
 
+`app_language` is set from the device locale on the first anonymous sign-in (`detectLanguage()`
+today), falling back to `en` for unsupported locales; the DB default only matters for rows created
+outside the app. `timezone` likewise comes from `expo-localization` on every launch (users in
+Lisbon, São Paulo and Mexico City all need correct streak days). The UI should stop a user from
+learning their own app language (e.g. app in English, learning English); that is a client rule,
+not a constraint, because immersion setups (app in Spanish while learning Spanish) are legitimate.
+
 Email is not duplicated into `profiles`; the profile and logout screens read it from
 `supabase.auth.getUser()`. The `name`, `appLanguage`, `dailyGoalMinutes`, `reminder` fields of
 the current `Session` schema map 1:1 to `profiles`; `learningLanguage`, `level`, `targetLevel`,
@@ -248,7 +281,9 @@ create trigger on_auth_user_created
 
 The welcome and account screens say "Mit … akzeptierst du die Nutzungsbedingungen und die
 Datenschutzerklärung". To prove that later, the documents are versioned in the database and each
-acceptance is recorded. The terms screen fetches the current document (`effective_at <= now()`,
+acceptance is recorded. With six app languages every version exists once per locale; the app
+fetches `(kind, locale = profiles.app_language)` and falls back to `en` when a translation is
+missing, and the acceptance row points at the exact translated document the user saw. The terms screen fetches the current document (`effective_at <= now()`,
 newest first) instead of the lorem ipsum in `de.json`; the "Stand 15. September 2026" line comes
 from `effective_at`.
 
@@ -458,6 +493,8 @@ create table public.conversations (
   topic                text,                                -- 'Café in Paris' (Rückblick header)
   lesson_ref           text,                                -- → Kurs: chapter/station id, later a FK
   level                public.cefr_level,                   -- learner level when the call started
+  native_language      text references public.languages(code), -- app language at call time:
+                                                            -- Pip explains / mixes in this language
   provider             text not null default 'openai',
   model                text,                                -- e.g. 'gpt-live-1'
   provider_session_id  text,
@@ -488,8 +525,9 @@ create table public.conversation_items (
   conversation_id  uuid not null references public.conversations(id) on delete cascade,
   user_id          uuid not null references public.profiles(id) on delete cascade,
   kind             text not null check (kind in ('word','paraphrase')),
-  term             text not null,        -- 'la cuillère'
-  meaning          text not null,        -- 'der Löffel'
+  term             text not null,        -- 'la cuillère' (learning language)
+  meaning          text not null,        -- 'der Löffel' / 'the spoon' …
+  meaning_language text not null references public.languages(code),  -- = conversations.native_language
   said             text,                 -- 'le truc pour remuer' (paraphrase only)
   example          text,
   saved_word_id    uuid references public.saved_words(id) on delete set null,
@@ -501,8 +539,9 @@ create table public.saved_words (
   id                      uuid primary key default gen_random_uuid(),
   user_id                 uuid not null references public.profiles(id) on delete cascade,
   language                text not null references public.languages(code),
-  term                    text not null,
-  meaning                 text not null,
+  term                    text not null,                       -- learning language
+  meaning                 text not null,                       -- in meaning_language
+  meaning_language        text not null references public.languages(code),
   example                 text,
   source_conversation_id  uuid references public.conversations(id) on delete set null,
   created_at              timestamptz not null default now(),
@@ -514,18 +553,23 @@ Call flow:
 
 1. **`start-conversation`** (edge function, JWT required): body `{ language, kind, topic?,
    lesson_ref? }`. For `kind != 'placement'` it calls `consume_conversation_credit()`; for
-   `placement` it allows exactly one per user (anonymous users included) and no credit. It inserts
-   the `conversations` row (`status='active'`, `started_at`, `max_seconds` from config), builds the
-   system prompt from `learner_languages` (level, goal) and the topic, mints the ephemeral realtime
-   token, and returns `{ conversation_id, client_secret, max_seconds }`.
+   `placement` it allows exactly one per user and language (anonymous users included) and no
+   credit. It inserts the `conversations` row (`status='active'`, `started_at`, `max_seconds` from
+   config, `native_language = profiles.app_language`), builds the system prompt from
+   `learner_languages` (level, goal), the topic, the learning language and the native language
+   (Pip speaks the learning language, explains and accepts mixed answers in the native one), mints
+   the ephemeral realtime token, and returns `{ conversation_id, client_secret, max_seconds }`.
 2. The app connects, shows the timer and cuts off at `max_seconds`.
 3. **`end-conversation`**: body `{ conversation_id, transcript[], end_reason }`. Stores the turns,
    sets `ended_at`/`duration_seconds`, calls `log_activity(duration, conversations => 1)`, runs the
-   analysis (words, paraphrases, short summary) and writes `conversation_items` + `summary`. For
+   analysis (words, paraphrases, short summary; meanings in `native_language`) and writes
+   `conversation_items` + `summary`. For
    `kind='placement'` it also writes a `level_assessments` row and updates
    `learner_languages.level`. Refunds the credit if the call failed early.
 4. The Rückblick screen reads `conversation_items`; "N Wörter speichern" inserts into
-   `saved_words` and sets `saved_word_id` (state 2 "Gespeichert" = already linked).
+   `saved_words` (copying `meaning_language`) and sets `saved_word_id` (state 2 "Gespeichert" =
+   already linked). A user who later switches the app language keeps the old meanings; the column
+   makes a re-translation job possible later.
 
 "8 Gespräche übrig bis zur nächsten Einstufung" = `reassessment_every_n_conversations` minus the
 count of ended non-placement conversations since the latest `level_assessments.created_at`.
@@ -653,8 +697,9 @@ supabase/migrations/
                                    conversation_balance(), consume_conversation_credit()
   0008_referrals.sql               referral_codes, referrals, generate_referral_code(),
                                    redeem_referral_code()
-supabase/seed.sql                  languages (de/en/es/fr/it/pt; fr learnable; de app language),
-                                   app_config keys above, one terms + one privacy document,
+supabase/seed.sql                  languages (six app languages; fr/en/es learnable),
+                                   app_config keys above, terms + privacy in all six locales
+                                   (placeholder text until legal copy exists),
                                    a dev user (dev@yori.app / password) with onboarding done
 ```
 
@@ -669,11 +714,26 @@ Suggested build order in the app:
 
 ---
 
-## 8. Open questions
+## 8. Client changes implied by six app languages and three learning languages
 
-1. Your message ended at "when we launch the app it will be available in …". Which markets /
-   store regions? This decides the region (assumed Frankfurt), whether non-EUR prices are needed,
-   and whether `app_language` must support more than `de` at launch.
+Not database work, but the schema above assumes them:
+
+- `SUPPORTED_APP_LANGUAGES` (`shared/lib/i18n.ts`, today `['de']`) and
+  `LearningLanguageSchema` / `UPCOMING_LEARNING_LANGUAGES` (`features/auth/data/schemas.ts`,
+  today `['fr']` / `['en','es','de']`) become mirrors of the `languages` table: the pickers render
+  from the query, the Zod enums stay as type guards and are checked against the seed in a test.
+- Locale files for `es`, `fr`, `it`, `pt` next to `de.json` / `en.json`.
+- French-specific copy is parameterised by the learning language: "Warum lernst du Französisch?",
+  the goal options ("Reise nach Frankreich", "Freunde in Frankreich"), "B1 in etwa 8 Monaten",
+  `common.languagePill` ("Französisch · A2"), the level-self examples (`bonjour`, `merci
+  beaucoup`, …), the placement questions and the widget sentence. The `learning_goal` enum keeps
+  the same six semantic options; only the labels change per language.
+- Everything shown *about* the learning language (level names, blurbs, CTAs) is keyed by
+  `app_language`; everything *in* the learning language (examples, prompts) by `active_language`.
+
+## 9. Open questions
+
+1. Fallback app language for devices outside the six locales: `en` (assumed above) or `de`?
 2. Phone-number sign-in ("Mit Telefonnummer"): keep (SMS provider + cost) or route to email?
 3. Sign in with Apple is required on iOS alongside Google. OK to add it to the account screen?
 4. Referral reward: the copy says "1 Stunde Live-Gespräch", billing is per conversation. Convert to
