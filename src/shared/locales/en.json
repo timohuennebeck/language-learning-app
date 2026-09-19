@@ -554,7 +554,8 @@
       "microphone": "Yori needs microphone access so Pip can hear you.",
       "placement_used": "You have already done the placement for this language.",
       "account_required": "A second placement needs an account.",
-      "placement_limit": "Too many placements on this device. Try again later."
+      "placement_limit": "Too many placements on this device. Try again later.",
+      "native_module": "The call needs a development build of the app (npm run ios / android). It cannot run in Expo Go."
     }
   },
   "exercise": {

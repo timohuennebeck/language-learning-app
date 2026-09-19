@@ -574,7 +574,8 @@
       "microphone": "Yori braucht Zugriff auf das Mikrofon, damit Pip dich hört.",
       "placement_used": "Die Einstufung für diese Sprache hast du schon gemacht.",
       "account_required": "Für eine zweite Einstufung brauchst du ein Konto.",
-      "placement_limit": "Zu viele Einstufungen auf diesem Gerät. Versuch es später noch mal."
+      "placement_limit": "Zu viele Einstufungen auf diesem Gerät. Versuch es später noch mal.",
+      "native_module": "Das Gespräch braucht einen Development Build der App (npm run ios / android). In Expo Go geht es nicht."
     }
   },
   "exercise": {
