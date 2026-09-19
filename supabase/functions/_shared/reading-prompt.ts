@@ -162,7 +162,7 @@ export function annotatorInstructions(language: string, nativeLanguage: string):
     `For each word you are given the sentence it appears in and that sentence's ${native} translation.`,
     `"here": what this exact form means in this sentence, in ${native}. For "je suis allée" that is "ich bin gegangen", not "gehen".`,
     `"nativeMarks": the parts of the ${native} translation that render this word. Copy them from the translation character for character. Use several when the ${native} splits ("bin ich", "gegangen"); use an empty list if nothing in the translation corresponds.`,
-    'If one of the offered dictionary entries is the right meaning for this sentence, put its id in "lexeme" and leave "gloss" null.',
+    'If one of the offered dictionary entries is the right meaning for this sentence, put its id in "lexeme" and leave "gloss" null. Judge them by meaning: an entry filed under a different part of speech is still the right entry if it means this word, and reusing it is always better than writing a new one.',
     'If none of them fits this sentence, or none was offered, leave "lexeme" null and fill in "gloss" instead:',
     `  "trans": the dictionary meaning in ${native} (for a verb, the infinitive; for a noun, with its ${native} article).`,
     `  "note": one short sentence in ${native} about grammar or usage, only when it helps. Otherwise null.`,

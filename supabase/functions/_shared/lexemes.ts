@@ -41,12 +41,16 @@ export interface ResolveInput {
   gloss?: GlossInput | null;
 }
 
-const key = (lemma: string, pos: string) => `${lemma}\u0000${pos}`;
-
 /**
- * Every sense of the given words that the dictionary already holds, keyed by `lemma\0pos`, with
- * the gloss in `nativeLanguage` when there is one. This is what the annotator is offered so it can
- * reuse an existing meaning instead of inventing a parallel one.
+ * Every sense of the given words that the dictionary already holds, keyed by lemma, with the gloss
+ * in `nativeLanguage` when there is one. This is what the annotator is offered so it can reuse an
+ * existing meaning instead of inventing a parallel one.
+ *
+ * Keyed by lemma alone, deliberately, and not by lemma and part of speech: a card saved before the
+ * dictionary existed was backfilled as `other`, and the lemmatiser will call the same word a noun.
+ * Keying on both would hide that row, mint a second lexeme for the same word, and leave the
+ * learner's card pointing at the one the text does not use — so the text would never tint a word
+ * they have been studying for weeks, which is the whole feature.
  */
 export async function findCandidates(
   db: Db,
@@ -69,7 +73,7 @@ export async function findCandidates(
     const gloss = (row.lexeme_glosses ?? []).find(
       (g: { native_language: string }) => g.native_language === nativeLanguage,
     );
-    const list = out.get(key(row.lemma, row.pos)) ?? [];
+    const list = out.get(row.lemma) ?? [];
     list.push({
       id: row.id,
       lemma: row.lemma,
@@ -77,7 +81,7 @@ export async function findCandidates(
       sense: row.sense,
       trans: gloss?.trans ?? null,
     });
-    out.set(key(row.lemma, row.pos), list);
+    out.set(row.lemma, list);
   }
   for (const list of out.values()) list.sort((a, b) => a.sense - b.sense);
   return out;
@@ -120,9 +124,11 @@ export async function resolveLexeme(
   const lemma = toLemma(input.lemma, language);
   if (!lemma) return null;
   const pos: Pos = POS.includes(input.pos) ? input.pos : 'other';
-  const existing = candidates.get(key(lemma, pos)) ?? [];
+  const existing = candidates.get(lemma) ?? [];
 
-  // The model picked a sense that already exists. Only trust an id we actually offered it.
+  // The model picked a sense that already exists. Only trust an id we actually offered it — and
+  // accept it whatever part of speech it was filed under, since that is how a backfilled card is
+  // reunited with the word a text just used.
   const picked = input.lexeme ? existing.find((c) => c.id === input.lexeme) : undefined;
   if (picked) {
     if (!picked.trans && input.gloss?.trans) {
@@ -132,9 +138,11 @@ export async function resolveLexeme(
     return picked.trans ? picked.id : null;
   }
 
-  // Nothing fits, so this is a new word or a new sense of a known spelling.
+  // Nothing fits, so this is a new word or a new sense of a known spelling. The unique key is
+  // (language, lemma, pos, sense), so the next free sense is counted within this part of speech.
   if (!input.gloss?.trans) return null;
-  const sense = existing.length ? Math.max(...existing.map((c) => c.sense)) + 1 : 1;
+  const samePos = existing.filter((c) => c.pos === pos);
+  const sense = samePos.length ? Math.max(...samePos.map((c) => c.sense)) + 1 : 1;
 
   const { data, error } = await db
     .from('lexemes')
@@ -170,8 +178,8 @@ export async function resolveLexeme(
   if (!id) return null;
 
   await addGloss(db, id, nativeLanguage, input.gloss);
-  const list = candidates.get(key(lemma, pos)) ?? [];
+  const list = candidates.get(lemma) ?? [];
   list.push({ id, lemma, pos, sense, trans: input.gloss.trans });
-  candidates.set(key(lemma, pos), list);
+  candidates.set(lemma, list);
   return id;
 }

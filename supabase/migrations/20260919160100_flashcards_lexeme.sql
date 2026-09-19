@@ -8,10 +8,33 @@
 alter table public.flashcards
   add column lexeme_id uuid references public.lexemes(id) on delete restrict;
 
--- Backfill. Nothing creates flashcards yet (the Rückblick's "Wörter speichern" is unwired), so in
--- practice this runs over an empty table; it is written to be correct if it does not.
+-- Backfill. A card's `front` is how the learner saved it ("le café"), not a dictionary form, so it
+-- has to be normalised the way `_shared/lemma.ts` does — otherwise a generated text containing
+-- "café" would mint a second lexeme and the learner's card would never tint it. This is a copy of
+-- that function, which is why it is dropped again at the end: the app's version is the only one
+-- that is allowed to survive this migration.
+create function pg_temp.backfill_lemma(word text, language text) returns text
+language sql immutable as $$
+  select regexp_replace(
+    regexp_replace(
+      regexp_replace(lower(btrim(normalize(word, NFC))), '\s+', ' ', 'g'),
+      '^[\s"“”„«»''‘’(\[{.,;:!?¿¡…—–-]+|[\s"“”„«»(\[{.,;:!?…—–-]+$', '', 'g'),
+    case language
+      when 'fr' then '^(les |le |la |des |une |un |de la |du |l''|l’)'
+      when 'es' then '^(los |las |el |la |unos |unas |un |una )'
+      when 'it' then '^(gli |il |lo |la |le |un |uno |una |l''|l’)'
+      when 'pt' then '^(os |as |o |a |um |uma )'
+      when 'de' then '^(der |die |das |ein |eine )'
+      when 'en' then '^(the |a |an )'
+      else '^$'
+    end, '')
+$$;
+
+-- `pos` is unknown for a card saved before this migration, so these land as 'other'. The generator
+-- offers every sense of a lemma whatever its part of speech (see `findCandidates`), so a text that
+-- later meets "café" as a noun is still offered this row and reuses it.
 insert into public.lexemes (language, lemma, pos)
-select distinct f.language, lower(btrim(f.front)), 'other'::public.lexeme_pos
+select distinct f.language, pg_temp.backfill_lemma(f.front, f.language), 'other'::public.lexeme_pos
 from public.flashcards f
 on conflict (language, lemma, pos, sense) do nothing;
 
@@ -19,14 +42,17 @@ insert into public.lexeme_glosses (lexeme_id, native_language, trans)
 select distinct on (l.id, f.back_language) l.id, f.back_language, f.back
 from public.flashcards f
 join public.lexemes l
-  on l.language = f.language and l.lemma = lower(btrim(f.front)) and l.pos = 'other' and l.sense = 1
+  on l.language = f.language and l.lemma = pg_temp.backfill_lemma(f.front, f.language)
+  and l.pos = 'other' and l.sense = 1
 on conflict (lexeme_id, native_language) do nothing;
 
 update public.flashcards f
 set lexeme_id = l.id
 from public.lexemes l
-where l.language = f.language and l.lemma = lower(btrim(f.front))
+where l.language = f.language and l.lemma = pg_temp.backfill_lemma(f.front, f.language)
   and l.pos = 'other' and l.sense = 1;
+
+drop function pg_temp.backfill_lemma(text, text);
 
 alter table public.flashcards alter column lexeme_id set not null;
 

@@ -259,10 +259,10 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
           `${s.id} · ${ctx.language}: ${s.source}`,
           `${s.id} · ${ctx.nativeLanguage}: ${s.native}`,
           ...words.map((w) => {
-            const known = candidates.get(`${toLemma(w.lemma, ctx.language)}\u0000${w.pos}`) ?? [];
+            const known = candidates.get(toLemma(w.lemma, ctx.language)) ?? [];
             const offered = known
               .filter((c: Candidate) => c.trans)
-              .map((c: Candidate) => `${c.id} = "${c.trans}"`)
+              .map((c: Candidate) => `${c.id} = "${c.trans}" (${c.pos})`)
               .join('; ');
             return `  - "${w.surface}" (${w.lemma}, ${w.pos})${offered ? ` · known meanings: ${offered}` : ''}`;
           }),
