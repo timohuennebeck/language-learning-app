@@ -7,7 +7,7 @@ import { liveScenario } from '@/features/live/data/content';
 import { Headline } from '@/shared/components/headline';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
-import { CheckCircle, RadioMark } from '@/shared/ui/marks';
+import { RadioMark } from '@/shared/ui/marks';
 import { NavCircle } from '@/shared/ui/nav-circle';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
@@ -28,18 +28,21 @@ export function LiveTasksScreen() {
           <View
             key={task.text}
             className="flex-row items-start"
-            style={{ columnGap: 16 }}
+            style={{ columnGap: 14 }}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: task.done }}
           >
-            {task.done ? (
-              <CheckCircle size={36} bg={colors.accent[800]} iconSize={16} stroke={2.8} />
-            ) : (
-              <RadioMark selected={false} size={36} ringColor={colors.neutral[300]} />
-            )}
+            <RadioMark
+              selected={task.done}
+              size={26}
+              ringColor={colors.ring2}
+              ringWidth={1.6}
+              bg={colors.accent[800]}
+              checkStroke={2.1}
+            />
             <Text
               className={task.done ? 'flex-1 text-faint line-through' : 'flex-1 text-ink2'}
-              style={{ fontSize: 17, lineHeight: 24, paddingTop: 5 }}
+              style={{ fontSize: 17, lineHeight: 24, paddingTop: 1 }}
             >
               {task.text}
             </Text>

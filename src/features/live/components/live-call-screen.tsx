@@ -8,7 +8,7 @@ import { CallControls } from '@/shared/components/call-controls';
 import { Waveform } from '@/shared/components/waveform';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
-import { ChevronDown, InfoCircle } from '@/shared/ui/icons';
+import { ChecklistIcon, ChevronDown } from '@/shared/ui/icons';
 import { NavCircle } from '@/shared/ui/nav-circle';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
@@ -80,7 +80,7 @@ export function LiveCallScreen({ onEnd, hideBack = false }: Props) {
         )}
         <CallTimer label={t('live.timer')} />
         <NavCircle
-          icon={<InfoCircle size={18} />}
+          icon={<ChecklistIcon />}
           size={40}
           accessibilityLabel={t('live.tasks.cta')}
           onPress={() => router.push('/(app)/live/tasks')}

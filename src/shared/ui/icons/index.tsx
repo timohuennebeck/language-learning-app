@@ -11,6 +11,7 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ClipboardDocumentCheckIcon,
   ClockIcon,
   Cog6ToothIcon,
   EyeIcon,
@@ -121,13 +122,13 @@ export function Subtitles({ size = 26, color = colors.accent[900] }: IconProps) 
   );
 }
 
-/** Info "i" in a circle (call top bar). */
-export function InfoCircle({ size = 18, color = colors.accent[900] }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 256 256" fill={color}>
-      <Path d="M128 24a104 104 0 1 0 104 104A104.1 104.1 0 0 0 128 24Zm0 192a88 88 0 1 1 88-88 88.1 88.1 0 0 1-88 88Zm16-40a8 8 0 0 1-8 8 16 16 0 0 1-16-16v-40a8 8 0 0 1 0-16 16 16 0 0 1 16 16v40a8 8 0 0 1 8 8ZM112 84a12 12 0 1 1 12 12 12 12 0 0 1-12-12Z" />
-    </Svg>
-  );
+/** Clipboard with a check: the conversation's task list (call top bar). */
+export function ChecklistIcon({
+  size = 20,
+  color = colors.accent[900],
+  strokeWidth = 1.9,
+}: IconProps) {
+  return <ClipboardDocumentCheckIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 /** Microphone on the "Konversation starten" onboarding button. */

@@ -8,7 +8,7 @@ import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
-import { CheckCircle } from '@/shared/ui/marks';
+import { RadioMark } from '@/shared/ui/marks';
 import { NavCircle } from '@/shared/ui/nav-circle';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
@@ -50,7 +50,7 @@ export function LiveDoneScreen() {
               className="flex-row items-start rounded-[20px] bg-white px-[16px] py-[14px]"
               style={{ columnGap: 12 }}
             >
-              <CheckCircle size={26} bg={colors.accent[800]} iconSize={12} stroke={2.8} />
+              <RadioMark selected size={26} bg={colors.accent[800]} checkStroke={2.1} />
               <View className="flex-1" style={{ rowGap: 4 }}>
                 <Text className="text-ink" style={{ fontSize: 16, lineHeight: 22 }}>
                   {task.text}
