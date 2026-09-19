@@ -62,7 +62,15 @@ export function SpeakScreen() {
         <Text className="mt-[6px] text-sub" style={{ fontSize: 16, lineHeight: 22 }}>
           {t('speak.sub')}
         </Text>
-        <View className="mt-[10px] self-start rounded-pill bg-lavender px-[12px] py-[5px]">
+        <View
+          className="mt-[10px] flex-row items-center self-start rounded-pill bg-lavender py-[5px] pl-[9px] pr-[12px]"
+          style={{ columnGap: 7 }}
+        >
+          <View className="h-[20px] min-w-[20px] items-center justify-center rounded-pill bg-accent-800 px-[6px]">
+            <Text className="font-semibold text-accent-100" style={{ fontSize: 12.5 }}>
+              {CREDITS.left}
+            </Text>
+          </View>
           <Text className="font-medium text-accent-800" style={{ fontSize: 14 }}>
             {t('speak.credits', CREDITS)}
           </Text>

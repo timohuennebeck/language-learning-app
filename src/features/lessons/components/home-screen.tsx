@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
-import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
 import { HomeHeader } from '@/shared/components/home-header';
 import {
@@ -13,15 +12,12 @@ import {
   ReadPreview,
   TalkPreview,
 } from '@/shared/components/previews';
-import { ProfileRow } from '@/shared/components/profile-row';
-import { StreakCard } from '@/shared/components/streak-card';
-import { Kicker } from '@/shared/ui/kicker';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
 /**
- * 01 · Lernen (home): today's numbers, the carousel, the streak and what was last opened.
+ * 01 · Lernen (home): today's numbers and the carousel of what Pip generated.
  * Scenario tiles live on the Sprechen tab (docs/sprechen-plan.md).
  */
 export function HomeScreen() {
@@ -29,7 +25,6 @@ export function HomeScreen() {
   const router = useRouter();
   const { session } = useSession();
   const feed = useHomeFeed();
-  const progress = useProgress().data!;
   const minutes = feed.data?.minutesToday ?? 6;
   const goal = feed.data?.goalMinutes ?? session.dailyGoalMinutes;
   const due = feed.data?.dueCards ?? 12;
@@ -106,34 +101,6 @@ export function HomeScreen() {
             },
           ]}
         />
-
-        <StreakCard
-          className="mt-[18px]"
-          streakDays={progress.streakDays}
-          minutesToday={minutes}
-          goalMinutes={goal}
-          week={progress.week}
-        />
-
-        <Kicker className="mt-[22px] text-muted">{t('home.recent.title')}</Kicker>
-        <View className="mt-[8px] rounded-[24px] bg-surface2">
-          <ProfileRow
-            label={t('home.recent.read')}
-            sub={t('home.recent.readSub')}
-            onPress={() => router.push({ pathname: '/(app)/reading', params: { section: '2' } })}
-          />
-          <ProfileRow
-            label={t('home.recent.practice')}
-            sub={t('home.recent.practiceSub')}
-            onPress={() => router.push('/(app)/exercise')}
-          />
-          <ProfileRow
-            label={t('home.recent.review')}
-            sub={t('home.recent.reviewSub')}
-            onPress={() => router.push('/(app)/review')}
-            last
-          />
-        </View>
         <View className="flex-1" />
       </View>
     </Screen>

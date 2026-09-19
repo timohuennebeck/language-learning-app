@@ -33,7 +33,7 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>{t('tabs.course')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="speak" contentStyle={CONTENT}>
-        <NativeTabs.Trigger.Icon sf="waveform" md="graphic_eq" />
+        <NativeTabs.Trigger.Icon sf="app.background.dotted" md="blur_on" />
         <NativeTabs.Trigger.Label>{t('tabs.speak')}</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile" contentStyle={CONTENT}>

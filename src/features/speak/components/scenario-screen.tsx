@@ -1,31 +1,36 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { ScenarioArt } from '@/features/speak/components/scenario-art';
 import { tasksForLevel } from '@/features/speak/data/types';
 import { useScenario } from '@/features/speak/hooks/use-scenarios';
-import { Headline } from '@/shared/components/headline';
 import { useBack } from '@/shared/hooks/use-back';
 import { localized } from '@/shared/lib/i18n';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
-import { CardGradient } from '@/shared/ui/gradient';
+import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
 import { MicSmall } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
-import { Screen } from '@/shared/ui/screen';
+import { CheckCircle } from '@/shared/ui/marks';
+import { NavCircle } from '@/shared/ui/nav-circle';
+import { PAGE_TOP, Screen } from '@/shared/ui/screen';
 import { Spinner } from '@/shared/ui/spinner';
 import { Text } from '@/shared/ui/text';
 import { TopBar } from '@/shared/ui/top-bar';
 
 /**
- * Scenario preview (after 06 "Einstufung Intro"): the situation, the tasks to complete in the
- * talk, then "Gespräch starten". The call itself still opens the design's live screen.
+ * Scenario preview: the same briefing layout as the onboarding role-play
+ * (`assessment-call-intro-screen`) — gradient header with the artwork, the situation, the tasks
+ * to complete in the talk, then "Gespräch starten". Only the top bar differs: a close circle
+ * instead of the onboarding progress.
  */
 export function ScenarioScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const back = useBack('/(app)/(tabs)/speak');
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const { session } = useSession();
@@ -34,7 +39,7 @@ export function ScenarioScreen() {
 
   if (scenario.isPending) {
     return (
-      <Screen top={0} bottom={6} className="px-[22px]">
+      <Screen bottom={6} className="px-[22px]">
         <TopBar left="close" onLeftPress={back} />
         <View className="flex-1 items-center justify-center">
           <Spinner />
@@ -44,7 +49,7 @@ export function ScenarioScreen() {
   }
   if (scenario.isError) {
     return (
-      <Screen top={0} bottom={6} className="px-[22px]">
+      <Screen bottom={6} className="px-[22px]">
         <TopBar left="close" onLeftPress={back} />
         <Text className="mt-[40px] text-center text-muted" style={{ fontSize: 15 }}>
           {t('speak.loadError')}
@@ -58,74 +63,71 @@ export function ScenarioScreen() {
   const levels = s.levelMin === s.levelMax ? s.levelMin : `${s.levelMin}–${s.levelMax}`;
   return (
     <Screen
-      top={0}
+      edgeToEdgeTop
       bottom={6}
-      scroll
+      className="px-[22px]"
       footer={
-        <View className="px-[22px] pt-[12px]">
-          <Button
-            height={60}
-            size={17.5}
-            label={t('speak.scenario.cta', { minutes: s.minutes })}
-            left={<MicSmall />}
-            className="[column-gap:2px]"
-            // `scenario` is forwarded so start-conversation can add the briefing once it exists.
-            onPress={() => router.push({ pathname: '/(app)/live', params: { scenario: s.slug } })}
-          />
-        </View>
+        <Button
+          height={60}
+          size={17}
+          label={t('speak.scenario.cta', { minutes: s.minutes })}
+          left={<MicSmall size={18} />}
+          // `scenario` is forwarded so start-conversation can add the briefing once it exists.
+          onPress={() => router.push({ pathname: '/(app)/live', params: { scenario: s.slug } })}
+        />
       }
     >
-      <View className="px-[22px]">
-        <TopBar left="close" onLeftPress={back} />
-        <Kicker className="mt-[22px]">
-          {t('speak.scenario.kicker', {
-            language: t(`common.language.${s.language}`),
-            levels,
-            minutes: s.minutes,
-          })}
-        </Kicker>
-        <Headline title={s.title} sub={localized(s.subtitle, locale)} titleMarginTop={6} />
-        <CardGradient className="mt-[18px] items-center p-[18px]" style={{ rowGap: 14 }}>
-          <ScenarioArt url={s.illustrationUrl} label={s.title} size={150} radius={26} />
-          <View className="w-full rounded-[18px] bg-white px-[16px] py-[14px]">
-            <Text className="text-accent-900" style={{ fontSize: 16, lineHeight: 22.4 }}>
-              {localized(s.brief, locale)}
-            </Text>
-          </View>
-        </CardGradient>
-        <Kicker tracking={0.1} className="mt-[18px] text-muted">
-          {t('speak.scenario.tasks')}
-        </Kicker>
-        <View className="mt-[10px]" style={{ rowGap: 8 }}>
-          {tasks.map((task, i) => (
-            <View
-              key={task.id}
-              className="flex-row items-start rounded-[18px] bg-surface px-[14px] py-[12px]"
-              style={{ columnGap: 12 }}
-            >
-              <View
-                className="mt-[1px] h-[24px] w-[24px] items-center justify-center rounded-full"
-                style={{ backgroundColor: colors.accent[800] }}
-              >
-                <Text className="font-semibold text-accent-100" style={{ fontSize: 12.5 }}>
-                  {i + 1}
-                </Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-accent-900" style={{ fontSize: 15.5, lineHeight: 21 }}>
-                  {localized(task.text, locale)}
-                </Text>
-                {task.hint ? (
-                  <Text className="mt-[3px] text-muted" style={{ fontSize: 13.5, lineHeight: 18 }}>
-                    {task.hint}
-                  </Text>
-                ) : null}
-              </View>
-            </View>
-          ))}
+      <Gradient
+        {...HEADER_GRADIENT}
+        className="-mx-[22px] items-center overflow-hidden px-[22px]"
+        style={{ paddingTop: insets.top + PAGE_TOP, paddingBottom: 18 }}
+      >
+        <View className="self-stretch">
+          <TopBar
+            left={<NavCircle icon="close" onPress={back} style={{ backgroundColor: '#fff' }} />}
+          />
         </View>
-        <View style={{ height: 24 }} />
+        <View style={{ marginTop: 22 }}>
+          <ScenarioArt url={s.illustrationUrl} label={s.title} size={150} radius={26} />
+        </View>
+      </Gradient>
+      <Kicker tracking={0.1} className="mt-[22px] text-accent-700">
+        {t('speak.scenario.kicker', {
+          language: t(`common.language.${s.language}`),
+          levels,
+          minutes: s.minutes,
+        })}
+      </Kicker>
+      <Text
+        className="mt-[8px] font-semibold text-ink"
+        style={{ fontSize: 30, lineHeight: 34, letterSpacing: -0.9 }}
+      >
+        {s.title}
+      </Text>
+      <Text className="mt-[8px] text-muted" style={{ fontSize: 15, lineHeight: 22 }}>
+        {localized(s.brief, locale)}
+      </Text>
+      <Kicker tracking={0.1} className="mt-[22px] text-muted">
+        {t('speak.scenario.tasks')}
+      </Kicker>
+      <View className="mt-[12px]" style={{ rowGap: 14 }}>
+        {tasks.map((task) => (
+          <View key={task.id} className="flex-row items-start" style={{ columnGap: 12 }}>
+            <CheckCircle size={26} bg={colors.accent[800]} stroke={2.4} iconSize={13} />
+            <View className="flex-1">
+              <Text className="text-ink" style={{ fontSize: 15.5, lineHeight: 22 }}>
+                {localized(task.text, locale)}
+              </Text>
+              {task.hint ? (
+                <Text className="mt-[3px] text-muted" style={{ fontSize: 13.5, lineHeight: 18 }}>
+                  {task.hint}
+                </Text>
+              ) : null}
+            </View>
+          </View>
+        ))}
       </View>
+      <View style={{ height: 24 }} />
     </Screen>
   );
 }

@@ -419,15 +419,6 @@
         "title": "Review flashcards",
         "cta": "Practice"
       }
-    },
-    "recent": {
-      "title": "Recent",
-      "read": "Reading · Mardi matin",
-      "readSub": "Section 2 of 3 · Continue",
-      "practice": "Practice · 5 tasks",
-      "practiceSub": "Repeat exercise",
-      "review": "Review · Café in Paris",
-      "reviewSub": "6 words · 4 paraphrased"
     }
   },
   "languages": {
@@ -805,7 +796,7 @@
   "speak": {
     "title": "Free speaking",
     "sub": "Pick a topic. Pip plays the situation through with you.",
-    "credits": "{{left}} of {{total}} conversations left",
+    "credits": "of {{total}} conversations left",
     "free": {
       "kicker": "NO TOPIC",
       "title": "Free conversation",
