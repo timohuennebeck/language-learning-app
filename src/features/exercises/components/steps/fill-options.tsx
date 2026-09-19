@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AnswerChip } from '@/features/exercises/components/answer-chip';
-import { SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout';
+import { GAP_HEIGHT, SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout';
 import { TranslationLine } from '@/features/exercises/components/steps/translation-line';
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import { InlineFlow } from '@/shared/components/inline-flow';
@@ -34,7 +34,7 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
               <View
                 style={{
                   minWidth: 130,
-                  height: 44,
+                  height: GAP_HEIGHT,
                   borderRadius: 14,
                   backgroundColor: answer ? colors.surface : colors.surface2,
                   boxShadow: insetRing(1.5, colors.accent[500]),
@@ -50,7 +50,12 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
                 ) : null}
               </View>
             ) : (
-              <AnswerChip text={answer} ok={phase === 'correct'} size={SENTENCE.fontSize} />
+              <AnswerChip
+                text={answer}
+                ok={phase === 'correct'}
+                size={SENTENCE.fontSize}
+                height={GAP_HEIGHT}
+              />
             ),
           },
           step.post,

@@ -11,5 +11,8 @@ export const SENTENCE = {
   color: colors.ink,
 } as const;
 
+/** Height of the gap box in the task phase and of the answer chip afterwards, so the line never changes height. */
+export const GAP_HEIGHT = 44;
+
 /** The German prompt of the translate steps. */
 export const PROMPT = { fontSize: 22, lineHeight: 30.8, color: colors.ink } as const;

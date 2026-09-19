@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AnswerChip } from '@/features/exercises/components/answer-chip';
 import { AutoWidthInput } from '@/features/exercises/components/auto-width-input';
-import { SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout';
+import { GAP_HEIGHT, SENTENCE, STEP_TOP } from '@/features/exercises/components/steps/layout';
 import { TranslationLine } from '@/features/exercises/components/steps/translation-line';
 import type { StepProps } from '@/features/exercises/components/steps/types';
 import { Hint } from '@/shared/components/hint';
@@ -45,7 +45,7 @@ export function FillFree({
                 onPress={() => input.current?.focus()}
                 style={{
                   minWidth: 130,
-                  height: 46,
+                  height: GAP_HEIGHT,
                   flexDirection: 'row',
                   alignItems: 'center',
                   borderRadius: 14,
@@ -66,7 +66,12 @@ export function FillFree({
                 <Caret height={24} style={{ marginLeft: 2 }} />
               </Tap>
             ) : (
-              <AnswerChip text={answer} ok={phase === 'correct'} size={SENTENCE.fontSize} />
+              <AnswerChip
+                text={answer}
+                ok={phase === 'correct'}
+                size={SENTENCE.fontSize}
+                height={GAP_HEIGHT}
+              />
             ),
           },
           step.post,

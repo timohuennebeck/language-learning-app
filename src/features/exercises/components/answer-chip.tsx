@@ -6,16 +6,24 @@ import { colors } from '@/shared/theme/tokens';
  * Inline answer chip inside a sentence (green when correct, red + strikethrough when wrong).
  * A real View so the rounded background renders on native; place it as an `InlineFlow` piece.
  */
-export function AnswerChip({ text, ok, size }: { text: string; ok: boolean; size: number }) {
+type Props = {
+  text: string;
+  ok: boolean;
+  size: number;
+  /** Total chip height; matches the task-phase gap box. */ height: number;
+};
+
+export function AnswerChip({ text, ok, size, height }: Props) {
+  const lineHeight = size * 1.4;
   return (
     <InlineMark
       size={size}
-      lineHeight={size * 1.4}
+      lineHeight={lineHeight}
       color={ok ? colors.ok.text : colors.err.text}
       bg={ok ? colors.ok.chip : colors.err.chip}
       radius={14}
       px={12}
-      py={2}
+      py={(height - lineHeight) / 2}
       textClassName={cn(!ok && 'line-through')}
     >
       {text}

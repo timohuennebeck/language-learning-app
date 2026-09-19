@@ -39,7 +39,7 @@ export function TranslateFree({
       <Text style={{ ...PROMPT, marginTop: 12 }}>{step.prompt}</Text>
       <View
         className="rounded-[22px] bg-white px-[18px] py-[16px]"
-        style={{ marginTop: 18, minHeight: task ? 130 : undefined, boxShadow: ring(2, ringColor) }}
+        style={{ marginTop: 18, minHeight: 130, boxShadow: ring(2, ringColor) }}
       >
         <Text
           style={{
