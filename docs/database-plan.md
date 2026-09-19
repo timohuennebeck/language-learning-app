@@ -441,8 +441,8 @@ spoon" are both valid rows, and a user who switches app language keeps the old c
 
 Call flow:
 
-1. **`start-conversation`** (edge function, JWT required): body `{ language, kind, topic?,
-   lesson_ref? }`. For `kind = 'placement'` it allows one per user and language (anonymous users
+1. **`start-conversation`** (edge function, JWT required): body `{ language, kind, topic? }`
+   (→ Kurs adds `lesson_id`). For `kind = 'placement'` it allows one per user and language (anonymous users
    included) and skips the quota; otherwise it runs the RevenueCat check from §3.5. It inserts the
    `conversations` row (`native_language = profiles.app_language`, `level` from
    `learner_languages`, `max_seconds` from config), builds the system prompt from level, goal,
