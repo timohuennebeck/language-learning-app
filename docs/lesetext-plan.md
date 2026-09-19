@@ -477,12 +477,16 @@ luna calls see ~1.5k each and write 400 and 600–3,300 depending on how many wo
 
 | Setup                          | cold text | warm text | 2/day cap, month | realistic 12/month |
 | ------------------------------ | --------- | --------- | ---------------- | ------------------ |
-| **sol writes, luna annotates** | $0.031    | $0.028    | $1.86            | $0.34              |
+| **sol writes, luna annotates** | $0.039    | $0.036    | $2.34            | $0.47              |
 | terra single pass, no lexicon  | $0.053    | $0.053    | $3.18            | $0.64              |
 | terra single pass, lexicon     | $0.053    | $0.025    | $1.50            | $0.30              |
 | astra single pass              | $0.225    | $0.225    | $13.50           | $2.70              |
 
-**Recommendation: `sol` writes, `luna` does everything else — about three cents a text.**
+**Recommendation: `sol` writes, `luna` does everything else — three to four cents a text.**
+Itemised for a two-minute read (220 words, 12 sentences, ~60 content words): writer 2,500 in,
+800 out plus ~400 reasoning = $0.034; lemmatiser $0.0007; annotator $0.0045 cold / $0.0017 warm.
+The writer is ~90 % of it and its reasoning tokens are the swing. Tapping a word costs nothing:
+the gloss is already on the device and the tap is one Postgres upsert.
 
 - The writer's 800 tokens are the ones worth paying for: level-accurate, idiomatic prose and a
   correct rendering of each sentence. This is where a cheap model fails in ways a learner cannot
