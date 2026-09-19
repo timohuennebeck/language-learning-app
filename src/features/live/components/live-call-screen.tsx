@@ -209,7 +209,8 @@ export function LiveCallScreen({
           labelSize={13.5}
           endColor={colors.danger}
           endShadow="0 10px 24px rgba(201,64,63,.32)"
-          subtitlesBg={call.subtitles ? colors.neutral[200] : colors.surface}
+          muted={call.muted}
+          subtitles={call.subtitles}
           onMute={() => setMuted(!call.muted)}
           onSubtitles={() => setSubtitles(!call.subtitles)}
           onEnd={call.status === 'live' ? finish : undefined}

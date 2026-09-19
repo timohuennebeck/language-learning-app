@@ -1,7 +1,8 @@
 import {
   ClosedCaptioningIcon,
+  MicrophoneIcon,
   MicrophoneSlashIcon,
-  PhoneDisconnectIcon,
+  PhoneSlashIcon,
 } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +22,22 @@ interface Props {
   sideSize?: number;
   endSize?: number;
   labelSize?: number;
-  subtitlesBg?: string;
+  /** Microphone off: the button fills in and the glyph becomes the crossed-out mic. */
+  muted?: boolean;
+  /** Captions on: the button fills in. */
+  subtitles?: boolean;
   className?: string;
 }
+
+/**
+ * On state for the two side buttons. The filled accent circle is the same "selected" treatment
+ * the chips use; the two lavenders this row had before (#e7e5fe vs #e4e7f5) are a point apart
+ * and read as no change at all.
+ */
+const ON_BG = colors.accent[800];
+const OFF_BG = colors.surface;
+const ON_GLYPH = colors.accent[100];
+const OFF_GLYPH = colors.accent[900];
 
 /** Mute / End / Subtitles control row shared by the live and placement calls. */
 export function CallControls({
@@ -35,7 +49,8 @@ export function CallControls({
   sideSize = 68,
   endSize = 88,
   labelSize = 14,
-  subtitlesBg = colors.surface,
+  muted = false,
+  subtitles = false,
   className,
 }: Props) {
   const { t } = useTranslation();
@@ -50,11 +65,17 @@ export function CallControls({
         <Tap
           haptic="light"
           onPress={onMute}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: muted }}
           accessibilityLabel={t('live.mute')}
-          className="items-center justify-center rounded-full bg-surface"
-          style={{ width: sideSize, height: sideSize }}
+          className="items-center justify-center rounded-full"
+          style={{ width: sideSize, height: sideSize, backgroundColor: muted ? ON_BG : OFF_BG }}
         >
-          <MicrophoneSlashIcon size={26} color={colors.accent[900]} weight="fill" />
+          {muted ? (
+            <MicrophoneSlashIcon size={26} color={ON_GLYPH} weight="fill" />
+          ) : (
+            <MicrophoneIcon size={26} color={OFF_GLYPH} weight="fill" />
+          )}
         </Tap>
         {label(t('live.mute'))}
       </View>
@@ -71,7 +92,7 @@ export function CallControls({
             boxShadow: endShadow,
           }}
         >
-          <PhoneDisconnectIcon size={34} color={colors.accent[100]} weight="fill" />
+          <PhoneSlashIcon size={34} color={colors.accent[100]} weight="fill" />
         </Tap>
         {label(t('live.end'), true)}
       </View>
@@ -79,11 +100,13 @@ export function CallControls({
         <Tap
           haptic="light"
           onPress={onSubtitles}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: subtitles }}
           accessibilityLabel={t('live.subtitles')}
           className="items-center justify-center rounded-full"
-          style={{ width: sideSize, height: sideSize, backgroundColor: subtitlesBg }}
+          style={{ width: sideSize, height: sideSize, backgroundColor: subtitles ? ON_BG : OFF_BG }}
         >
-          <ClosedCaptioningIcon size={26} color={colors.accent[900]} weight="fill" />
+          <ClosedCaptioningIcon size={26} color={subtitles ? ON_GLYPH : OFF_GLYPH} weight="fill" />
         </Tap>
         {label(t('live.subtitles'))}
       </View>

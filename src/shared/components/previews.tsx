@@ -1,10 +1,24 @@
-import { WaveformIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 
 import { colors } from '@/shared/theme/tokens';
 import { Text } from '@/shared/ui/text';
 
 const shadow = { boxShadow: '0 4px 14px rgba(41,43,49,.08)' };
+
+/**
+ * The three bars in the accent circle on the talk card. Part of the card's illustration, drawn
+ * to the design's own proportions, not an icon: it stays hand-built rather than coming from an
+ * icon set.
+ */
+function SpeakBars({ color = colors.accent[100] }: { color?: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 2.5 }}>
+      {[8, 14, 10].map((h, i) => (
+        <View key={i} style={{ width: 3, height: h, borderRadius: 999, backgroundColor: color }} />
+      ))}
+    </View>
+  );
+}
 
 /** Pill of skeleton "text" used inside the preview cards. */
 function Line({
@@ -44,7 +58,7 @@ export function TalkPreview() {
         style={{ columnGap: 11, ...shadow }}
       >
         <View className="h-[30px] w-[30px] items-center justify-center rounded-full bg-accent-800">
-          <WaveformIcon size={17} color={colors.accent[100]} weight="bold" />
+          <SpeakBars />
         </View>
         <View className="flex-1" style={{ rowGap: 6 }}>
           <Text className="font-medium text-accent-900" style={{ fontSize: 14 }}>
