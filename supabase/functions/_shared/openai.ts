@@ -1,9 +1,9 @@
 // Thin OpenAI client for the edge functions (fetch only, no SDK).
 //
-// Secrets: OPENAI_API_KEY (required); OPENAI_LIVE_MODEL, OPENAI_LIVE_VOICE, OPENAI_REVIEW_MODEL
-// (optional). The call runs on the Live API (GPT-Live-1): the app sends its WebRTC offer, the
-// server creates the session with the API key and returns the answer, so no key or client secret
-// ever reaches the device.
+// Secrets: OPENAI_API_KEY (required); OPENAI_LIVE_MODEL, OPENAI_LIVE_VOICE, OPENAI_REVIEW_MODEL,
+// OPENAI_READING_WRITER_MODEL, OPENAI_READING_HELPER_MODEL (optional). The call runs on the Live
+// API (GPT-Live-1): the app sends its WebRTC offer, the server creates the session with the API
+// key and returns the answer, so no key or client secret ever reaches the device.
 //   supabase secrets set OPENAI_API_KEY=sk-… OPENAI_LIVE_MODEL=gpt-live-1
 
 import { HttpError } from './http.ts';
@@ -15,6 +15,13 @@ export const LIVE_MODEL = Deno.env.get('OPENAI_LIVE_MODEL') ?? 'gpt-live-1';
 export const REVIEW_MODEL = Deno.env.get('OPENAI_REVIEW_MODEL') ?? 'gpt-5-mini';
 /** Live voice (built-in voice name; `marin` is the API default). */
 export const VOICE = Deno.env.get('OPENAI_LIVE_VOICE') ?? 'marin';
+/**
+ * Reading texts are written by one model and annotated by a much cheaper one (docs/lesetext-plan.md
+ * §6): the prose is judgement, the glosses are bulk extraction the validator checks anyway. Both
+ * are env so switching is a secret change, not a deploy.
+ */
+export const READING_WRITER_MODEL = Deno.env.get('OPENAI_READING_WRITER_MODEL') ?? 'gpt-5.6-sol';
+export const READING_HELPER_MODEL = Deno.env.get('OPENAI_READING_HELPER_MODEL') ?? 'gpt-5.6-luna';
 
 function apiKey(): string {
   const key = Deno.env.get('OPENAI_API_KEY');
@@ -124,24 +131,76 @@ export async function createLiveSession(o: LiveSessionOptions): Promise<LiveSess
   return { sessionId: res.session.id, sdp: res.transport.sdp, model: LIVE_MODEL };
 }
 
+export interface Usage {
+  model: string;
+  input_tokens?: number;
+  output_tokens?: number;
+  /** Reasoning tokens are billed as output; they are the swing in a writer call's cost. */
+  reasoning_tokens?: number;
+}
+
+export interface JsonResult<T> {
+  value: T;
+  usage: Usage;
+}
+
+interface RespondOptions {
+  /** Defaults to REVIEW_MODEL, so existing callers are unchanged. */
+  model?: string;
+  effort?: 'minimal' | 'low' | 'medium' | 'high';
+  maxOutputTokens?: number;
+}
+
+/**
+ * One structured-output call on the Responses API, returning the parsed object and what it cost.
+ * The usage is stored per row: a bad text has to be traceable to the model that wrote it, and
+ * `sum(usage)` is the only honest answer to "what does a user cost us".
+ */
+export async function respondJsonWithUsage<T>(
+  instructions: string,
+  input: string,
+  schemaName: string,
+  schema: Record<string, unknown>,
+  options: RespondOptions = {},
+): Promise<JsonResult<T>> {
+  const model = options.model ?? REVIEW_MODEL;
+  const res = await post<{
+    output: { type: string; content?: { type: string; text?: string }[] }[];
+    usage?: {
+      input_tokens?: number;
+      output_tokens?: number;
+      output_tokens_details?: { reasoning_tokens?: number };
+    };
+  }>('/responses', {
+    model,
+    instructions,
+    input,
+    reasoning: { effort: options.effort ?? 'low' },
+    ...(options.maxOutputTokens ? { max_output_tokens: options.maxOutputTokens } : {}),
+    text: { format: { type: 'json_schema', name: schemaName, strict: true, schema } },
+  });
+  const message = res.output.find((o) => o.type === 'message');
+  const text = message?.content?.find((c) => c.type === 'output_text')?.text;
+  if (!text) throw new HttpError(502, 'openai_error', 'Responses API returned no text');
+  return {
+    value: JSON.parse(text) as T,
+    usage: {
+      model,
+      input_tokens: res.usage?.input_tokens,
+      output_tokens: res.usage?.output_tokens,
+      reasoning_tokens: res.usage?.output_tokens_details?.reasoning_tokens,
+    },
+  };
+}
+
 /** One structured-output call on the Responses API; returns the parsed JSON object. */
 export async function respondJson<T>(
   instructions: string,
   input: string,
   schemaName: string,
   schema: Record<string, unknown>,
+  options: RespondOptions = {},
 ): Promise<T> {
-  const res = await post<{
-    output: { type: string; content?: { type: string; text?: string }[] }[];
-  }>('/responses', {
-    model: REVIEW_MODEL,
-    instructions,
-    input,
-    reasoning: { effort: 'low' },
-    text: { format: { type: 'json_schema', name: schemaName, strict: true, schema } },
-  });
-  const message = res.output.find((o) => o.type === 'message');
-  const text = message?.content?.find((c) => c.type === 'output_text')?.text;
-  if (!text) throw new HttpError(502, 'openai_error', 'Responses API returned no text');
-  return JSON.parse(text) as T;
+  const { value } = await respondJsonWithUsage<T>(instructions, input, schemaName, schema, options);
+  return value;
 }

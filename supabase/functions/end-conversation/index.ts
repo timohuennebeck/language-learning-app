@@ -9,6 +9,7 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { HttpError, json, serveWithUser } from '../_shared/http.ts';
+import { findCandidates, resolveLexeme, POS, type Pos } from '../_shared/lexemes.ts';
 import { respondJson } from '../_shared/openai.ts';
 import { languageName, taskLabel, type ScenarioTask } from '../_shared/prompt.ts';
 
@@ -31,7 +32,15 @@ interface Review {
   tasks: { id: string; done: boolean; said: string | null }[];
   level: 'A1' | 'A2' | 'B1' | 'B2' | null;
   evidence: string[];
-  words: { front: string; back: string; example: string | null }[];
+  words: {
+    front: string;
+    back: string;
+    example: string | null;
+    lemma: string;
+    pos: Pos;
+    /** Filled in after the model answers: the dictionary entry "Wörter speichern" saves. */
+    lexemeId?: string | null;
+  }[];
 }
 
 /** Calls shorter than this are counted as failed (nothing to review, no quota used). */
@@ -64,8 +73,10 @@ const REVIEW_SCHEMA = {
           front: { type: 'string' },
           back: { type: 'string' },
           example: { type: ['string', 'null'] },
+          lemma: { type: 'string' },
+          pos: { type: 'string', enum: POS },
         },
-        required: ['front', 'back', 'example'],
+        required: ['front', 'back', 'example', 'lemma', 'pos'],
         additionalProperties: false,
       },
     },
@@ -87,6 +98,7 @@ function reviewInstructions(
       ? `For each task id, decide whether the learner completed it and quote the learner's sentence that did it in "said" (verbatim, in ${learning}); null if not done.`
       : 'The "tasks" array is empty for this conversation.',
     `"words": up to 8 useful ${learning} words or short phrases from the learner's or Pip's turns worth saving as flashcards, with "back" in ${native} and a short example in ${learning} (or null).`,
+    `For each word also give "lemma", its dictionary form (infinitive for verbs, singular without an article for nouns), and "pos", one of: ${POS.join(', ')}.`,
     placement
       ? `"level": the learner's CEFR speaking level, one of A1, A2, B1, B2, and "evidence": 2–3 short observations in ${native} that justify it.`
       : '"level" must be null and "evidence" an empty array.',
@@ -161,6 +173,35 @@ serveWithUser<Body>(async ({ userId, db, body }) => {
     return { id: t.id, done: Boolean(r?.done) || tasksDone.has(t.id), said: r?.said ?? null };
   });
   const level = placement ? review.level : null;
+
+  // Every saved word becomes a flashcard, and a flashcard is about a lexeme. Resolving them here
+  // is what lets a reading text later tint a word the learner picked up in this conversation; a
+  // card saved without one could never be matched to a text again.
+  try {
+    const words = review.words ?? [];
+    const candidates = await findCandidates(
+      db,
+      conv.language,
+      conv.native_language,
+      words.map((w) => ({ lemma: w.lemma, pos: w.pos })),
+    );
+    for (const word of words) {
+      word.lexemeId = await resolveLexeme(
+        db,
+        conv.language,
+        conv.native_language,
+        {
+          lemma: word.lemma,
+          pos: word.pos,
+          gloss: { trans: word.back, example: word.example },
+        },
+        candidates,
+      );
+    }
+  } catch (e) {
+    // The Rückblick is still worth showing; those words just cannot be saved yet.
+    console.error('lexeme resolution failed', e);
+  }
 
   const { error: reviewError } = await db
     .from('conversations')

@@ -69,6 +69,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types 'supabase/functions/**/*.test.ts'",
     "tokens": "node scripts/gen-tokens.js",
     "screens:reference": "node scripts/reference-shots.js",
     "screens:app": "node scripts/app-shots.js",
