@@ -140,7 +140,6 @@ export type Database = {
           box: number;
           created_at: string;
           due: string;
-          example: string | null;
           front: string;
           id: string;
           language: string;
@@ -157,7 +156,6 @@ export type Database = {
           box?: number;
           created_at?: string;
           due?: string;
-          example?: string | null;
           front: string;
           id?: string;
           language: string;
@@ -174,7 +172,6 @@ export type Database = {
           box?: number;
           created_at?: string;
           due?: string;
-          example?: string | null;
           front?: string;
           id?: string;
           language?: string;

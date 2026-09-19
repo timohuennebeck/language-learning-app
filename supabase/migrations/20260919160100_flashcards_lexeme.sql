@@ -1,4 +1,4 @@
--- 0016 · a flashcard is a word, not a spelling (docs/lesetext-plan.md §1)
+-- 0017 · a flashcard is a word, not a spelling (docs/lesetext-plan.md §1)
 --
 -- The card's identity moves from the text it was saved from to the lexeme it is about. That is what
 -- lets a reading text tint "nous allons" from a card saved as "je suis allée": both point at the

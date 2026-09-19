@@ -3,10 +3,8 @@ import { FIRST_BOX, dueAfter, promote, today } from '@/features/flashcards/lib/b
 import type { Tables } from '@/shared/lib/database.types';
 import { supabase } from '@/shared/lib/supabase';
 
-// `example` is no longer on the card, but every row the deck writes back carries it: the run is
-// saved with an upsert, and a column left out of an upsert is written as null.
 const COLUMNS =
-  'id, user_id, language, lexeme_id, front, back, back_language, example, box, reviews, lapses';
+  'id, user_id, language, lexeme_id, front, back, back_language, box, reviews, lapses';
 
 /** Cards handed to one run. The rest waits for the next one. */
 export const DECK_SIZE = 20;
@@ -20,7 +18,6 @@ type Row = Pick<
   | 'front'
   | 'back'
   | 'back_language'
-  | 'example'
   | 'box'
   | 'reviews'
   | 'lapses'
@@ -35,7 +32,6 @@ function toCard(row: Row): Flashcard {
     front: row.front,
     back: row.back,
     backLanguage: row.back_language,
-    example: row.example,
     box: row.box,
     reviews: row.reviews,
     lapses: row.lapses,
@@ -90,7 +86,6 @@ export async function saveDeckRun(cards: Flashcard[], knownIds: Set<string>): Pr
       front: card.front,
       back: card.back,
       back_language: card.backLanguage,
-      example: card.example,
       box,
       due: dueAfter(box, at),
       reviews: card.reviews + 1,

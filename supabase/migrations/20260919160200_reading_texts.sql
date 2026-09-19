@@ -1,4 +1,4 @@
--- 0017 · reading_texts: the generated Lesetext (docs/lesetext-plan.md §3)
+-- 0018 · reading_texts: the generated Lesetext (docs/lesetext-plan.md §3)
 --
 -- One row per text. `content` is the whole document — prose, its translation, and spans that point
 -- at `lexemes` by id — written once by `generate-reading` and read as a whole. No vocabulary lives

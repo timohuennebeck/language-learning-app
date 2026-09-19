@@ -1,4 +1,4 @@
--- 0015 · lexemes: the vocabulary becomes a table (docs/lesetext-plan.md §1)
+-- 0016 · lexemes: the vocabulary becomes a table (docs/lesetext-plan.md §1)
 --
 -- A reading text contains surface forms ("je suis allée"); a flashcard contains what the learner
 -- saved ("aller"). Neither string can find the other, and explaining "café" afresh inside every

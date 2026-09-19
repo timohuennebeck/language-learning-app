@@ -185,7 +185,6 @@ export async function saveWord(input: {
       front: lexeme.pos === 'noun' ? `${article}${lexeme.lemma}` : lexeme.lemma,
       back: lexeme.trans,
       back_language: input.nativeLanguage,
-      example: lexeme.example,
     },
     { onConflict: 'user_id,lexeme_id', ignoreDuplicates: true },
   );
