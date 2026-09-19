@@ -36,15 +36,15 @@ Four situations per theme at launch. The chip labels live in the locale files un
 
 **Levels.** One scenario, one **window** (`level_min` / `level_max`), no copy per level: the
 situation is the same for an A1 and an A2 learner, and Pip already gets the learner's level in the
-prompt. What differs by level is authored inside the row: each task and each vocabulary entry can
-carry a `level`, and the preview shows the entries at or below the learner's level. Suggested
+prompt. What differs by level is authored inside the row: each task can carry a `level`, and the
+preview shows the tasks at or below the learner's level. Suggested
 split of the 24: ten A1–A2, eight A2–B1, six B1–B2.
 
 ## 2 Table
 
 A scenario is one concept ("cafe") realised once per learning language. The language-neutral
 `key` ties the variants together and owns the illustration, theme and level window; per-language
-rows carry the title, Pip's prompt and the vocabulary; per-app-language strings are jsonb keyed
+rows carry the title and Pip's prompt; per-app-language strings are jsonb keyed
 by locale.
 
 ```sql
@@ -59,11 +59,10 @@ create table public.scenarios (
   level_min     public.cefr_level not null default 'A1',
   level_max     public.cefr_level not null default 'B2',
   minutes       smallint not null default 5,            -- "3–5 Min" on the preview
-  illustration  text not null,                          -- storage path: 'scenarios/cafe.webp'
+  illustration_storage_path  text not null,             -- 'scenarios/cafe.webp' in the public `scenarios` bucket
   subtitle      jsonb not null default '{}',            -- { "de": "Bestellen und bezahlen", "en": "Order and pay" }
   brief         jsonb not null default '{}',            -- { "de": "Du sitzt in einem Café in Paris. …" } · shown on the preview
   tasks         jsonb not null default '[]',            -- [{ "id": "order", "level": "A1", "text": { "de": "Bestelle einen Kaffee" }, "hint": "un café, s’il vous plaît" }]
-  vocabulary    jsonb not null default '[]',            -- [{ "term": "l’addition", "level": "A1", "meaning": { "de": "die Rechnung" }, "example": "L’addition, s’il vous plaît." }]
   pip_prompt    text not null,                          -- Pip's role and the situation, in the learning language
   sort_order    smallint not null default 0,
   active        boolean not null default true,
@@ -74,7 +73,7 @@ create index scenarios_feed_idx on public.scenarios (language, active, sort_orde
 
 Why jsonb for the localized strings: six locales times a handful of short strings per scenario do
 not justify a translations table; the app reads the whole row and picks `subtitle[app_language]`
-with an `en` fallback. The `tasks` / `vocabulary` shapes get a Zod schema in
+with an `en` fallback. The `tasks` shape gets a Zod schema in
 `features/speak/data/schemas.ts`, which is also what the content check below runs.
 
 Read-only for clients (`select` for `anon, authenticated`), written by the seed.
@@ -123,14 +122,6 @@ scripts/
           "text": { "de": "Bestelle einen Kaffee", "en": "…" },
           "hint": "un café, s’il vous plaît"
         }
-      ],
-      "vocabulary": [
-        {
-          "term": "l’addition",
-          "level": "A1",
-          "meaning": { "de": "die Rechnung", "en": "the bill" },
-          "example": "…"
-        }
       ]
     },
     "en": { "title": "At the café", "…": "…" },
@@ -140,8 +131,8 @@ scripts/
 ```
 
 `check-content.js` runs in CI and before `db:reset`: every key has a variant for every language
-with `learnable = true` in the seed; every `subtitle`, `brief`, task `text` and vocabulary
-`meaning` has all six locales; every `illustration` file exists; task ids are unique per key;
+with `learnable = true` in the seed; every `subtitle`, `brief` and task `text` has all six
+locales; every `illustration_storage_path` file exists; task ids are unique per key;
 levels lie inside the window. Missing content is a build error, not something noticed in the app.
 First drafts of the translations can be model-generated from the German master and reviewed by a
 native speaker per language; the check proves presence, not quality.
@@ -160,8 +151,8 @@ alter type public.conversation_kind add value 'scenario';
 alter table public.conversations add column scenario_id uuid references public.scenarios(id) on delete set null;
 ```
 
-`start-conversation` takes `scenario_id?`; the function adds `pip_prompt`, the tasks and the
-vocabulary at or below the learner's level to the system prompt and stores the id. A call from
+`start-conversation` takes `scenario_id?`; the function adds `pip_prompt` and the tasks at or
+below the learner's level to the system prompt and stores the id. A call from
 the "Freies Gespräch" card is `kind = 'free'` with no scenario. `end-conversation`'s review gains
 a task checklist, which the Rückblick shows:
 
@@ -177,10 +168,10 @@ a task checklist, which the Rückblick shows:
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
 | Sprechen tab                    | `scenarios` for the active language (theme chips, level window, "Für dich" from `learner_languages.goal`); credits: RevenueCat customer info + `count(conversations)` this period |                                        |
 | Freies Gespräch card            |                                                                                                                                                                                   | `start-conversation` (`kind = 'free'`) |
-| Scenario preview (01b restyled) | one `scenarios` row: `brief`, `tasks` and `vocabulary` filtered by level, `minutes`                                                                                               | `start-conversation` (`scenario_id`)   |
+| Scenario preview (01b restyled) | one `scenarios` row: `brief`, `tasks` filtered by level, `minutes`                                                                                                                | `start-conversation` (`scenario_id`)   |
 | Rückblick                       | `conversations.review.tasks`                                                                                                                                                      |                                        |
 
-Client: `features/speak/` gets `data/schemas.ts` (scenario, task, vocabulary), `data/repository.ts`
+Client: `features/speak/` gets `data/schemas.ts` (scenario, task), `data/repository.ts`
 (`listScenarios(language)`, `getScenario(key)`), `data/keys.ts`, and the preview screen replaces
 the current lesson start screen for scenarios. The `lessons` sample data and the home feed's
 `lessons` field go away with it.
