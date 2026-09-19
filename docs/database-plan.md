@@ -1,31 +1,31 @@
 # Yori · Database plan (Supabase)
 
-Scope of this document: user accounts and profiles, language levels, app config, streaks,
-live conversations (GPT-Live-1), legal documents (Nutzungsbedingungen / Datenschutzerklärung),
-billing and referral credits, and the local-development workflow. **Lernen** (exercises,
-flashcards, reading, grammar) and **Kurs** (chapters, stations) are out of scope and get their own
-plan later; where they touch the tables below, the seam is marked with `→ Lernen` / `→ Kurs`.
+Scope of this document: accounts and profiles, language levels, app config, live conversations
+(GPT-Live-1) and the flashcards they produce, legal documents (Nutzungsbedingungen /
+Datenschutzerklärung), and the local-development workflow. **Lernen** (exercises, flashcard
+scheduling, reading, grammar) and **Kurs** (chapters, stations) get their own plans later; where
+they touch the tables below, the seam is marked with `→ Lernen` / `→ Kurs`. Everything cut from
+earlier drafts is listed in §8 with the moment it comes back.
 
 Launch scope (confirmed):
 
 - **App languages (UI):** German, English, Spanish, French, Italian, Portuguese.
 - **Learning languages at launch:** French, English, Spanish. German, Italian and Portuguese show
   under "Bald verfügbar".
-- Any learning language can be paired with any app language (a Spanish-speaking user learning
-  English, an Italian user learning French, …). Everything the user *reads* (menus, meanings,
-  explanations, Pip's feedback, legal documents) is in the app language; everything they
+- Any learning language can be paired with any app language. Everything the user *reads* (menus,
+  meanings, explanations, Pip's feedback, legal documents) is in the app language; everything they
   *practise* is in the learning language.
 
 Assumptions (please correct):
 
 - Supabase project in **eu-central-1 (Frankfurt)**: EU users are the core, GDPR applies (consent
-  records, in-app account deletion, data minimisation). Users in the Americas (en/es/pt) only pay
-  ~100 ms extra on API calls; the voice stream goes to the model provider directly, not via
-  Supabase, so call latency is unaffected.
+  records, in-app account deletion, data minimisation). Users in the Americas only pay ~100 ms
+  extra on API calls; the voice stream goes to the model provider directly, so call latency is
+  unaffected.
 - One learning language at a time, but progress per language is kept ("Dein Fortschritt in
   Französisch bleibt gespeichert").
-- The unit of billing is **one conversation** ("Gespräch", up to 6 minutes). Referral rewards
-  ("1 Stunde") are converted into conversations (see open questions).
+- Billing at launch is the **monthly subscription only** (10 or 30 conversations per month).
+  Packs and referral credits come later (§8).
 
 ---
 
@@ -56,8 +56,7 @@ supabase/
   config.toml            local ports, auth providers, anonymous sign-ins, redirect urls
   migrations/            ordered SQL files = the single source of truth for the schema
   seed.sql               reference data (languages, app_config, legal documents) + a dev user
-  functions/             edge functions (Deno): start-conversation, end-conversation,
-                         revenuecat-webhook, delete-account
+  functions/             edge functions (Deno): start-conversation, end-conversation, delete-account
 src/shared/lib/
   supabase.ts            client (AsyncStorage session, url polyfill)
   database.types.ts      generated: `supabase gen types typescript --local`
@@ -81,9 +80,8 @@ Rules of the road:
   never edits in Studio. `supabase db reset` replays migrations + seed and must stay green.
 - `db:types` runs after every migration; the generated types are committed. Zod schemas in
   `features/*/data/schemas.ts` stay as the domain layer and parse rows into the app's shapes.
-- Production: `supabase link --project-ref …` once, then `supabase db push` from CI. Consider
-  Supabase branching later for preview environments; not needed at the start.
-- Secrets for edge functions (`OPENAI_API_KEY`, `REVENUECAT_WEBHOOK_SECRET`) live in
+- Production: `supabase link --project-ref …` once, then `supabase db push` from CI.
+- Secrets for edge functions (`OPENAI_API_KEY`, `REVENUECAT_API_KEY`) live in
   `supabase/.env.local` locally and `supabase secrets set` in production.
 
 `config.toml` settings that matter for this app:
@@ -92,7 +90,7 @@ Rules of the road:
 [auth]
 site_url = "yori://"
 additional_redirect_urls = ["yori://**", "exp://**"]
-enable_anonymous_sign_ins = true          # onboarding before the account exists (see §3)
+enable_anonymous_sign_ins = true          # onboarding before the account exists (see §2)
 [auth.email]
 enable_confirmations = false              # turn on before launch
 [auth.external.apple]  enabled = true     # required on iOS when Google sign-in is offered
@@ -114,15 +112,26 @@ email screen for v1 or drop it.
 *before* the account is created (step 10). Instead of holding all of it in AsyncStorage and
 replaying it on sign-up, the app calls `supabase.auth.signInAnonymously()` on first launch. Every
 step then writes to the user's own rows straight away, and the placement conversation has a real
-`user_id` to bill and rate-limit against. At step 10 the anonymous user is converted into a
-permanent one (`updateUser({ email, password })` or `linkIdentity({ provider })`), keeping the same
-`id` and all rows. Stale anonymous users (no `onboarding_completed_at` after 30 days) are deleted by
-a scheduled job.
+`user_id` to rate-limit against. At step 10 the anonymous user is converted into a permanent one
+(`updateUser({ email, password })` or `linkIdentity({ provider })`), keeping the same `id` and all
+rows. Stale anonymous users (no `onboarding_completed_at` after 30 days) are removed by a scheduled
+edge function later.
+
+**Profile creation happens in the app, not in a trigger.** Right after `signInAnonymously()` the
+app runs `profiles.upsert({ id: user.id, app_language, first_name: '' })` and only continues when
+that succeeds; the same upsert runs on every cold start, so a profile can never be missing. A
+database trigger on `auth.users` would create the row invisibly, and when it fails the user sees a
+generic "Database error saving new user" from Auth with nothing the app can act on.
 
 The current `SessionProvider` keeps its API (`session`, `update`, `completeOnboarding`, `reset`),
 but becomes a thin layer over the Supabase session + a `profiles` query; the AsyncStorage copy
 stays as an offline cache. The route guard changes from `session.onboardingComplete` to
 `profile.onboarding_completed_at != null`.
+
+**Where logic lives.** Plain table reads and writes from the app wherever row-level security is
+enough (profiles, learner languages, flashcards, consent). Edge functions wherever a secret or a
+third party is involved (the model provider, RevenueCat, auth admin). No database functions or
+triggers in this plan: every write is a call the app made and whose result it sees.
 
 ---
 
@@ -139,13 +148,9 @@ auth user removes everything.
 create type public.cefr_level          as enum ('A1','A2','B1','B2');
 create type public.reminder_repeat     as enum ('daily','weekdays','weekend');
 create type public.learning_goal       as enum ('travel','media','family','work','friends','fun');
-create type public.level_source        as enum ('self','placement_call','reassessment');
+create type public.level_source        as enum ('self','placement');
 create type public.conversation_kind   as enum ('placement','lesson','free');
-create type public.conversation_status as enum ('pending','active','ended','failed');
-create type public.credit_bucket       as enum ('monthly','purchased');
-create type public.credit_reason       as enum ('trial_grant','monthly_grant','pack_purchase',
-                                                'referral_reward','conversation','refund','admin');
-create type public.subscription_status as enum ('trial','active','billing_issue','cancelled','expired');
+create type public.conversation_status as enum ('active','ended','failed');
 create type public.legal_doc_kind      as enum ('terms','privacy');
 create type public.platform            as enum ('ios','android','web');
 ```
@@ -185,112 +190,80 @@ create table public.app_config (
 Codes are two-letter ISO 639-1. Regional variants (pt-BR / pt-PT, es-ES / es-419) are not separate
 rows; the full device locale is stored on `devices.locale` for number/date formatting only.
 
-Initial `app_config` keys (seed):
+`app_config` seed (two keys; if that feels thin, both can be constants in the app and the table
+can wait):
 
-| key                                  | value                              | used by                     |
-| ------------------------------------ | ---------------------------------- | --------------------------- |
-| `min_app_version`                    | `"1.0.0"`                          | force-update gate           |
-| `conversation_max_seconds`           | `360`                              | live call timer / cut-off   |
-| `referral_reward_conversations`      | `10`                               | redeem code (≈ 1 Stunde)    |
-| `reassessment_every_n_conversations` | `10`                               | "8 Gespräche übrig bis zur nächsten Einstufung" |
-| `daily_goal_options_minutes`         | `[5,10,15,30]`                     | goal pickers                |
+| key                        | value     | used by                                          |
+| -------------------------- | --------- | ------------------------------------------------ |
+| `min_app_version`          | `"1.0.0"` | force-update gate                                |
+| `conversation_max_seconds` | `360`     | live call timer, `start-conversation` cut-off    |
 
-Plans, packs, prices and the trial length are **not** config: RevenueCat offerings own them
-(§3.6). The only thing the database needs about a product is how many conversations it grants.
+Plans, prices and the trial are **not** in the database: RevenueCat offerings own them (§3.5).
 
 ### 3.3 Profiles and learner state
 
 ```sql
 create table public.profiles (
   id                       uuid primary key references auth.users(id) on delete cascade,
-  display_name             text not null default '' check (char_length(display_name) <= 40),
+  first_name               text not null default '' check (char_length(first_name) <= 40),
   app_language             text not null default 'en' references public.languages(code),
   active_language          text references public.languages(code),   -- currently learning
-  timezone                 text not null default 'UTC',                -- set from the device on sign-in
   daily_goal_minutes       smallint not null default 15 check (daily_goal_minutes in (5,10,15,30)),
   reminder_time            time,                                       -- null = reminders off
   reminder_repeat          public.reminder_repeat not null default 'daily',
   onboarding_completed_at  timestamptz,
-  -- streak cache, maintained by log_activity() (§3.5)
-  streak_current           int not null default 0,
-  streak_longest           int not null default 0,
-  streak_last_day          date,
   created_at               timestamptz not null default now(),
   updated_at               timestamptz not null default now()
 );
 
 -- One row per language the user has started. Level, target and goal are per language.
 create table public.learner_languages (
-  user_id         uuid not null references public.profiles(id) on delete cascade,
-  language        text not null references public.languages(code),
-  level           public.cefr_level not null default 'A1',
-  target_level    public.cefr_level not null default 'B1',
-  level_progress  numeric(4,3) not null default 0 check (level_progress between 0 and 1), -- → Kurs
-  goal            public.learning_goal,                       -- "Warum lernst du Französisch?"
-  started_at      timestamptz not null default now(),
-  last_active_at  timestamptz,
+  user_id                   uuid not null references public.profiles(id) on delete cascade,
+  language                  text not null references public.languages(code),
+  level                     public.cefr_level not null default 'A1',
+  level_source              public.level_source not null default 'self',
+  level_assessed_at         timestamptz,
+  placement_conversation_id uuid references public.conversations(id) on delete set null,
+  target_level              public.cefr_level not null default 'B1',
+  goal                      public.learning_goal,       -- "Warum lernst du Französisch?"
+  started_at                timestamptz not null default now(),
   primary key (user_id, language),
   check (target_level >= level)
 );
-
--- Every Einstufung: the onboarding call, the self-assessment fallback, later re-assessments.
-create table public.level_assessments (
-  id               uuid primary key default gen_random_uuid(),
-  user_id          uuid not null references public.profiles(id) on delete cascade,
-  language         text not null references public.languages(code),
-  source           public.level_source not null,
-  conversation_id  uuid references public.conversations(id) on delete set null,
-  level            public.cefr_level not null,
-  previous_level   public.cefr_level,
-  evidence         jsonb not null default '[]',   -- [{text, note, score, status}] → 09 "3 Stellen"
-  created_at       timestamptz not null default now()
-);
 ```
 
-`app_language` is set from the device locale on the first anonymous sign-in (`detectLanguage()`
-today), falling back to `en` for unsupported locales; the DB default only matters for rows created
-outside the app. `timezone` likewise comes from `expo-localization` on every launch (users in
-Lisbon, São Paulo and Mexico City all need correct streak days). The UI should stop a user from
-learning their own app language (e.g. app in English, learning English); that is a client rule,
-not a constraint, because immersion setups (app in Spanish while learning Spanish) are legitimate.
+Column notes:
 
-Email is not duplicated into `profiles`; the profile and logout screens read it from
-`supabase.auth.getUser()`. The `name`, `appLanguage`, `dailyGoalMinutes`, `reminder` fields of
-the current `Session` schema map 1:1 to `profiles`; `learningLanguage`, `level`, `targetLevel`,
-`goal` map to `learner_languages`; `plusActive` is derived from `subscriptions` (§3.6).
+- `reminder_time` + `reminder_repeat` are the two controls on the reminder screens: the time
+  wheel and the "Wiederholen" segments (Täglich / Mo–Fr / Wochenende). Both feed the local
+  notification schedule; no server involvement.
+- `level`, `level_source`, `level_assessed_at` and `placement_conversation_id` replace a separate
+  assessments table for now. The 09 "Dein Stand" screen reads the level here and the "3 Stellen"
+  evidence from the placement conversation's `review` column (§3.6).
+- `app_language` is set from the device locale on the first anonymous sign-in (`detectLanguage()`
+  today), falling back to `en` for unsupported locales. The UI should stop a user from learning
+  their own app language; that is a client rule, not a constraint.
+- Email is not duplicated into `profiles`; the profile and logout screens read it from
+  `supabase.auth.getUser()`.
 
-A trigger on `auth.users` creates the profile and the referral code:
-
-```sql
-create function public.handle_new_user() returns trigger
-language plpgsql security definer set search_path = '' as $$
-begin
-  insert into public.profiles (id, display_name)
-  values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', ''));
-  insert into public.referral_codes (code, user_id)
-  values (public.generate_referral_code(), new.id);
-  return new;
-end $$;
-
-create trigger on_auth_user_created
-  after insert on auth.users for each row execute function public.handle_new_user();
-```
+Mapping from the current `Session` schema: `name` → `first_name`, `appLanguage`,
+`dailyGoalMinutes`, `reminder` → `profiles`; `learningLanguage` → `profiles.active_language`;
+`level`, `targetLevel`, `goal` → `learner_languages`; `plusActive` → RevenueCat SDK (§3.5).
 
 ### 3.4 Legal documents and consent
 
 The welcome and account screens say "Mit … akzeptierst du die Nutzungsbedingungen und die
 Datenschutzerklärung". To prove that later, the documents are versioned in the database and each
-acceptance is recorded. With six app languages every version exists once per locale; the app
-fetches `(kind, locale = profiles.app_language)` and falls back to `en` when a translation is
-missing, and the acceptance row points at the exact translated document the user saw. The terms screen fetches the current document (`effective_at <= now()`,
-newest first) instead of the lorem ipsum in `de.json`; the "Stand 15. September 2026" line comes
-from `effective_at`.
+acceptance is recorded. Every version exists once per locale; the app fetches
+`(kind, locale = profiles.app_language)` and falls back to `en`, and the acceptance row points at
+the exact translated document the user saw. The terms screen renders `content_md` instead of the
+lorem ipsum in `de.json`; the "Stand 15. September 2026" line comes from `effective_at`.
 
 ```sql
 create table public.legal_documents (
   id                     uuid primary key default gen_random_uuid(),
   kind                   public.legal_doc_kind not null,
-  locale                 text not null default 'de',
+  locale                 text not null default 'en',
   version                text not null,                 -- '2026-09-15'
   title                  text not null,
   content_md             text not null,                 -- rendered as sections in TermsScreen
@@ -313,283 +286,119 @@ create table public.legal_acceptances (
 Acceptance is written when the anonymous user taps "Los geht's" (welcome) and again when the
 account is created, each time with the document version that was on screen.
 
-### 3.5 Activity and streaks
+### 3.5 Subscription and the monthly conversation quota
 
-One row per user and calendar day **in the user's time zone**. Streaks, the "Heute schon 6 von 15
-Min" line, the Mon–Sun circles, "Tägliches Limit erreicht" and the reset countdown are all derived
-from this table. Lernen and Kurs only ever call `log_activity()`; they never touch streak fields.
+No billing tables at launch. RevenueCat holds the subscription; the database only needs to answer
+"how many conversations has this user started in the current period", and `conversations` already
+answers that.
 
-```sql
-create table public.daily_activity (
-  user_id          uuid not null references public.profiles(id) on delete cascade,
-  day              date not null,                  -- (now() at time zone profiles.timezone)::date
-  seconds_learned  int not null default 0,
-  conversations    int not null default 0,
-  cards_reviewed   int not null default 0,         -- → Lernen
-  exercises_done   int not null default 0,         -- → Lernen
-  goal_minutes     smallint not null,              -- snapshot of the goal that day
-  primary key (user_id, day)
-);
+- **In the app:** `plusActive`, the plan, the trial, prices, and "In 11 Tagen hast du wieder 30
+  Gespräche" all come from the RevenueCat SDK (`getCustomerInfo().entitlements.active.plus`,
+  `expirationDate`, offerings). `Purchases.logIn(user.id)` ties the store account to the Supabase
+  user. Conversations used this period = `select count(*) from conversations where kind <>
+  'placement' and status <> 'failed' and started_at >= <period start>` (RLS lets the user read
+  only their own rows).
+- **In `start-conversation` (server side, cannot be bypassed):** the edge function calls the
+  RevenueCat REST API (`GET /v1/subscribers/{user.id}`) with the secret key, reads the active
+  `plus` entitlement, its `product_identifier` and `purchase_date` / `expires_date`, maps the
+  product to its quota with a constant in the function
+  (`{ yori_plus_10_monthly: 10, yori_plus_30_monthly: 30 }`), counts the user's conversations in
+  that period the same way, and refuses with `NO_CREDITS` when the quota is reached → the app
+  shows 30a "Gespräche aufgebraucht".
 
--- Called by the app after each learning unit. Upserts today, then extends or resets the streak.
-create function public.log_activity(p_seconds int, p_conversations int default 0,
-                                    p_cards int default 0, p_exercises int default 0)
-returns public.daily_activity language plpgsql security definer set search_path = '' as $$
-declare v_profile public.profiles; v_today date; v_row public.daily_activity;
-begin
-  select * into v_profile from public.profiles where id = auth.uid() for update;
-  v_today := (now() at time zone v_profile.timezone)::date;
+The trial is the store intro offer on the same products; a user on trial has the `plus`
+entitlement and the plan's normal quota. When packs or referral credits arrive, they need a
+balance that outlives the period, and that is when a ledger table comes in (§8).
 
-  insert into public.daily_activity as a (user_id, day, seconds_learned, conversations,
-                                          cards_reviewed, exercises_done, goal_minutes)
-  values (v_profile.id, v_today, p_seconds, p_conversations, p_cards, p_exercises,
-          v_profile.daily_goal_minutes)
-  on conflict (user_id, day) do update set
-    seconds_learned = a.seconds_learned + excluded.seconds_learned,
-    conversations   = a.conversations   + excluded.conversations,
-    cards_reviewed  = a.cards_reviewed  + excluded.cards_reviewed,
-    exercises_done  = a.exercises_done  + excluded.exercises_done
-  returning * into v_row;
-
-  -- any activity counts for the streak (the design shows "2 Tage Serie" after the first exercise)
-  if v_profile.streak_last_day is distinct from v_today then
-    update public.profiles set
-      streak_current  = case when streak_last_day = v_today - 1 then streak_current + 1 else 1 end,
-      streak_longest  = greatest(streak_longest,
-                          case when streak_last_day = v_today - 1 then streak_current + 1 else 1 end),
-      streak_last_day = v_today
-    where id = v_profile.id;
-  end if;
-  return v_row;
-end $$;
-```
-
-Reads: `streak_current` is stale by at most one day, so the client treats it as 0 when
-`streak_last_day < yesterday`. The week strip is `select day, seconds_learned from daily_activity
-where user_id = auth.uid() and day >= date_trunc('week', today)`.
-
-### 3.6 Subscriptions and conversation credits
-
-RevenueCat owns the store subscriptions; the database mirrors the state it needs for
-entitlements and keeps the credit ledger. The client never writes here; the `revenuecat-webhook`
-edge function does.
-
-RevenueCat knows products, prices per storefront, the intro offer (the 5-day trial) and the
-current entitlement. It does not know that `yori_plus_30_monthly` is worth 30 conversations, and
-the webhook that writes the ledger must not trust the app for that number. So the database keeps
-exactly one thing per product: its conversation count.
-
-```sql
--- One row per store product. Same identifiers on App Store and Play Store, so one row covers both.
-create table public.products (
-  product_id     text primary key,          -- 'yori_plus_10_monthly', 'yori_pack_25'
-  kind           text not null check (kind in ('subscription','pack')),
-  conversations  int not null check (conversations > 0),
-  active         boolean not null default true
-);
-
--- Current subscription state per user (upserted from RevenueCat webhooks).
-create table public.subscriptions (
-  user_id         uuid primary key references public.profiles(id) on delete cascade,
-  rc_app_user_id  text not null,           -- = profiles.id, set via Purchases.logIn()
-  product_id      text references public.products(product_id),
-  status          public.subscription_status not null,
-  store           text,                    -- 'app_store' | 'play_store'
-  period_start    timestamptz,
-  period_end      timestamptz,
-  will_renew      boolean,
-  updated_at      timestamptz not null default now()
-);
-
--- Raw webhook log; the event id makes processing idempotent.
-create table public.revenuecat_events (
-  id            text primary key,
-  type          text not null,             -- INITIAL_PURCHASE, RENEWAL, CANCELLATION, …
-  app_user_id   text not null,
-  payload       jsonb not null,
-  received_at   timestamptz not null default now(),
-  processed_at  timestamptz
-);
-
--- Append-only ledger. Positive rows are grants, negative rows are consumption.
-create table public.credit_ledger (
-  id               bigint generated always as identity primary key,
-  user_id          uuid not null references public.profiles(id) on delete cascade,
-  bucket           public.credit_bucket not null,
-  amount           int not null check (amount <> 0),
-  reason           public.credit_reason not null,
-  conversation_id  uuid references public.conversations(id) on delete set null,
-  period_end       timestamptz,            -- monthly rows: when this month's quota expires
-  ref              text,                   -- RC event id / purchase id / referral id
-  created_at       timestamptz not null default now(),
-  unique (reason, ref)                     -- idempotent grants
-);
-create index on public.credit_ledger (user_id, bucket, period_end);
-```
-
-Semantics, matching the copy on the paywall and talk-limit screens:
-
-- **Monthly bucket** ("30 Gespräche im Monat"): each `RENEWAL` / `INITIAL_PURCHASE` webhook inserts
-  `+products.conversations` with `period_end = subscription.period_end`. Consumption rows copy the same `period_end`, so
-  the remaining quota is `sum(amount) where bucket='monthly' and period_end > now()`. Unused
-  conversations expire with the period. "In 11 Tagen hast du wieder 30 Gespräche" = `period_end`.
-- **Purchased bucket** ("Guthaben verfällt nicht und wird erst nach deinem Monatskontingent
-  verbraucht"): pack purchases (`NON_RENEWING_PURCHASE` webhook, `+products.conversations`) and
-  referral rewards land here with `period_end = null` and are consumed only when the monthly
-  bucket is empty.
-- **Trial** ("5 Tage kostenlos testen"): the store intro offer arrives as `INITIAL_PURCHASE` with
-  `period_type = 'TRIAL'`; the webhook sets `status='trial'` and grants the plan's normal
-  `products.conversations` with `period_end = trial end`. No separate trial quota.
-- **Display**: the paywall and talk-limit screens read prices, the trial length and the
-  recommended package from RevenueCat offerings and join `products` by `product_id` for the
-  conversation count.
-
-```sql
-create function public.conversation_balance()
-returns table (monthly_remaining int, monthly_total int, resets_at timestamptz, purchased_remaining int)
-language sql security definer set search_path = '' stable as $$
-  select
-    coalesce(sum(amount) filter (where bucket = 'monthly' and period_end > now()), 0)::int,
-    coalesce(sum(amount) filter (where bucket = 'monthly' and period_end > now() and amount > 0), 0)::int,
-    max(period_end) filter (where bucket = 'monthly' and period_end > now()),
-    coalesce(sum(amount) filter (where bucket = 'purchased'), 0)::int
-  from public.credit_ledger where user_id = auth.uid();
-$$;
-```
-
-`consume_conversation_credit(conversation_id)` (security definer, called only by the
-`start-conversation` edge function) locks the profile row, reads the balance, inserts `-1` into
-`monthly` if available, else `purchased`, else raises `NO_CREDITS` → the app shows 30a
-"Gespräche aufgebraucht". A conversation that fails before it really started (`duration < 30 s`,
-`status='failed'`) gets a matching `+1 refund` row.
-
-`plusActive` in the UI = `subscriptions.status in ('trial','active','billing_issue')`.
-
-### 3.7 Referrals ("Code teilen" / "Code einlösen")
-
-```sql
-create table public.referral_codes (
-  code        text primary key check (code ~ '^[A-Z0-9]{6}$'),   -- 'MAJA7K' → yori.app/MAJA7K
-  user_id     uuid not null unique references public.profiles(id) on delete cascade,
-  created_at  timestamptz not null default now()
-);
-
-create table public.referrals (
-  id           uuid primary key default gen_random_uuid(),
-  code         text not null references public.referral_codes(code),
-  referrer_id  uuid not null references public.profiles(id) on delete cascade,
-  referred_id  uuid not null unique references public.profiles(id) on delete cascade,
-  redeemed_at  timestamptz not null default now(),
-  rewarded_at  timestamptz,
-  check (referrer_id <> referred_id)
-);
-```
-
-`redeem_referral_code(p_code)` (RPC, security definer): valid code, caller has no referral yet,
-caller's account is younger than 14 days → insert the referral and grant
-`referral_reward_conversations` to both users in the purchased bucket
-(`reason='referral_reward'`, `ref=referral id`). The unique constraint on `referred_id` prevents
-double redemption; the check prevents self-referral. Codes come from
-`generate_referral_code()` (6 chars, retries on collision, avoids `0/O/1/I`).
-
-### 3.8 Live conversations (GPT-Live-1)
+### 3.6 Live conversations (GPT-Live-1) and flashcards
 
 The app talks to the realtime model directly (WebRTC) using a short-lived token minted by an edge
-function; the database only sees the lifecycle, the transcript and the analysis. This keeps the
-OpenAI key off the device and puts credit checks server-side.
+function; the database sees the lifecycle, the transcript and the review. This keeps the provider
+key off the device and puts the quota check server-side.
 
 ```sql
 create table public.conversations (
   id                   uuid primary key default gen_random_uuid(),
   user_id              uuid not null references public.profiles(id) on delete cascade,
-  language             text not null references public.languages(code),
+  language             text not null references public.languages(code),   -- practised
+  native_language      text not null references public.languages(code),   -- app language at call time
   kind                 public.conversation_kind not null,   -- placement | lesson | free
-  status               public.conversation_status not null default 'pending',
+  status               public.conversation_status not null default 'active',
   topic                text,                                -- 'Café in Paris' (Rückblick header)
   lesson_ref           text,                                -- → Kurs: chapter/station id, later a FK
   level                public.cefr_level,                   -- learner level when the call started
-  native_language      text references public.languages(code), -- app language at call time:
-                                                            -- Pip explains / mixes in this language
   provider             text not null default 'openai',
   model                text,                                -- e.g. 'gpt-live-1'
   provider_session_id  text,
   max_seconds          int not null default 360,
-  started_at           timestamptz,
+  started_at           timestamptz not null default now(),
   ended_at             timestamptz,
   duration_seconds     int,
   end_reason           text,                                -- 'user' | 'max_duration' | 'error'
-  summary              jsonb,                               -- analysis output (stats, tips)
+  transcript           jsonb,   -- [{role:'user'|'assistant', text, started_ms, ended_ms}, …]
+  review               jsonb,   -- output of end-conversation, see below
   created_at           timestamptz not null default now()
 );
-create index on public.conversations (user_id, created_at desc);
+create index on public.conversations (user_id, started_at desc);
 
--- Transcript, one row per utterance. Uploaded by the app at the end of the call.
-create table public.conversation_turns (
-  conversation_id  uuid not null references public.conversations(id) on delete cascade,
-  seq              int not null,
-  role             text not null check (role in ('user','assistant')),
-  text             text not null,
-  started_ms       int,
-  ended_ms         int,
-  primary key (conversation_id, seq)
-);
-
--- What the Rückblick screen shows: captured words and "Umschrieben" paraphrases.
-create table public.conversation_items (
-  id               uuid primary key default gen_random_uuid(),
-  conversation_id  uuid not null references public.conversations(id) on delete cascade,
-  user_id          uuid not null references public.profiles(id) on delete cascade,
-  kind             text not null check (kind in ('word','paraphrase')),
-  term             text not null,        -- 'la cuillère' (learning language)
-  meaning          text not null,        -- 'der Löffel' / 'the spoon' …
-  meaning_language text not null references public.languages(code),  -- = conversations.native_language
-  said             text,                 -- 'le truc pour remuer' (paraphrase only)
-  example          text,
-  saved_word_id    uuid references public.saved_words(id) on delete set null,
-  created_at       timestamptz not null default now()
-);
-
--- The learner's vocabulary ("86 Wörter gespeichert"). → Lernen adds SRS state in its own table.
-create table public.saved_words (
+-- The learner's vocabulary. Rows are created from the Rückblick screen (and later by Lernen).
+-- → Lernen adds the spaced-repetition columns (due_at, interval, ease, misses) in its own migration.
+create table public.flashcards (
   id                      uuid primary key default gen_random_uuid(),
   user_id                 uuid not null references public.profiles(id) on delete cascade,
-  language                text not null references public.languages(code),
-  term                    text not null,                       -- learning language
-  meaning                 text not null,                       -- in meaning_language
-  meaning_language        text not null references public.languages(code),
-  example                 text,
+  language                text not null references public.languages(code),  -- of `front`
+  front                   text not null,        -- 'la cuillère'
+  back                    text not null,        -- 'der Löffel' / 'the spoon' …
+  back_language           text not null references public.languages(code),  -- of `back`
+  example                 text,                 -- 'un café à emporter'
   source_conversation_id  uuid references public.conversations(id) on delete set null,
   created_at              timestamptz not null default now(),
-  unique (user_id, language, term)
+  unique (user_id, language, front)
 );
 ```
+
+`review` shape (written once by `end-conversation`, read by the Rückblick and level-result screens):
+
+```json
+{
+  "summary": "…",
+  "words":       [{ "term": "à emporter", "meaning": "zum Mitnehmen", "example": "un café à emporter" }],
+  "paraphrases": [{ "said": "le truc pour remuer", "term": "la cuillère", "meaning": "der Löffel" }],
+  "placement":   { "level": "A2", "evidence": [{ "text": "…", "note": "…", "score": 88, "status": "ok" }] }
+}
+```
+
+Why jsonb and not tables: the transcript is written once and read as a whole; the review is a
+candidate list the user picks from, not something queried across conversations. Both fit one row.
+If Lernen later needs "every sentence the user ever said with *prendre*", a `conversation_turns`
+table can be filled from `transcript` in one migration.
+
+Why `flashcards` carries `back_language`: a German user's "der Löffel" and an English user's "the
+spoon" are both valid rows, and a user who switches app language keeps the old cards readable.
 
 Call flow:
 
 1. **`start-conversation`** (edge function, JWT required): body `{ language, kind, topic?,
-   lesson_ref? }`. For `kind != 'placement'` it calls `consume_conversation_credit()`; for
-   `placement` it allows exactly one per user and language (anonymous users included) and no
-   credit. It inserts the `conversations` row (`status='active'`, `started_at`, `max_seconds` from
-   config, `native_language = profiles.app_language`), builds the system prompt from
-   `learner_languages` (level, goal), the topic, the learning language and the native language
-   (Pip speaks the learning language, explains and accepts mixed answers in the native one), mints
-   the ephemeral realtime token, and returns `{ conversation_id, client_secret, max_seconds }`.
+   lesson_ref? }`. For `kind = 'placement'` it allows one per user and language (anonymous users
+   included) and skips the quota; otherwise it runs the RevenueCat check from §3.5. It inserts the
+   `conversations` row (`native_language = profiles.app_language`, `level` from
+   `learner_languages`, `max_seconds` from config), builds the system prompt from level, goal,
+   topic, learning language and native language (Pip speaks the learning language, explains and
+   accepts mixed answers in the native one), mints the ephemeral realtime token, and returns
+   `{ conversation_id, client_secret, max_seconds }`. Any failure is an HTTP error the app shows.
 2. The app connects, shows the timer and cuts off at `max_seconds`.
-3. **`end-conversation`**: body `{ conversation_id, transcript[], end_reason }`. Stores the turns,
-   sets `ended_at`/`duration_seconds`, calls `log_activity(duration, conversations => 1)`, runs the
-   analysis (words, paraphrases, short summary; meanings in `native_language`) and writes
-   `conversation_items` + `summary`. For
-   `kind='placement'` it also writes a `level_assessments` row and updates
-   `learner_languages.level`. Refunds the credit if the call failed early.
-4. The Rückblick screen reads `conversation_items`; "N Wörter speichern" inserts into
-   `saved_words` (copying `meaning_language`) and sets `saved_word_id` (state 2 "Gespeichert" =
-   already linked). A user who later switches the app language keeps the old meanings; the column
-   makes a re-translation job possible later.
+3. **`end-conversation`**: body `{ conversation_id, transcript, end_reason }`. Stores the
+   transcript, sets `ended_at` / `duration_seconds` / `status`, runs the analysis (words,
+   paraphrases, summary, meanings in `native_language`; for `placement` also the level and
+   evidence), writes `review`, and for placement updates `learner_languages.level`,
+   `level_source`, `level_assessed_at`, `placement_conversation_id`. Returns the `review` so the
+   app can show the Rückblick immediately. A call that ended in under 30 s is marked `failed` and
+   does not count against the quota.
+4. The Rückblick screen shows `review.words` and `review.paraphrases`; "N Wörter speichern"
+   inserts the picked ones into `flashcards` (`back_language = native_language`). Already-saved
+   words ("Gespeichert") are found by `(user_id, language, front)`.
 
-"8 Gespräche übrig bis zur nächsten Einstufung" = `reassessment_every_n_conversations` minus the
-count of ended non-placement conversations since the latest `level_assessments.created_at`.
-
-### 3.9 Devices, notifications, feedback
+### 3.7 Devices
 
 ```sql
 create table public.devices (
@@ -603,25 +412,12 @@ create table public.devices (
   push_enabled     boolean not null default false,
   last_seen_at     timestamptz not null default now()
 );
-
-create table public.feedback (
-  id           uuid primary key default gen_random_uuid(),
-  user_id      uuid not null references public.profiles(id) on delete cascade,
-  rating       smallint not null check (rating between 1 and 5),
-  note         text check (char_length(note) <= 240),
-  app_version  text,
-  created_at   timestamptz not null default now()
-);
 ```
 
-The daily reminder ("Pip meldet sich jeden Tag um 20:30") is best done with **local scheduled
-notifications** (expo-notifications) in v1: no server, works offline, respects the picked repeat
-option. `devices` exists so a server push ("Eine Lücke von heute … un café ___") can be added
-later with pg_cron + an edge function without a schema change.
-
-The rating screen copy says "Text und Sterne gehen direkt in den App Store", which is not possible
-from an app. Suggested behaviour: store the row in `feedback`; if `rating >= 4` call
-`StoreReview.requestReview()`.
+The daily reminder is a **local scheduled notification** (expo-notifications) in v1: no server,
+works offline, respects the repeat option. `devices` exists so a server push ("Eine Lücke von
+heute … un café ___") can be added later without a schema change; it is the next candidate to cut
+if it feels early.
 
 ---
 
@@ -632,38 +428,34 @@ Every table has RLS enabled. Pattern for user-owned tables:
 ```sql
 alter table public.profiles enable row level security;
 create policy "own profile: read"   on public.profiles for select using (auth.uid() = id);
+create policy "own profile: insert" on public.profiles for insert with check (auth.uid() = id);
 create policy "own profile: update" on public.profiles for update using (auth.uid() = id);
--- no insert/delete policies: the auth trigger inserts, auth deletion cascades
+-- no delete policy: auth deletion cascades
 ```
 
-| Table                                            | anon/auth read            | client write                              |
-| ------------------------------------------------ | ------------------------- | ----------------------------------------- |
-| `languages`, `app_config`, `legal_documents`     | everyone (incl. anon)     | none (service role only)                  |
-| `profiles`                                       | own                       | update own                                |
-| `learner_languages`, `devices`, `saved_words`    | own                       | insert/update/delete own                  |
-| `legal_acceptances`, `feedback`                  | own                       | insert own                                |
-| `level_assessments`, `daily_activity`            | own                       | none (RPC / edge function)                |
-| `subscriptions`, `credit_ledger`, `referral_codes`, `referrals` | own        | none (webhook / RPC)                      |
-| `revenuecat_events`                              | none                      | none                                      |
-| `conversations`                                  | own                       | none (edge functions)                     |
-| `conversation_turns`, `conversation_items`       | own (via conversation)    | none (edge functions)                     |
+| Table                                        | read                   | client write                      |
+| -------------------------------------------- | ---------------------- | --------------------------------- |
+| `languages`, `app_config`, `legal_documents` | everyone (incl. anon)  | none (service role only)          |
+| `profiles`                                   | own                    | insert / update own               |
+| `learner_languages`, `flashcards`, `devices` | own                    | insert / update / delete own      |
+| `legal_acceptances`                          | own                    | insert own                        |
+| `conversations`                              | own                    | none (edge functions, service role) |
 
-All `security definer` functions set `search_path = ''` and check `auth.uid()` themselves.
-Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the only extra
-restriction is enforced in `start-conversation` (placement only, once).
+Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the only
+extra restriction is enforced in `start-conversation` (placement only, once per language).
 
 ---
 
 ## 5. Edge functions
 
-| Function              | Trigger                | Does                                                                 |
-| --------------------- | ---------------------- | -------------------------------------------------------------------- |
-| `start-conversation`  | app                    | credit check, insert conversation, mint realtime token               |
-| `end-conversation`    | app                    | store transcript, analysis, placement result, activity, refunds      |
-| `revenuecat-webhook`  | RevenueCat             | verify secret, log event, upsert `subscriptions`, grant credits      |
-| `delete-account`      | app (09e)              | `auth.admin.deleteUser(uid)` → cascades; RevenueCat is left alone (the copy already tells the user to cancel in the store) |
-| `cleanup-anonymous`   | pg_cron, daily         | delete anonymous users older than 30 days without completed onboarding |
+| Function              | Trigger        | Does                                                                          |
+| --------------------- | -------------- | ----------------------------------------------------------------------------- |
+| `start-conversation`  | app            | placement limit or RevenueCat quota check, insert conversation, mint token    |
+| `end-conversation`    | app            | store transcript, run analysis, write review, update level for placement      |
+| `delete-account`      | app (09e)      | `auth.admin.deleteUser(uid)` → cascades; RevenueCat is left alone (the copy already tells the user to cancel in the store) |
+| `cleanup-anonymous`   | schedule, later | delete anonymous users older than 30 days without completed onboarding       |
 
+Each returns a JSON body or an HTTP error; the app never has to guess whether something happened.
 Analytics (PostHog) does not touch the database.
 
 ---
@@ -672,28 +464,28 @@ Analytics (PostHog) does not touch the database.
 
 | Screen                                       | Reads                                              | Writes                                    |
 | -------------------------------------------- | -------------------------------------------------- | ----------------------------------------- |
-| 02b Welcome                                  | `legal_documents` (current versions)               | `signInAnonymously`, `legal_acceptances`  |
+| 02b Welcome                                  | `legal_documents` (current versions)               | `signInAnonymously`, `profiles` upsert, `legal_acceptances` |
 | 02c Nutzungsbedingungen / Datenschutz        | `legal_documents`                                  |                                           |
 | 03 App-Sprache · 09d                         | `languages` (is_app_language)                      | `profiles.app_language`                   |
 | 03a Lernsprache · 09c · 01a Sprachen         | `languages` (learnable), `learner_languages`       | `profiles.active_language`, `learner_languages` row |
 | 03b Ziel                                     |                                                    | `learner_languages.goal`                  |
-| 04 Name                                      |                                                    | `profiles.display_name`                   |
+| 04 Name                                      |                                                    | `profiles.first_name`                     |
 | 05 / 05a / 09f Erinnerung                    |                                                    | `profiles.reminder_time`, `reminder_repeat`; local notification |
-| 06 → 07 → 08 → 09 Einstufung                 | `level_assessments.evidence`                       | `start-conversation` / `end-conversation` (placement) |
-| 06a Level selbst                             |                                                    | `learner_languages.level`, `level_assessments` (source self) |
+| 06 → 07 → 08 → 09 Einstufung                 | `conversations.review.placement`                   | `start-conversation` / `end-conversation` (placement) |
+| 06a Level selbst                             |                                                    | `learner_languages.level` (source self)   |
 | 09g Ziel-Level                               |                                                    | `learner_languages.target_level`          |
-| 09h / 09g Lernzeit                           | `app_config.daily_goal_options_minutes`            | `profiles.daily_goal_minutes`             |
-| 11f Paywall · 13 Plus aktiv                  | RevenueCat offerings, `products`, `subscriptions`  | purchase via RevenueCat → webhook         |
-| 11b Code einlösen · 15 Code teilen           | `referral_codes` (own)                             | `redeem_referral_code()`                  |
+| 09h / 09g Lernzeit                           |                                                    | `profiles.daily_goal_minutes`             |
+| 11f Paywall · 13 Plus aktiv                  | RevenueCat offerings + customer info               | purchase via RevenueCat SDK               |
 | 12 / 12b Konto                               |                                                    | `updateUser` / `linkIdentity`, `legal_acceptances`, `onboarding_completed_at` |
-| 09b Profil                                   | `profiles`, `learner_languages`, `daily_activity` (week), `saved_words` count, `conversations` count | |
-| 09i Einstellungen                            | `profiles`, `subscriptions`                        |                                           |
+| 09b Profil                                   | `profiles`, `learner_languages`, `flashcards` count, `conversations` count | |
+| 09i Einstellungen                            | `profiles`, RevenueCat customer info               |                                           |
 | 09e Konto löschen · 41a Abmelden             |                                                    | `delete-account` / `signOut`              |
-| 02c Live-Konversation                        | `conversation_balance()`                           | `start-conversation`, `end-conversation`  |
-| 3h Rückblick                                 | `conversation_items`                               | `saved_words`                             |
-| 30a Gespräche aufgebraucht                   | `conversation_balance()`, RevenueCat offerings, `products` | pack purchase via RevenueCat → webhook |
-| 08b Serie · 08 Tägliches Limit               | `profiles.streak_*`, `daily_activity`              | (via `log_activity()` from Lernen)        |
-| 10a Bewertung                                |                                                    | `feedback`                                |
+| 02c Live-Konversation                        | RevenueCat customer info, `conversations` count    | `start-conversation`, `end-conversation`  |
+| 3h Rückblick                                 | `conversations.review`                             | `flashcards`                              |
+| 30a Gespräche aufgebraucht                   | RevenueCat customer info (`expirationDate`)        | (packs later, §8)                         |
+
+Not covered yet, by design: 08b Serie, 08 Tägliches Limit, the streak card and "Heute schon 6 von
+15 Min" (→ Lernen, §8), 10a Bewertung (§8), 15 Code teilen / 11b Code einlösen (§8).
 
 ---
 
@@ -701,36 +493,46 @@ Analytics (PostHog) does not touch the database.
 
 ```
 supabase/migrations/
-  0001_extensions_enums.sql        moddatetime, pg_cron (prod), enums, updated_at trigger fn
+  0001_extensions_enums.sql        moddatetime, enums, updated_at trigger function
   0002_reference.sql               languages, app_config, legal_documents (+ RLS)
-  0003_profiles.sql                profiles, learner_languages, level_assessments (FK to
-                                   conversations added in 0006), handle_new_user trigger
-  0004_consent_devices_feedback.sql legal_acceptances, devices, feedback
-  0005_activity.sql                daily_activity, log_activity()
-  0006_conversations.sql           conversations, conversation_turns, conversation_items, saved_words
-  0007_billing.sql                 products, subscriptions, revenuecat_events, credit_ledger,
-                                   conversation_balance(), consume_conversation_credit()
-  0008_referrals.sql               referral_codes, referrals, generate_referral_code(),
-                                   redeem_referral_code()
+  0003_profiles.sql                profiles, learner_languages (FK to conversations added in 0005)
+  0004_consent_devices.sql         legal_acceptances, devices
+  0005_conversations.sql           conversations, flashcards, learner_languages.placement_conversation_id
 supabase/seed.sql                  languages (six app languages; fr/en/es learnable),
-                                   app_config keys above, products (plus_10, plus_30, pack_10/25/50),
-                                   terms + privacy in all six locales
+                                   app_config (two keys), terms + privacy in all six locales
                                    (placeholder text until legal copy exists),
                                    a dev user (dev@yori.app / password) with onboarding done
 ```
 
 Suggested build order in the app:
 
-1. `supabase init`, migrations 0001–0004, client + anonymous auth, `SessionProvider` on top of
-   `profiles`/`learner_languages`, account conversion on step 12/12b, legal documents from the DB.
-2. 0005 activity + streaks; profile screen reads real numbers.
-3. 0006 conversations + the two conversation edge functions (placement call end-to-end).
-4. 0007/0008 RevenueCat webhook, credit ledger, referral codes, talk-limit screen.
-5. Then Lernen (flashcards SRS on top of `saved_words`, exercises, reading) and Kurs.
+1. `supabase init`, migrations 0001–0004, client + anonymous auth, profile upsert,
+   `SessionProvider` on top of `profiles` / `learner_languages`, account conversion on step
+   12/12b, legal documents from the DB. Profile screen reads the real name, level and email.
+2. 0005 + `start-conversation` / `end-conversation`: placement call end-to-end, live call,
+   Rückblick → `flashcards`, `delete-account`.
+3. RevenueCat SDK in the paywall, `Purchases.logIn`, quota check in `start-conversation`.
+4. Then **Lernen** (activity + streaks, flashcard scheduling on top of `flashcards`, exercises,
+   reading), then **Kurs**, then the deferred items below as they are needed.
 
 ---
 
-## 8. Client changes implied by six app languages and three learning languages
+## 8. Deferred (cut from this plan on purpose)
+
+| Item                                                        | Comes back with                                  |
+| ----------------------------------------------------------- | ------------------------------------------------ |
+| `daily_activity` + streak columns (`streak_current`, `streak_longest`, `streak_last_day`) and the `log_activity()` write | **Lernen**: almost all minutes come from exercises, cards and reading; designing the day/streak model before that exists means redoing it. Until then the profile can show conversation days or hide the streak card. |
+| `level_progress` ("62 % bis B1") and `level_assessments`    | **Kurs** (progress is a course metric); re-assessments after N conversations |
+| `products`, `subscriptions`, `revenuecat_events`, `credit_ledger` | **Packs** (non-expiring credits need a balance) or the first time the app needs subscription state offline / in SQL |
+| `referral_codes`, `referrals`, `redeem_referral_code`, `referral_reward_conversations` | Referral feature                                 |
+| `feedback`                                                  | Rating screen goes live                          |
+| `conversation_turns`, `conversation_items`, `saved_words`   | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
+| `profiles.timezone`                                         | Streaks (day boundaries) or server-side reminders |
+| Server push via `devices` + a scheduled function            | Reminders with content from the last conversation |
+
+---
+
+## 9. Client changes implied by six app languages and three learning languages
 
 Not database work, but the schema above assumes them:
 
@@ -747,16 +549,17 @@ Not database work, but the schema above assumes them:
 - Everything shown *about* the learning language (level names, blurbs, CTAs) is keyed by
   `app_language`; everything *in* the learning language (examples, prompts) by `active_language`.
 
-## 9. Open questions
+---
 
-1. Fallback app language for devices outside the six locales: `en` (assumed above) or `de`?
-2. Phone-number sign-in ("Mit Telefonnummer"): keep (SMS provider + cost) or route to email?
-3. Sign in with Apple is required on iOS alongside Google. OK to add it to the account screen?
-4. Referral reward: the copy says "1 Stunde Live-Gespräch", billing is per conversation. Convert to
-   `10` conversations (≈ 1 h at 6 min) or add a minutes-based bucket?
+## 10. Open questions
+
+1. Name for `daily_goal_minutes`: keep, or `daily_learning_minutes` / `learning_minutes_per_day`?
+2. Fallback app language for devices outside the six locales: `en` (assumed above) or `de`?
+3. Phone-number sign-in ("Mit Telefonnummer"): keep (SMS provider + cost) or route to email?
+4. Sign in with Apple is required on iOS alongside Google. OK to add it to the account screen?
 5. 13 "Plus aktiv" says "15 Minuten Gespräch am Tag", the paywall sells 10/30 conversations per
-   month. Which one is the product rule? The ledger above implements the monthly count.
+   month. Which one is the product rule? §3.5 implements the monthly count.
 6. GPT-Live-1: confirm the exact model id and token endpoint so `start-conversation` can be written
-   against it; the schema only stores `model`/`provider_session_id` as text.
-7. Should transcripts be kept indefinitely, or trimmed after N days once the analysis is stored
+   against it; the schema only stores `model` / `provider_session_id` as text.
+7. Should transcripts be kept indefinitely, or trimmed after N days once the review is stored
    (data-minimisation argument for the Datenschutzerklärung)?
