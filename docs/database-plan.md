@@ -339,7 +339,7 @@ create table public.conversations (
   topic                text,                                -- 'Café in Paris' (Rückblick header)
   level                public.cefr_level,                   -- learner level when the call started
   provider             text not null default 'openai',
-  model                text,                                -- e.g. 'gpt-live-1'
+  model                text,                                -- realtime model id (OPENAI_REALTIME_MODEL)
   provider_session_id  text,
   prompt_version       text,                                -- which system prompt produced this call
   device_id            text,                                -- stable install id, for the placement cap
@@ -674,7 +674,12 @@ beaucoup`, …), the placement questions and the widget sentence. The `learning_
 3. Sign in with Apple is required on iOS alongside Google. OK to add it to the account screen?
 4. 13 "Plus aktiv" says "15 Minuten Gespräch am Tag", the paywall sells 10/30 conversations per
    month. Which one is the product rule? §3.5 implements the monthly count.
-5. GPT-Live-1: confirm the exact model id and token endpoint so `start-conversation` can be written
+5. Realtime model: the functions default to `gpt-realtime-2.1` (the newest id the OpenAI SDK lists;
+   there is no `gpt-live-1` realtime model id, only `gpt-live-transcribe`). Set the secret
+   `OPENAI_REALTIME_MODEL` to switch; the id is stored per call in `conversations.model`.
+   Pricing per model is on https://developers.openai.com/api/docs/pricing (audio tokens in/out,
+   cached input); `conversations.usage` keeps the per-call token counts so the cost per user is
+   `sum(usage)` × the price list
    against it; the schema only stores `model` / `provider_session_id` as text.
 6. Should transcripts be kept indefinitely, or trimmed after N days once the review is stored
    (data-minimisation argument for the Datenschutzerklärung)?

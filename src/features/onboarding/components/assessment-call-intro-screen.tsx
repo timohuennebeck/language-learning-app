@@ -1,11 +1,15 @@
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSession } from '@/features/auth/hooks/use-session';
 import {
   ONBOARDING_STEPS,
   PLACEMENT_STEPS,
 } from '@/features/onboarding/components/onboarding-frame';
+import { localized } from '@/features/speak/data/schemas';
+import { usePlacementScenario } from '@/features/speak/hooks/use-scenarios';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
@@ -16,14 +20,26 @@ import { CheckCircle } from '@/shared/ui/marks';
 import { PAGE_TOP, Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 import { ProgressTopBar } from '@/shared/ui/top-bar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/** 60c · Einstufung · Rollenspiel-Briefing "Im Café" before the placement call. */
+/**
+ * 60c · Einstufung · Rollenspiel-Briefing "Im Café" before the placement call. The scenario row
+ * (`scenarios.is_placement`) supplies title, brief and tasks; the bundled copy is the fallback
+ * while it loads or when the request fails.
+ */
 export function AssessmentCallIntroScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const tasks = t('onboarding.placement.call.tasks', { returnObjects: true }) as string[];
+  const { session } = useSession();
+  const scenario = usePlacementScenario(session.learningLanguage).data;
+  const locale = session.appLanguage;
+  const title = scenario
+    ? localized(scenario.subtitle, locale)
+    : t('onboarding.placement.call.title');
+  const sub = scenario ? localized(scenario.brief, locale) : t('onboarding.placement.call.sub');
+  const tasks = scenario
+    ? scenario.tasks.map((task) => localized(task.text, locale))
+    : (t('onboarding.placement.call.tasks', { returnObjects: true }) as string[]);
   return (
     <Screen
       edgeToEdgeTop
@@ -60,10 +76,10 @@ export function AssessmentCallIntroScreen() {
         className="mt-[8px] font-semibold text-ink"
         style={{ fontSize: 30, lineHeight: 34, letterSpacing: -0.9 }}
       >
-        {t('onboarding.placement.call.title')}
+        {title}
       </Text>
       <Text className="mt-[8px] text-muted" style={{ fontSize: 15, lineHeight: 22 }}>
-        {t('onboarding.placement.call.sub')}
+        {sub}
       </Text>
       <Kicker tracking={0.1} className="mt-[22px] text-muted">
         {t('onboarding.placement.call.tasksLabel')}

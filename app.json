@@ -44,6 +44,13 @@
           "resizeMode": "contain",
           "backgroundColor": "#e7e5fe"
         }
+      ],
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "Yori does not use the camera.",
+          "microphonePermission": "Yori uses the microphone so you can talk to Pip."
+        }
       ]
     ],
     "experiments": {

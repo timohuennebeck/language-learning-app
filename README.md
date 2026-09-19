@@ -109,6 +109,28 @@ npm run functions:serve                      # local, reads supabase/.env.local
 npx supabase functions deploy delete-account # hosted
 ```
 
+### Live conversations (OpenAI Realtime)
+
+The call is WebRTC straight from the device to OpenAI; the API key stays in the edge functions
+(`features/live/`, `supabase/functions/start-conversation` and `end-conversation`, flow in
+`docs/database-plan.md` §3.6). `start-conversation` checks the placement limits, inserts the
+`conversations` row and mints an ephemeral client secret with Pip's instructions, the scenario's
+tasks and a `mark_task_done` tool; the app connects with `react-native-webrtc`, ticks tasks as Pip
+reports them and ends at `max_seconds`; `end-conversation` stores transcript and usage, has a text
+model write the review (tasks with what was said, summary, words) and, for the placement call,
+the CEFR level into `learner_languages`.
+
+```
+npx supabase secrets set OPENAI_API_KEY=sk-…            # required
+npx supabase secrets set OPENAI_REALTIME_MODEL=gpt-realtime-2.1   # optional (default)
+npx supabase secrets set OPENAI_REALTIME_VOICE=marin OPENAI_REVIEW_MODEL=gpt-5-mini  # optional
+npx supabase functions deploy start-conversation end-conversation
+```
+
+`react-native-webrtc` is native code: run a development build (`npm run ios` / `npm run android`,
+the config plugin adds the microphone permission); Expo Go cannot open the call. On web the
+browser's WebRTC is used.
+
 ## Visual verification against the design
 
 The design export was rendered headlessly and each device frame saved to `design/reference/`.
@@ -136,8 +158,8 @@ fallback), so headings look wider there; the app uses the real Inter faces.
 
 ## Next steps (not in scope yet)
 
-- Supabase: auth, profiles, learner languages, legal documents and flashcards are wired; the
-  live-conversation edge functions (`start-conversation`, `end-conversation`) and the lessons /
-  flashcard-deck repositories still use the design's sample data (see `docs/database-plan.md`).
+- Supabase: auth, profiles, learner languages, legal documents, scenarios, flashcards and the live
+  call are wired; the lessons / flashcard-deck repositories and the Rückblick still use the
+  design's sample data (see `docs/database-plan.md`).
 - RevenueCat: feed `PaywallScreen` / `TalkLimitScreen` plans from offerings.
 - PostHog: add the provider in `shared/components/app-providers.tsx`.

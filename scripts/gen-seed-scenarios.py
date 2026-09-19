@@ -9,29 +9,25 @@ def i18n(de, en, es, fr, it, pt): return dict(zip(L, [de, en, es, fr, it, pt]))
 
 # slug, theme, level window, minutes, sort, subtitle, brief, tasks (text i18n + hint per learning language), title + pip_prompt per learning language
 SCENARIOS = [
-  dict(slug="placement", theme="life", level=("A1", "B2"), minutes=2, sort=0, is_placement=True,
-    subtitle=i18n("Einstufungsgespräch", "Placement talk", "Conversación de nivel", "Entretien de niveau", "Colloquio di livello", "Conversa de nível"),
-    brief=i18n("Eine Stufe nach der anderen. Antworte in der Lernsprache, auf Deutsch oder gemischt. Fehler sind hier erwünscht.",
-               "One stage at a time. Answer in the language you are learning, in English, or mixed. Mistakes are welcome here.",
-               "Una etapa tras otra. Responde en el idioma que aprendes, en español o mezclado. Aquí los errores son bienvenidos.",
-               "Une étape après l’autre. Réponds dans la langue que tu apprends, en français ou en mélangeant. Ici, les erreurs sont les bienvenues.",
-               "Un livello alla volta. Rispondi nella lingua che impari, in italiano o mescolando. Qui gli errori sono benvenuti.",
-               "Uma etapa de cada vez. Responde na língua que aprendes, em português ou misturado. Aqui os erros são bem-vindos."),
+  dict(slug="placement", theme="food", level=("A1", "B2"), minutes=2, sort=0, is_placement=True,
+    subtitle=i18n("Im Café", "At the café", "En la cafetería", "Au café", "Al caffè", "No café"),
+    brief=i18n("Du bist in einem Café in Paris. Du wolltest einen Cappuccino, aber die Maschine ist heute kaputt.",
+               "You are in a café in Paris. You wanted a cappuccino, but the machine is broken today.",
+               "Estás en una cafetería de París. Querías un capuchino, pero hoy la máquina está estropeada.",
+               "Tu es dans un café à Paris. Tu voulais un cappuccino, mais la machine est en panne aujourd’hui.",
+               "Sei in un caffè a Parigi. Volevi un cappuccino, ma oggi la macchina è rotta.",
+               "Estás num café em Paris. Querias um cappuccino, mas hoje a máquina está avariada."),
     tasks=[
-      dict(id="today", level="A1", text=i18n("Heute", "Today", "Hoy", "Aujourd’hui", "Oggi", "Hoje"),
-           hint=dict(fr="Qu’est-ce que tu fais le week-end ?", en="What do you usually do at the weekend?", es="¿Qué haces los fines de semana?")),
-      dict(id="yesterday", level="A2", text=i18n("Gestern", "Yesterday", "Ayer", "Hier", "Ieri", "Ontem"),
-           hint=dict(fr="Qu’est-ce que tu as fait hier ?", en="What did you do yesterday?", es="¿Qué hiciste ayer?")),
-      dict(id="tomorrow", level="A2", text=i18n("Morgen", "Tomorrow", "Mañana", "Demain", "Domani", "Amanhã"),
-           hint=dict(fr="Qu’est-ce que tu vas faire demain ?", en="What are you going to do tomorrow?", es="¿Qué vas a hacer mañana?")),
-      dict(id="maybe", level="B1", text=i18n("Eventuell", "Perhaps", "Quizás", "Peut-être", "Forse", "Talvez"),
-           hint=dict(fr="Si tu avais une semaine de libre, qu’est-ce que tu ferais ?", en="If you had a week off, what would you do?", es="Si tuvieras una semana libre, ¿qué harías?")),
-      dict(id="dreams", level="B2", text=i18n("Träume", "Dreams", "Sueños", "Rêves", "Sogni", "Sonhos"),
-           hint=dict(fr="Quel est ton plus grand rêve, et pourquoi ?", en="What is your biggest dream, and why?", es="¿Cuál es tu mayor sueño y por qué?")),
+      dict(id="order", level=None, text=i18n("Sprich den Serveur an und bestelle ein Getränk.", "Greet the waiter and order a drink.", "Saluda al camarero y pide una bebida.", "Adresse-toi au serveur et commande une boisson.", "Rivolgiti al cameriere e ordina qualcosa da bere.", "Fala com o empregado e pede uma bebida."),
+           hint=dict(fr="Bonjour, un cappuccino, s’il vous plaît.", en="Hello, a cappuccino, please.", es="Hola, un capuchino, por favor.")),
+      dict(id="alternatives", level=None, text=i18n("Frage nach, was es stattdessen gibt.", "Ask what there is instead.", "Pregunta qué hay en su lugar.", "Demande ce qu’il y a à la place.", "Chiedi cosa c’è in alternativa.", "Pergunta o que há em vez disso."),
+           hint=dict(fr="Qu’est-ce que vous avez d’autre ?", en="What else do you have?", es="¿Qué más tiene?")),
+      dict(id="decide", level=None, text=i18n("Entscheide dich für eine Alternative und sage sie klar.", "Pick an alternative and say it clearly.", "Decídete por una alternativa y dila con claridad.", "Choisis une alternative et dis-la clairement.", "Scegli un’alternativa e dilla chiaramente.", "Decide-te por uma alternativa e di-la claramente."),
+           hint=dict(fr="Alors je prends un thé.", en="Then I’ll have a tea.", es="Entonces tomo un té.")),
     ],
-    fr=("Entretien de niveau", "Tu es Pip, un partenaire de conversation bienveillant. Tu mènes un entretien de niveau de deux minutes : pose les cinq questions dans l’ordre, une étape à la fois, du présent au conditionnel. Reste bref, ne corrige pas, encourage, et passe à la question suivante dès que l’apprenant a répondu."),
-    en=("Placement talk", "You are Pip, a friendly conversation partner running a two-minute placement talk. Ask the five questions in order, one stage at a time, from the present tense up to hypotheticals. Keep your turns short, do not correct, encourage, and move on as soon as the learner has answered."),
-    es=("Prueba de nivel", "Eres Pip, un compañero de conversación amable que hace una prueba de nivel de dos minutos. Haz las cinco preguntas en orden, una etapa cada vez, del presente al condicional. Sé breve, no corrijas, anima y pasa a la siguiente pregunta en cuanto el estudiante haya respondido."),
+    fr=("Au café", "Tu es Pip, le serveur d’un café à Paris. La machine à cappuccino est en panne aujourd’hui : accueille l’apprenant, prends sa commande, explique le problème et propose des alternatives (thé, chocolat chaud, café filtre, jus). C’est un entretien de niveau de deux minutes : commence très simplement, puis augmente doucement la difficulté (questions ouvertes, passé, conditionnel) tant que l’apprenant suit. Reste bref, ne corrige pas, encourage."),
+    en=("At the café", "You are Pip, the waiter at a café in Paris. The cappuccino machine is broken today: greet the learner, take their order, explain the problem and offer alternatives (tea, hot chocolate, filter coffee, juice). This is a two-minute placement talk: start very simply, then gently raise the difficulty (open questions, past tense, conditionals) as long as the learner keeps up. Keep your turns short, do not correct, encourage."),
+    es=("En la cafetería", "Eres Pip, el camarero de una cafetería en París. Hoy la máquina de capuchino está estropeada: saluda al estudiante, toma su pedido, explica el problema y ofrece alternativas (té, chocolate caliente, café de filtro, zumo). Es una prueba de nivel de dos minutos: empieza muy sencillo y sube poco a poco la dificultad (preguntas abiertas, pasado, condicional) mientras el estudiante siga. Sé breve, no corrijas, anima."),
   ),
   dict(slug="introduce", theme="social", level=("A1", "A2"), minutes=6, sort=1,
     subtitle=i18n("Kennenlernen", "Getting to know", "Conocerse", "Faire connaissance", "Conoscersi", "Conhecer-se"),
@@ -122,7 +118,7 @@ rows = []
 for s in SCENARIOS:
     for lang in ("fr", "en", "es"):
         title, prompt = s[lang]
-        tasks = [dict(id=t["id"], level=t["level"], text=t["text"], hint=t["hint"][lang]) for t in s["tasks"]]
+        tasks = [{k: v for k, v in dict(id=t["id"], level=t["level"], text=t["text"], hint=t["hint"][lang]).items() if v is not None} for t in s["tasks"]]
         rows.append(f"  ({q(s['slug'])}, {q(lang)}, {q(title)}, {q(s['theme'])}, {q(s['level'][0])}, {q(s['level'][1])}, {s['minutes']}, {'true' if s.get('is_placement') else 'false'}, "
                     f"{q('scenarios/' + s['slug'] + '.webp')}, {j(s['subtitle'])}, {j(s['brief'])}, {j(tasks)}, {q(prompt)}, {s['sort']})")
 

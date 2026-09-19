@@ -45,6 +45,8 @@ export const SessionSchema = z.object({
   appLanguage: z.enum(SUPPORTED_APP_LANGUAGES).default('de'),
   learningLanguage: LearningLanguageSchema.default('fr'),
   level: LevelSchema.default('A2'),
+  /** Where `level` came from: chosen on 06a or measured by the placement call. */
+  levelSource: z.enum(['self', 'placement']).default('self'),
   targetLevel: LevelSchema.default('B2'),
   /** Result of the reading placement (kept in memory until the call's level combines with it). */
   readingLevel: LevelSchema.nullable().default(null),

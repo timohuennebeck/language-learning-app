@@ -172,7 +172,7 @@
         "Höflichkeitsformen vergleichen",
         "Level bestimmen"
       ],
-      "secondsLeft": "{{n}} Sekunden übrig"
+      "hint": "Dauert nur einen Moment"
     },
     "targetLevel": {
       "title": "Welches Level willst du erreichen?",
@@ -552,23 +552,31 @@
     "report": "Fehler melden"
   },
   "live": {
-    "timer": "Live · 02:14",
     "name": "Pip",
-    "sub": "Französisch · Café · A2",
-    "prompt": "Sur place ou à emporter ?",
     "mute": "Stumm",
     "end": "Beenden",
     "subtitles": "Untertitel",
     "tasks": {
-      "timer": "02:14",
       "cta": "Weiter sprechen"
     },
     "done": {
       "title": "Gespräch geschafft.",
-      "meta": "Im Café · 8 Min · A2",
+      "meta": "{{topic}} · {{minutes}} Min · {{level}}",
       "tasks": "Deine Aufgaben",
       "cta": "Rückblick ansehen",
       "later": "Später"
+    },
+    "timer": "Live · {{time}}",
+    "sub": "{{language}} · {{topic}} · {{level}}",
+    "connecting": "Pip nimmt ab …",
+    "ending": "Pip hört noch mal hin …",
+    "retry": "Nochmal versuchen",
+    "errors": {
+      "generic": "Pip ist gerade nicht erreichbar. Versuch es gleich noch mal.",
+      "microphone": "Yori braucht Zugriff auf das Mikrofon, damit Pip dich hört.",
+      "placement_used": "Die Einstufung für diese Sprache hast du schon gemacht.",
+      "account_required": "Für eine zweite Einstufung brauchst du ein Konto.",
+      "placement_limit": "Zu viele Einstufungen auf diesem Gerät. Versuch es später noch mal."
     }
   },
   "exercise": {

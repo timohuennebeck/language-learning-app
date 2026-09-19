@@ -172,7 +172,7 @@
         "Comparing politeness forms",
         "Determining level"
       ],
-      "secondsLeft": "{{n}} seconds left"
+      "hint": "Just a moment"
     },
     "targetLevel": {
       "title": "Which level do you want to reach?",
@@ -532,23 +532,31 @@
     "report": "Report a problem"
   },
   "live": {
-    "timer": "Live · 02:14",
     "name": "Pip",
-    "sub": "French · Café · A2",
-    "prompt": "Sur place ou à emporter ?",
     "mute": "Mute",
     "end": "End",
     "subtitles": "Captions",
     "tasks": {
-      "timer": "02:14",
       "cta": "Keep talking"
     },
     "done": {
       "title": "Conversation done.",
-      "meta": "Im Café · 8 min · A2",
+      "meta": "{{topic}} · {{minutes}} min · {{level}}",
       "tasks": "Your tasks",
       "cta": "See the recap",
       "later": "Later"
+    },
+    "timer": "Live · {{time}}",
+    "sub": "{{language}} · {{topic}} · {{level}}",
+    "connecting": "Pip is picking up…",
+    "ending": "Pip is listening back…",
+    "retry": "Try again",
+    "errors": {
+      "generic": "Pip can’t be reached right now. Try again in a moment.",
+      "microphone": "Yori needs microphone access so Pip can hear you.",
+      "placement_used": "You have already done the placement for this language.",
+      "account_required": "A second placement needs an account.",
+      "placement_limit": "Too many placements on this device. Try again later."
     }
   },
   "exercise": {

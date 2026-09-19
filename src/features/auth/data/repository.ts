@@ -88,6 +88,7 @@ function toSession(user: User, profile: ProfileRow, learner: LearnerRow | null):
       ? learningLanguage.data
       : DEFAULT_SESSION.learningLanguage,
     level: learner ? LevelSchema.parse(learner.level) : DEFAULT_SESSION.level,
+    levelSource: learner?.level_source ?? DEFAULT_SESSION.levelSource,
     targetLevel: learner ? LevelSchema.parse(learner.target_level) : DEFAULT_SESSION.targetLevel,
     readingLevel: null,
     dailyGoalMinutes: profile.goal_minutes,
@@ -167,8 +168,11 @@ export async function saveSession(next: Session, patch: Partial<Session>): Promi
           user_id: next.userId,
           language: next.learningLanguage,
           level: next.level,
-          level_source: 'self',
-          level_assessed_at: 'level' in patch ? new Date().toISOString() : undefined,
+          // A placement result is already on the row (end-conversation); only a self-chosen
+          // level re-stamps the source, so changing the goal never downgrades 'placement'.
+          ...('level' in patch
+            ? { level_source: next.levelSource, level_assessed_at: new Date().toISOString() }
+            : {}),
           target_level: next.targetLevel,
           goal: next.goal,
         },
