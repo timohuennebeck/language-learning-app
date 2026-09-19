@@ -360,6 +360,7 @@ create table public.flashcards (
   lapses                  int not null default 0,              -- times forgotten (the old `misses`)
   scheduled_days          int not null default 0,
   elapsed_days            int not null default 0,
+  learning_steps          smallint not null default 0,         -- short-term steps taken today (ts-fsrs ≥ 4)
   last_reviewed_at        timestamptz,
   created_at              timestamptz not null default now(),
   unique (user_id, language, front)
@@ -394,7 +395,10 @@ only stores what it hands back.
 - **Due**: `select … from flashcards where user_id = auth.uid() and language = :active and
   due <= now() order by due limit 20`. New cards have `state = 0`; a per-day cap on new cards is
   a client constant.
-- **Retention target** (default 0.9) is a client constant for now; it can move to `app_config`.
+- **Retention target** (default 0.9), the 21 model weights and the new-cards-per-day cap are
+  library defaults / client constants; nothing algorithm-related lives in the database.
+- **Undo last swipe** is done in memory inside the deck before the batched write; the library's
+  `rollback()` would need `due` and `last_elapsed_days` in the log, so it is not used.
 - **Later** (→ Lernen): run the FSRS optimiser over `flashcard_reviews` once a user has a few
   hundred reviews and store the 21 fitted parameters in a `fsrs_params jsonb` column on
   `profiles`. Nothing in the schema changes for that.
