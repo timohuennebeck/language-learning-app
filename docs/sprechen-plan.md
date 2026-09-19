@@ -22,14 +22,14 @@ favourites, so the catalogue must cover every goal at every level rather than be
 
 **Themes** reuse the onboarding goals, so the "Für dich" chip is a direct match:
 
-| `theme`    | Chip              | Serves the goal | Example situations                                             |
-| ---------- | ----------------- | --------------- | -------------------------------------------------------------- |
-| `everyday` | Alltag            | family, fun     | café, bakery, pharmacy, small talk with a neighbour            |
-| `travel`   | Reisen            | travel          | hotel check-in, asking directions, train ticket, lost luggage  |
-| `work`     | Arbeit & Studium  | work            | introducing yourself at work, a meeting, a job interview       |
-| `social`   | Freunde & Familie | friends, family | making plans, a birthday invitation, the weekend, the in-laws  |
-| `culture`  | Kultur & Medien   | media           | a series, a concert, a book, football                          |
-| `food`     | Essen & Trinken   | everyone        | ordering dinner, a market stall, cooking together, a complaint |
+| `theme`   | Chip              | Serves the goal | Example situations                                             |
+| --------- | ----------------- | --------------- | -------------------------------------------------------------- |
+| `life`    | Alltag            | family, fun     | café, bakery, pharmacy, small talk with a neighbour            |
+| `travel`  | Reisen            | travel          | hotel check-in, asking directions, train ticket, lost luggage  |
+| `work`    | Arbeit & Studium  | work            | introducing yourself at work, a meeting, a job interview       |
+| `social`  | Freunde & Familie | friends, family | making plans, a birthday invitation, the weekend, the in-laws  |
+| `culture` | Kultur & Medien   | media           | a series, a concert, a book, football                          |
+| `food`    | Essen & Trinken   | everyone        | ordering dinner, a market stall, cooking together, a complaint |
 
 Four situations per theme at launch. The chip labels live in the locale files under
 `speak.themes.<theme>`.
@@ -48,7 +48,7 @@ rows carry the title and Pip's prompt; per-app-language strings are jsonb keyed
 by locale.
 
 ```sql
-create type public.scenario_theme as enum ('everyday', 'travel', 'work', 'social', 'culture', 'food');
+create type public.scenario_theme as enum ('life', 'travel', 'work', 'social', 'culture', 'food');
 
 create table public.scenarios (
   id            uuid primary key default gen_random_uuid(),
