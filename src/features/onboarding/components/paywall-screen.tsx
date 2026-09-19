@@ -16,6 +16,7 @@ import { NavCircle } from '@/shared/ui/nav-circle';
 import { PAGE_TOP, Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
+import { useLayout } from '@/shared/hooks/use-layout';
 import { RecommendedBadge } from '@/shared/ui/recommended-badge';
 import { Text } from '@/shared/ui/text';
 
@@ -32,6 +33,7 @@ export function PaywallScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [plan, setPlan] = useState<string>('p30');
+  const [recommendedCard, onRecommendedLayout] = useLayout();
   const perks = t('onboarding.paywall.perks', { returnObjects: true }) as string[];
   const selected = PLANS.find((p) => p.id === plan) ?? PLANS[1];
   return (
@@ -110,7 +112,7 @@ export function PaywallScreen() {
         <Text className="mt-[8px] text-muted" style={{ fontSize: 15.5, lineHeight: 22 }}>
           {t('onboarding.paywall.sub')}
         </Text>
-        <View className="mt-[22px] flex-row" style={{ columnGap: 10, zIndex: 1 }}>
+        <View className="relative mt-[22px] flex-row" style={{ columnGap: 10 }}>
           {PLANS.map((p) => {
             const on = p.id === plan;
             return (
@@ -118,22 +120,15 @@ export function PaywallScreen() {
                 key={p.id}
                 haptic="selection"
                 onPress={() => setPlan(p.id)}
-                className="relative flex-1 rounded-[22px] bg-white"
+                onLayout={'recommended' in p && p.recommended ? onRecommendedLayout : undefined}
+                className="flex-1 rounded-[22px] bg-white"
                 style={{
                   paddingTop: 16,
                   paddingBottom: 15,
                   paddingHorizontal: 14,
                   boxShadow: on ? ring(2, colors.accent[700]) : ring(1.5, colors.line2),
-                  zIndex: 'recommended' in p && p.recommended ? 2 : 1,
                 }}
               >
-                {'recommended' in p && p.recommended ? (
-                  <RecommendedBadge
-                    style={{ left: 14, top: -18 }}
-                    size={12.5}
-                    paddingVertical={5}
-                  />
-                ) : null}
                 <View className="flex-row items-center justify-between">
                   <Text
                     className={cn('font-semibold', on ? 'text-accent-900' : 'text-ink')}
@@ -161,6 +156,13 @@ export function PaywallScreen() {
               </Tap>
             );
           })}
+          {recommendedCard ? (
+            <RecommendedBadge
+              style={{ left: recommendedCard.x + 14, top: -18 }}
+              size={12.5}
+              paddingVertical={5}
+            />
+          ) : null}
         </View>
         <View className="mt-[18px] pb-[15px] pt-[16px]" style={{ rowGap: 9 }}>
           <Kicker tracking={0.1}>{t('onboarding.paywall.alwaysUnlimited')}</Kicker>

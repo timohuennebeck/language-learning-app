@@ -6,7 +6,7 @@ import { OnboardingFrame } from '@/features/onboarding/components/onboarding-fra
 import { Button } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
-import { GoogleLogo, PhoneDevice } from '@/shared/ui/icons';
+import { GoogleLogo, MailIcon } from '@/shared/ui/icons';
 import { Text } from '@/shared/ui/text';
 import { TextLink } from '@/shared/ui/text-link';
 
@@ -44,8 +44,8 @@ export function AccountStep() {
         <Button
           height={60}
           size={17}
-          label={t('onboarding.account.phone')}
-          left={<PhoneDevice />}
+          label={t('onboarding.account.email')}
+          left={<MailIcon />}
           className="[column-gap:2px]"
           onPress={() => router.push('/(onboarding)/account-email')}
         />

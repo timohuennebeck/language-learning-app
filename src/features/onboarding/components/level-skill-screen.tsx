@@ -11,6 +11,7 @@ import {
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';
+import { PlusGlyph } from '@/shared/ui/icons';
 import { Illustration, type IllustrationName } from '@/shared/ui/illustration';
 import { CheckCircle } from '@/shared/ui/marks';
 import { Kicker } from '@/shared/ui/kicker';
@@ -155,9 +156,7 @@ export function LevelSkillScreen({ skill }: { skill: Skill }) {
         {work.map((item) => (
           <View key={item} className="flex-row items-start" style={{ columnGap: 12 }}>
             <View className="h-[22px] w-[22px] items-center justify-center rounded-full bg-surface">
-              <Text className="text-accent-800" style={{ fontSize: 15, lineHeight: 18 }}>
-                +
-              </Text>
+              <PlusGlyph />
             </View>
             <Text className="flex-1 text-ink" style={{ fontSize: 15.5, lineHeight: 22 }}>
               {item}

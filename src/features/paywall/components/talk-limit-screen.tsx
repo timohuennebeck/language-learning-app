@@ -7,10 +7,12 @@ import Svg, { Circle } from 'react-native-svg';
 import { GradientHeader } from '@/shared/components/gradient-header';
 import { Hint } from '@/shared/components/hint';
 import { OptionRow } from '@/shared/components/option-row';
+import { useLayout } from '@/shared/hooks/use-layout';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
 import { RadioMark } from '@/shared/ui/marks';
+import { RecommendedBadge } from '@/shared/ui/recommended-badge';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
@@ -25,6 +27,7 @@ export function TalkLimitScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [pack, setPack] = useState(10);
+  const [recommendedRow, onRecommendedLayout] = useLayout();
   const chosen = PACKS.find((p) => p.n === pack) ?? PACKS[0];
   return (
     <Screen
@@ -102,7 +105,7 @@ export function TalkLimitScreen() {
       <Text className="mt-[10px] text-center text-muted" style={{ fontSize: 15 }}>
         {t('talkLimit.sub')}
       </Text>
-      <View className="mt-[22px]" style={{ rowGap: 10, zIndex: 1 }}>
+      <View className="relative mt-[22px]" style={{ rowGap: 10 }}>
         {PACKS.map((p) => {
           const on = p.n === pack;
           return (
@@ -113,7 +116,7 @@ export function TalkLimitScreen() {
               sub={t('talkLimit.perTalk', { price: p.each })}
               tabularSub
               selected={on}
-              recommended={p.recommended}
+              onLayout={p.recommended ? onRecommendedLayout : undefined}
               onPress={() => setPack(p.n)}
             >
               <Text
@@ -134,6 +137,9 @@ export function TalkLimitScreen() {
           );
         })}
         <Hint glyph="i" align="start" className="mt-[6px] px-[4px]" text={t('talkLimit.info')} />
+        {recommendedRow ? (
+          <RecommendedBadge style={{ right: 18, top: recommendedRow.y - 11 }} />
+        ) : null}
       </View>
     </Screen>
   );

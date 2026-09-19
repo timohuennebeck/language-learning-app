@@ -13,8 +13,10 @@ import {
   ChevronRightIcon,
   ClockIcon,
   Cog6ToothIcon,
+  EnvelopeIcon,
   EyeIcon,
   ListBulletIcon,
+  PlusIcon,
   XMarkIcon,
 } from 'react-native-heroicons/outline';
 import { LockClosedIcon, PlayIcon, StarIcon as HiStar } from 'react-native-heroicons/solid';
@@ -146,22 +148,14 @@ export function MicSmall({ size = 20, color = colors.accent[100] }: IconProps) {
   );
 }
 
-/** Smartphone outline on the "Mit Telefonnummer" button. */
-export function PhoneDevice({ size = 20, color = colors.accent[100] }: IconProps) {
-  return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke={color}
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <Path d="M6.5 2.5h7a1.5 1.5 0 011.5 1.5v12a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 015 16V4a1.5 1.5 0 011.5-1.5zM9 15h2" />
-    </Svg>
-  );
+/** Envelope on the "Mit E-Mail" button. */
+export function MailIcon({ size = 20, color = colors.accent[100], strokeWidth = 1.8 }: IconProps) {
+  return <EnvelopeIcon size={size} color={color} strokeWidth={strokeWidth} />;
+}
+
+/** Plus glyph (drawn, not typed, so it sits dead centre in its circle). */
+export function PlusGlyph({ size = 12, color = colors.accent[800], strokeWidth = 2.4 }: IconProps) {
+  return <PlusIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 export function GoogleLogo({ size = 19 }: { size?: number }) {

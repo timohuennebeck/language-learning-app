@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react';
-import { View } from 'react-native';
+import { View, type LayoutChangeEvent } from 'react-native';
 
 import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { RecommendedBadge } from '@/shared/ui/recommended-badge';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -16,8 +15,8 @@ type Props = {
   tabularSub?: boolean;
   selected: boolean;
   onPress: () => void;
-  /** Hangs the "Empfohlen" badge over the top-right corner and lifts the row above its siblings. */
-  recommended?: boolean;
+  /** Lets the list measure this row (to hang the "Empfohlen" badge over it). */
+  onLayout?: (e: LayoutChangeEvent) => void;
   /** Trailing content: bars, price, radio mark. */
   children?: ReactNode;
 };
@@ -30,21 +29,20 @@ export function OptionRow({
   tabularSub,
   selected,
   onPress,
-  recommended,
+  onLayout,
   children,
 }: Props) {
   return (
     <Tap
       haptic="selection"
       onPress={onPress}
-      className="relative flex-row items-center rounded-[20px] bg-white px-[16px] py-[13px]"
+      onLayout={onLayout}
+      className="flex-row items-center rounded-[20px] bg-white px-[16px] py-[13px]"
       style={{
         columnGap: 13,
         boxShadow: selected ? ring(1.8, colors.accent[800]) : ring(1, colors.neutral[200]),
-        zIndex: recommended ? 2 : 1,
       }}
     >
-      {recommended ? <RecommendedBadge style={{ right: 18, top: -11 }} /> : null}
       <View
         className="h-[46px] w-[46px] items-center justify-center rounded-full"
         style={{ backgroundColor: selected ? colors.surface : colors.surface2 }}

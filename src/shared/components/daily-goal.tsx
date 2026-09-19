@@ -2,12 +2,14 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { OptionRow } from '@/shared/components/option-row';
+import { useLayout } from '@/shared/hooks/use-layout';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { RadioMark } from '@/shared/ui/marks';
+import { RecommendedBadge } from '@/shared/ui/recommended-badge';
 import { Text } from '@/shared/ui/text';
 
 const DAILY_GOAL_OPTIONS = [
@@ -28,8 +30,9 @@ type OptionsProps = {
 /** The four "N Min a day" rows with weekly bars and a recommended badge on 15. */
 export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
   const { t } = useTranslation();
+  const [recommendedRow, onRecommendedLayout] = useLayout();
   return (
-    <View className={className} style={{ rowGap: 10, zIndex: 1 }}>
+    <View className={cn('relative', className)} style={{ rowGap: 10 }}>
       {DAILY_GOAL_OPTIONS.map(({ min, filled }) => {
         const on = min === value;
         return (
@@ -39,7 +42,7 @@ export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
             label={t('common.min')}
             sub={t('profile.dailySub', { ex: t(`profile.goalScreen.ex.${min}`) })}
             selected={on}
-            recommended={min === 15}
+            onLayout={min === 15 ? onRecommendedLayout : undefined}
             onPress={() => onChange(min)}
           >
             <View className="flex-row items-end" style={{ columnGap: 4 }}>
@@ -68,6 +71,9 @@ export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
           </OptionRow>
         );
       })}
+      {recommendedRow ? (
+        <RecommendedBadge style={{ right: 18, top: recommendedRow.y - 11 }} />
+      ) : null}
     </View>
   );
 }

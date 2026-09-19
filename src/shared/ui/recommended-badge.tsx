@@ -5,13 +5,17 @@ import { Text } from '@/shared/ui/text';
 
 type Props = { style?: StyleProp<ViewStyle>; size?: number; paddingVertical?: number };
 
-/** Absolutely positioned "Empfohlen" pill hanging over a card edge. Position via `style`. */
+/**
+ * Absolutely positioned "Empfohlen" pill hanging over a card edge. Render it as the LAST child of
+ * the list that holds the card (positioned from the card's measured layout), never inside the
+ * card: a child outside its card is clipped on Android and painted under neighbouring rings on iOS.
+ */
 export function RecommendedBadge({ style, size = 12, paddingVertical = 4 }: Props) {
   const { t } = useTranslation();
   return (
     <View
       className="absolute rounded-pill bg-accent-800 px-[12px]"
-      style={[{ paddingVertical, zIndex: 2 }, style]}
+      style={[{ paddingVertical }, style]}
     >
       <Text className="font-semibold text-accent-100" style={{ fontSize: size }}>
         {t('common.recommended')}

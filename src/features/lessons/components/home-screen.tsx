@@ -110,6 +110,7 @@ export function HomeScreen() {
             <Tap
               key={f}
               haptic="selection"
+              sound="none"
               onPress={() => setFilter(i)}
               accessibilityState={{ selected: i === filter }}
               className={cn(
