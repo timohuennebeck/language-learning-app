@@ -341,8 +341,7 @@ create table public.conversations (
 );
 create index on public.conversations (user_id, started_at desc);
 
--- The learner's vocabulary. Rows are created from the Rückblick screen (and later by Lernen).
--- → Lernen adds the spaced-repetition columns (due_at, interval, ease, misses) in its own migration.
+-- The learner's vocabulary, scheduled with FSRS (see "Scheduling" below).
 create table public.flashcards (
   id                      uuid primary key default gen_random_uuid(),
   user_id                 uuid not null references public.profiles(id) on delete cascade,
@@ -352,10 +351,56 @@ create table public.flashcards (
   back_language           text not null references public.languages(code),  -- of `back`
   example                 text,                 -- 'un café à emporter'
   source_conversation_id  uuid references public.conversations(id) on delete set null,
+  -- FSRS card state (mirrors the ts-fsrs `Card` type; the app writes it back after each review)
+  due                     timestamptz not null default now(),   -- next review; new cards are due now
+  stability               real not null default 0,             -- days until recall drops to 90 %
+  difficulty              real not null default 0,             -- 1..10
+  state                   smallint not null default 0,         -- 0 new · 1 learning · 2 review · 3 relearning
+  reps                    int not null default 0,
+  lapses                  int not null default 0,              -- times forgotten (the old `misses`)
+  scheduled_days          int not null default 0,
+  elapsed_days            int not null default 0,
+  last_reviewed_at        timestamptz,
   created_at              timestamptz not null default now(),
   unique (user_id, language, front)
 );
+create index on public.flashcards (user_id, language, due);   -- "12 Karten fällig"
+
+-- One row per swipe. Needed to optimise the FSRS parameters per user later; never updated.
+create table public.flashcard_reviews (
+  id              bigint generated always as identity primary key,
+  card_id         uuid not null references public.flashcards(id) on delete cascade,
+  user_id         uuid not null references public.profiles(id) on delete cascade,
+  rating          smallint not null check (rating between 1 and 4),  -- 1 again · 2 hard · 3 good · 4 easy
+  state           smallint not null,          -- card state before this review
+  stability       real not null,              -- card values after this review
+  difficulty      real not null,
+  elapsed_days    int not null,
+  scheduled_days  int not null,
+  reviewed_at     timestamptz not null default now()
+);
+create index on public.flashcard_reviews (user_id, reviewed_at desc);
 ```
+
+**Scheduling.** FSRS (Free Spaced Repetition Scheduler, the algorithm Anki switched to; FSRS-6 is
+the current revision) predicts when a card is about to be forgotten from two numbers per card,
+*stability* and *difficulty*, instead of SM-2's fixed multipliers. The database does not know the
+algorithm: the `ts-fsrs` npm package runs on the device with the default parameters, and the app
+only stores what it hands back.
+
+- **Review**: the swipe deck maps right swipe → `Good` (3) and left swipe → `Again` (1); ts-fsrs
+  supports this two-button mode. After each swipe the app updates the card's FSRS columns and
+  inserts a `flashcard_reviews` row (batched at the end of the deck, one `upsert` + one `insert`).
+- **Due**: `select … from flashcards where user_id = auth.uid() and language = :active and
+  due <= now() order by due limit 20`. New cards have `state = 0`; a per-day cap on new cards is
+  a client constant.
+- **Retention target** (default 0.9) is a client constant for now; it can move to `app_config`.
+- **Later** (→ Lernen): run the FSRS optimiser over `flashcard_reviews` once a user has a few
+  hundred reviews and store the 21 fitted parameters in a `fsrs_params jsonb` column on
+  `profiles`. Nothing in the schema changes for that.
+
+Trade-off: FSRS needs ~10 columns and a review log where SM-2 needs three columns and no log. The
+log is what makes it "intelligent" over time, and it is cheap (one small row per swipe).
 
 `review` shape (written once by `end-conversation`, read by the Rückblick and level-result screens):
 
@@ -438,7 +483,7 @@ create policy "own profile: update" on public.profiles for update using (auth.ui
 | `languages`, `app_config`, `legal_documents` | everyone (incl. anon)  | none (service role only)          |
 | `profiles`                                   | own                    | insert / update own               |
 | `learner_languages`, `flashcards`, `devices` | own                    | insert / update / delete own      |
-| `legal_acceptances`                          | own                    | insert own                        |
+| `legal_acceptances`, `flashcard_reviews`     | own                    | insert own                        |
 | `conversations`                              | own                    | none (edge functions, service role) |
 
 Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the only
@@ -497,7 +542,8 @@ supabase/migrations/
   0002_reference.sql               languages, app_config, legal_documents (+ RLS)
   0003_profiles.sql                profiles, learner_languages (FK to conversations added in 0005)
   0004_consent_devices.sql         legal_acceptances, devices
-  0005_conversations.sql           conversations, flashcards, learner_languages.placement_conversation_id
+  0005_conversations.sql           conversations, flashcards, flashcard_reviews,
+                                   learner_languages.placement_conversation_id
 supabase/seed.sql                  languages (six app languages; fr/en/es learnable),
                                    app_config (two keys), terms + privacy in all six locales
                                    (placeholder text until legal copy exists),
@@ -512,8 +558,8 @@ Suggested build order in the app:
 2. 0005 + `start-conversation` / `end-conversation`: placement call end-to-end, live call,
    Rückblick → `flashcards`, `delete-account`.
 3. RevenueCat SDK in the paywall, `Purchases.logIn`, quota check in `start-conversation`.
-4. Then **Lernen** (activity + streaks, flashcard scheduling on top of `flashcards`, exercises,
-   reading), then **Kurs**, then the deferred items below as they are needed.
+4. Then **Lernen** (activity + streaks, the flashcard deck on FSRS, exercises, reading), then
+   **Kurs**, then the deferred items below as they are needed.
 
 ---
 
@@ -528,6 +574,7 @@ Suggested build order in the app:
 | `feedback`                                                  | Rating screen goes live                          |
 | `conversation_turns`, `conversation_items`, `saved_words`   | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
 | `profiles.timezone`                                         | Streaks (day boundaries) or server-side reminders |
+| `profiles.fsrs_params`                                      | FSRS parameter optimisation per user (needs review history first) |
 | Server push via `devices` + a scheduled function            | Reminders with content from the last conversation |
 
 ---
