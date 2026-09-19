@@ -12,6 +12,8 @@ import { Text } from '@/shared/ui/text';
 
 /** Widths of the empty slots, cycled for however many pieces are still missing. */
 const SLOT_WIDTHS = [104, 138, 126];
+/** Height of a slot and of a placed piece, so a line never changes height when a piece lands. */
+const PIECE_HEIGHT = 46;
 
 /** 19c1 / 25e / 25f · Übersetzen mit Bausteinen: tap a piece to place it, tap it again to remove. */
 export function Build({ step, phase, answer, setAnswer }: StepProps<'build', string[]>) {
@@ -31,8 +33,9 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
             return (
               <View
                 key={piece + i}
-                className="rounded-[14px] px-[14px] py-[10px]"
+                className="justify-center rounded-[14px] px-[14px]"
                 style={{
+                  height: PIECE_HEIGHT,
                   backgroundColor: wrong ? colors.err.chip : colors.ok.chip,
                   boxShadow: wrong ? insetRing(2, colors.err.ring) : undefined,
                 }}
@@ -49,8 +52,8 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
               haptic="selection"
               sound="none"
               onPress={() => setAnswer(answer.filter((_, j) => j !== i))}
-              className="rounded-[14px] bg-white px-[14px] py-[10px]"
-              style={{ boxShadow: ring(1, colors.neutral[200]) }}
+              className="justify-center rounded-[14px] bg-white px-[14px]"
+              style={{ height: PIECE_HEIGHT, boxShadow: ring(1, colors.neutral[200]) }}
             >
               <Text className="text-accent-900" style={{ fontSize: 17 }}>
                 {piece}
@@ -65,7 +68,7 @@ export function Build({ step, phase, answer, setAnswer }: StepProps<'build', str
                 className="rounded-[14px]"
                 style={{
                   width: SLOT_WIDTHS[i % SLOT_WIDTHS.length],
-                  height: 44,
+                  height: PIECE_HEIGHT,
                   backgroundColor: colors.surface2,
                   boxShadow: i === 0 ? insetRing(1.5, colors.accent[500]) : undefined,
                 }}

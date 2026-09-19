@@ -81,7 +81,7 @@ export function Conjugate({
               onPress={() => setFocus(i)}
               className="flex-row items-center"
               style={{
-                minHeight: 42,
+                minHeight: 52,
                 columnGap: 8,
                 borderTopWidth: i === 0 ? 0 : 1,
                 borderColor: colors.surface2,
@@ -108,9 +108,7 @@ export function Conjugate({
                   <Text className="text-ink" style={{ fontSize: FORM, lineHeight: 24 }}>
                     {value}
                   </Text>
-                ) : (
-                  <View className="h-[14px] flex-1 rounded-pill bg-surface2" />
-                )
+                ) : null
               ) : (
                 <View className="flex-1 flex-row flex-wrap items-center" style={{ gap: 8 }}>
                   {ok ? (

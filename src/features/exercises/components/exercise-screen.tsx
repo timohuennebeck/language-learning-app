@@ -67,11 +67,12 @@ export function ExerciseScreen() {
         labelSize={13}
         trackColor={colors.track2}
       />
-      {/* The step scrolls (the conjugation table runs under the keyboard); the actions stay put. */}
+      {/* The step scrolls (the conjugation table runs under the keyboard) while Prüfen stays put; the
+          result scrolls as a whole so a long table is never cut off above the feedback card. */}
       <ScrollView
         className="flex-1"
         style={{ marginHorizontal: -22 }}
-        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 22, paddingBottom: task ? 0 : 20 }}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 22 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -114,6 +115,24 @@ export function ExerciseScreen() {
             onSubmit={check}
           />
         )}
+        {task ? null : (
+          <>
+            <View className="flex-1" style={{ minHeight: 20 }} />
+            <FeedbackCard
+              correct={s.phase === 'correct'}
+              why={s.step.correctWhy}
+              wrongWhy={
+                s.step.kind === 'conjugate'
+                  ? conjugateWrongWhy(s.step, s.answer as string[])
+                  : s.step.wrongWhy
+              }
+              youLine={'youLine' in s.step ? s.step.youLine : undefined}
+              rightLine={'rightLine' in s.step ? s.step.rightLine : undefined}
+            />
+            <View style={{ height: 14 }} />
+            <Button height={56} label={t('common.next')} onPress={onNext} />
+          </>
+        )}
       </ScrollView>
       {task ? (
         <View
@@ -140,23 +159,7 @@ export function ExerciseScreen() {
             onPress={check}
           />
         </View>
-      ) : (
-        <>
-          <FeedbackCard
-            correct={s.phase === 'correct'}
-            why={s.step.correctWhy}
-            wrongWhy={
-              s.step.kind === 'conjugate'
-                ? conjugateWrongWhy(s.step, s.answer as string[])
-                : s.step.wrongWhy
-            }
-            youLine={'youLine' in s.step ? s.step.youLine : undefined}
-            rightLine={'rightLine' in s.step ? s.step.rightLine : undefined}
-          />
-          <View style={{ height: 14 }} />
-          <Button height={56} label={t('common.next')} onPress={onNext} />
-        </>
-      )}
+      ) : null}
     </Screen>
   );
 }
