@@ -139,7 +139,7 @@ export function SpeakScreen() {
                 key={s.id}
                 haptic="light"
                 onPress={() =>
-                  router.push({ pathname: '/(app)/scenario/[key]', params: { key: s.key } })
+                  router.push({ pathname: '/(app)/scenario/[kind]', params: { kind: s.kind } })
                 }
                 className="rounded-[22px] bg-surface2 p-[14px]"
                 style={{ width: (width - 44 - 12) / 2, height: 176 }}

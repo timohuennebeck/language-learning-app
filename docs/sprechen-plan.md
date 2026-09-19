@@ -43,7 +43,7 @@ split of the 24: ten A1–A2, eight A2–B1, six B1–B2.
 ## 2 Table
 
 A scenario is one concept ("cafe") realised once per learning language. The language-neutral
-`key` ties the variants together and owns the illustration, theme and level window; per-language
+`kind` ties the variants together and owns the illustration, theme and level window; per-language
 rows carry the title and Pip's prompt; per-app-language strings are jsonb keyed
 by locale.
 
@@ -52,7 +52,7 @@ create type public.scenario_theme as enum ('life', 'travel', 'work', 'social', '
 
 create table public.scenarios (
   id            uuid primary key default gen_random_uuid(),
-  key           text not null,                          -- 'cafe' · same across languages, names the illustration
+  kind           text not null,                          -- 'cafe' · same across languages, names the illustration
   language      text not null references public.languages(code),   -- learning language of this variant
   title         text not null,                          -- 'Au café' · in the learning language
   theme         public.scenario_theme not null,
@@ -66,7 +66,7 @@ create table public.scenarios (
   pip_prompt    text not null,                          -- Pip's role and the situation, in the learning language
   sort_order    smallint not null default 0,
   active        boolean not null default true,
-  unique (key, language)
+  unique (kind, language)
 );
 create index scenarios_feed_idx on public.scenarios (language, active, sort_order);
 ```
@@ -87,9 +87,9 @@ For the MVP the catalogue lives in the database and nowhere else.
 - **Local copy**: `supabase db dump --data-only --schema public -f supabase/seed/scenarios.sql`
   after every catalogue change; `seed.sql` includes that file, so `db reset` has the same rows as
   the hosted project.
-- **Illustrations**: uploaded by hand to the public Storage bucket `scenarios`, one file per key
+- **Illustrations**: uploaded by hand to the public Storage bucket `scenarios`, one file per kind
   (`scenarios/cafe.webp`, ~600 px, no text baked in); the row stores the path.
-- **Completeness check**: a view instead of a script. It lists every key that lacks a row for a
+- **Completeness check**: a view instead of a script. It lists every kind that lacks a row for a
   language with `learnable = true`, and every row whose `subtitle`, `brief` or task `text` lacks
   one of the six app locales. Look at it before a release; later it can run in CI against the
   hosted project.
@@ -97,32 +97,32 @@ For the MVP the catalogue lives in the database and nowhere else.
 ```sql
 create view public.scenario_content_gaps as
 with locales as (select code from public.languages where is_app_language),
-     keys as (select distinct key from public.scenarios)
-select k.key, l.code as language, 'missing variant' as gap
+     keys as (select distinct kind from public.scenarios)
+select k.kind, l.code as language, 'missing variant' as gap
 from keys k cross join (select code from public.languages where learnable) l
-left join public.scenarios s on s.key = k.key and s.language = l.code
+left join public.scenarios s on s.kind = k.kind and s.language = l.code
 where s.id is null
 union all
-select s.key, s.language, 'subtitle lacks ' || loc.code
+select s.kind, s.language, 'subtitle lacks ' || loc.code
 from public.scenarios s cross join locales loc
 where not (s.subtitle ? loc.code)
 union all
-select s.key, s.language, 'brief lacks ' || loc.code
+select s.kind, s.language, 'brief lacks ' || loc.code
 from public.scenarios s cross join locales loc
 where not (s.brief ? loc.code)
 union all
-select s.key, s.language, 'task ' || (t ->> 'id') || ' lacks ' || loc.code
+select s.kind, s.language, 'task ' || (t ->> 'id') || ' lacks ' || loc.code
 from public.scenarios s, jsonb_array_elements(s.tasks) t cross join locales loc
 where not ((t -> 'text') ? loc.code);
 ```
 
-A scenario is authored once per key across the three learning languages: the situation, theme,
+A scenario is authored once per kind across the three learning languages: the situation, theme,
 level window, subtitle and brief are the same in every row; the title, Pip's prompt and the task
 hints are written per learning language. First drafts of the translations can be model-generated
 from the German master and reviewed by a native speaker; the view proves presence, not quality.
 
 **Upgrade path** (when a second author or a translator joins): export the rows once into one JSON
-file per key under `content/scenarios/`, add a generator that unfolds a file into its three rows
+file per kind under `content/scenarios/`, add a generator that unfolds a file into its three rows
 and writes the seed, and run the same completeness rules as a script in CI before anything
 reaches a database. The table does not change.
 
@@ -161,20 +161,20 @@ fetches it once per launch per language and keeps it in TanStack Query with a lo
 select per user per day is nothing for Postgres; the read-only tables never see per-user writes.
 
 Client: `features/speak/` gets `data/schemas.ts` (scenario, task), `data/repository.ts`
-(`listScenarios(language)`, `getScenario(key)`), `data/keys.ts`, and the preview screen replaces
+(`listScenarios(language)`, `getScenario(kind)`), `data/keys.ts`, and the preview screen replaces
 the current lesson start screen for scenarios. The `lessons` sample data and the home feed's
 `lessons` field go away with it.
 
 ## 6 Status
 
-Applied to the hosted project on 2026-09-19 (migration `20260919104439_scenarios`): the table,
+Applied to the hosted project on 2026-09-19 (migrations `20260919104439_scenarios` and `20260919105432_scenarios_key_to_kind`): the table,
 its RLS policy, the `scenario_content_gaps` view, `conversations.scenario_id`, the `scenario`
 kind and the public `scenarios` bucket. Seeded with the four design scenarios in fr / en / es
 (12 rows, gaps view empty) from `scripts/gen-seed-scenarios.py` → `supabase/seed/scenarios.sql`.
 The app reads them: `features/speak/` (schemas, repository, query keys, hooks), the Sprechen
-tab renders the catalogue with theme chips and the level window, and `/scenario/[key]` is the
+tab renders the catalogue with theme chips and the level window, and `/scenario/[kind]` is the
 preview with the brief and the tasks for the learner's level. Illustrations are not uploaded yet;
-tiles show a placeholder until `scenarios/<key>.webp` exists in the bucket. "Gespräch starten"
+tiles show a placeholder until `scenarios/<kind>.webp` exists in the bucket. "Gespräch starten"
 still opens the design's live screen (the call functions come with the model decision).
 
 ## 7 Migration, seed, order

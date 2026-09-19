@@ -554,7 +554,7 @@ export type Database = {
           brief: Json;
           id: string;
           illustration_storage_path: string;
-          key: string;
+          kind: string;
           language: string;
           level_max: Database['public']['Enums']['cefr_level'];
           level_min: Database['public']['Enums']['cefr_level'];
@@ -571,7 +571,7 @@ export type Database = {
           brief?: Json;
           id?: string;
           illustration_storage_path: string;
-          key: string;
+          kind: string;
           language: string;
           level_max?: Database['public']['Enums']['cefr_level'];
           level_min?: Database['public']['Enums']['cefr_level'];
@@ -588,7 +588,7 @@ export type Database = {
           brief?: Json;
           id?: string;
           illustration_storage_path?: string;
-          key?: string;
+          kind?: string;
           language?: string;
           level_max?: Database['public']['Enums']['cefr_level'];
           level_min?: Database['public']['Enums']['cefr_level'];
@@ -615,7 +615,7 @@ export type Database = {
       scenario_content_gaps: {
         Row: {
           gap: string | null;
-          key: string | null;
+          kind: string | null;
           language: string | null;
         };
         Relationships: [];
