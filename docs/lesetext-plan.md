@@ -3,8 +3,7 @@
 How "Lesetext erstellen" on Lernen becomes real: generating a text, tapping any word in it for a
 translation with the sentence aligned, and tinting every word by how well the learner knows it.
 
-Supersedes §4 of `docs/lernen-plan.md` (that section stays as the parked sketch; the differences
-are called out in §10). Companion to `docs/database-plan.md`.
+Supersedes §4 of `docs/lernen-plan.md`. Companion to `docs/database-plan.md`.
 
 The three things the feature has to do:
 
@@ -15,144 +14,208 @@ The three things the feature has to do:
 3. **Show what they know** — every word tinted by its Leitner box, live, so a text read again next
    week looks different because the learner is different.
 
-Point 3 is the one that decides the data model: the tint cannot be baked into the generated text,
-because the text is written once and the knowledge changes daily.
+Point 3 decides the data model: the tint cannot be baked into the generated document, because the
+text is written once and the deck changes daily. So the document has to *reference* words, and
+the deck has to reference the same words. That reference is a **lexeme**.
 
 ---
 
-## 1 The join between a text and the deck
+## 1 Lexemes: the vocabulary is a table, not a field
 
-A reading text is French surface forms (`je suis allée`, `un crème`). The deck is flashcards with
-a `front` (`aller`, `le crème`). Matching one to the other by string equality fails on the first
-conjugated verb, and that is most of the interesting words.
+A reading text contains surface forms (`je suis allée`, `un crème`). A flashcard contains what the
+learner saved (`aller`, `le crème`). Matching by string equality fails on the first conjugated
+verb, which is most of the interesting words. And explaining `café` from scratch in every text it
+appears in means the same word explained thirty different ways across thirty texts.
 
-So both sides get a **lemma**: the dictionary form, produced by the generator for every glossed
-word and stored on every flashcard.
+Both problems have one answer: a shared vocabulary table, keyed by language and dictionary form,
+that texts and flashcards both point at by id.
 
 ```sql
--- …_flashcards_lemma.sql
-alter table public.flashcards add column lemma text;
+-- …_lexemes.sql
+create type public.lexeme_pos as enum ('noun', 'verb', 'adj', 'adv', 'phrase', 'other');
 
--- Nothing writes flashcards yet (the Rückblick "Wörter speichern" is still unwired), so the
--- backfill is a formality rather than a data migration.
-update public.flashcards set lemma = lower(btrim(front)) where lemma is null;
-alter table public.flashcards alter column lemma set not null;
+-- One row per word (or fixed phrase) of a learning language, in its dictionary form. Shared by
+-- every learner of that language; not per user, not per text.
+create table public.lexemes (
+  id          uuid primary key default gen_random_uuid(),
+  language    text not null references public.languages(code),
+  lemma       text not null,                        -- 'aller', 'crème', 'tout de suite'
+  pos         public.lexeme_pos not null,
+  sense       smallint not null default 1,          -- 'allongé' the coffee vs. 'allongé' lying down
+  gender      char(1) check (gender in ('m', 'f')), -- nouns; the card front renders 'le/la' from it
+  level       public.cefr_level,                    -- rough CEFR level of the word
+  tag         text,                                 -- grammar tag, free text ('passé composé') → Kurs
+  example     text,                                 -- in the learning language
+  created_at  timestamptz not null default now(),
+  unique (language, lemma, pos, sense)
+);
 
--- The identity of a card is its lemma, not the surface form it was saved from: 'la cuillère' and
--- 'cuillère' are one card. `front` stays the display form on the card.
-alter table public.flashcards drop constraint flashcards_user_id_language_front_key;
-alter table public.flashcards add constraint flashcards_user_lemma_key
-  unique (user_id, language, lemma);
-create index flashcards_lemma_idx on public.flashcards (user_id, language, lemma);
+-- What a lexeme means, per app language. A French word is one lexeme with up to six glosses.
+create table public.lexeme_glosses (
+  lexeme_id        uuid not null references public.lexemes(id) on delete cascade,
+  native_language  text not null references public.languages(code),
+  trans            text not null,                   -- 'gehen'
+  note             text,                            -- 'Passé composé mit être', in the app language
+  verified         boolean not null default false,  -- a human has looked at it
+  created_at       timestamptz not null default now(),
+  primary key (lexeme_id, native_language)
+);
 
-comment on column public.flashcards.lemma is
-  'Dictionary form, lowercased and trimmed, no leading article. The join key between a reading text''s glosses and the deck.';
+alter table public.lexemes        enable row level security;
+alter table public.lexeme_glosses enable row level security;
+create policy "lexemes are public" on public.lexemes
+  for select to anon, authenticated using (true);
+create policy "glosses are public" on public.lexeme_glosses
+  for select to anon, authenticated using (true);
+-- Written only by the edge functions (secret key).
 ```
 
-Normalisation is one shared client function (`lib/lemma.ts`), used by the generator, by the save
-button on the word screen and by the Rückblick: NFC, lowercase, trim, strip a leading article
-(`le la les l' un une des`), strip surrounding punctuation. **Diacritics are kept** — `ou` and `où`
-are different words.
+Why two tables: the identity of a word does not depend on who is reading it. `aller` is one
+lexeme whether the learner's app language is German or Spanish; only the gloss differs. This is
+what lets a flashcard survive an app-language switch (`database-plan.md` §3.6 already wants that)
+and lets encounter counts (§5) be per word rather than per word-and-translation.
 
-**Companion change:** `end-conversation`'s `REVIEW_SCHEMA` needs `lemma` alongside `front`/`back`
-in `words`. Without it, cards saved from a conversation carry a lemma derived from the surface form
-and never match a reading text's glosses — the whole feature silently shows every word as new.
+Why `sense` and not just `lemma`: `allongé` is a coffee or a body position, `le tour` a trip and
+`la tour` a tower. `pos` catches the noun/verb and gender collisions; `sense` catches the rest.
+Senses are not designed up front — they are created when the annotator says an existing gloss does
+not fit the sentence (§4), so the table grows a second sense exactly when a text needs one.
+
+**Lemma normalisation** (server-side only, one function, `_shared/lemma.ts`): Unicode NFC,
+lowercase, trim, strip surrounding punctuation, strip one leading article (`le la les l' un une
+des`). **Diacritics are kept** — `ou` and `où` are different words. The client never normalises
+anything; it only ever sees ids.
+
+### Flashcards point at lexemes
+
+```sql
+-- …_flashcards_lexeme.sql
+alter table public.flashcards add column lexeme_id uuid references public.lexemes(id) on delete restrict;
+
+-- Backfill: every existing card becomes a lexeme (pos unknown → 'other') and links to it.
+-- Real rows are few (the deck only started reading this table this week).
+insert into public.lexemes (language, lemma, pos)
+select distinct language, lower(btrim(front)), 'other'::public.lexeme_pos from public.flashcards
+on conflict do nothing;
+insert into public.lexeme_glosses (lexeme_id, native_language, trans)
+select l.id, f.back_language, f.back from public.flashcards f
+join public.lexemes l on l.language = f.language and l.lemma = lower(btrim(f.front)) and l.pos = 'other'
+on conflict do nothing;
+update public.flashcards f set lexeme_id = l.id
+from public.lexemes l
+where l.language = f.language and l.lemma = lower(btrim(f.front)) and l.pos = 'other';
+
+alter table public.flashcards alter column lexeme_id set not null;
+
+-- A card's identity is the word, not the spelling it was saved from.
+alter table public.flashcards drop constraint flashcards_user_id_language_front_key;
+alter table public.flashcards add constraint flashcards_user_lexeme_key unique (user_id, lexeme_id);
+create index flashcards_lexeme_idx on public.flashcards (user_id, lexeme_id);
+```
+
+`front` / `back` / `example` stay on the card as they are: copied from the lexeme at save time, so
+the card the learner sees never changes under them. `language` stays too — it is denormalised for
+the `(user_id, language, due)` index the deck reads.
+
+Nothing in the app creates a flashcard from free text. The two places that create cards both
+already have a lexeme id by the time they insert: the word screen (the span carries it, §2) and the
+Rückblick (`end-conversation` resolves `review.words[].lexemeId` when it writes the review — the
+**one companion change** to an existing function, using the same `resolveLexemes` helper §4
+describes).
 
 ### Box → tier
 
 ```ts
 // features/reading/lib/tiers.ts
-// 0 is the strongest tint (TIER_BG[0]); a word with no card at all is new, which is the point
-// of the text, so it gets the strongest tint too.
+// 0 is the strongest tint (TIER_BG[0]). No card at all is a new word, which is the point of the
+// text, so it gets the strongest tint too.
 export const tierOf = (box: number | undefined) =>
   box === undefined || box <= 2 ? 0 : box <= 4 ? 1 : 2;
 ```
 
-`LEARNED_BOX` is 5, so tier 2 ("you know this") is exactly the learned boxes. The word screen's
-"X % sicher" comes out of the same row, no new columns:
+`LEARNED_BOX` is 5, so tier 2 ("you know this") is exactly the learned boxes. "X % sicher" on the
+word screen comes out of the same row, no new columns:
 
 ```ts
 const right = card.reviews - card.lapses;          // saveDeckRun bumps both together
 const pct = card.reviews ? Math.round((right / card.reviews) * 100) : null;   // null → "Neu"
 ```
 
-One query per text render, not per word:
-
-```sql
-select lemma, box, reviews, lapses from public.flashcards
-where user_id = auth.uid() and language = :lang and lemma = any(:lemmas);
-```
-
 ---
 
-## 2 Content shape
+## 2 The text document
 
-One immutable jsonb document per text. Tokens reference glosses by id, so a word that appears
-three times is written once — which matters, because glosses are where the output tokens go.
+One immutable jsonb document per text. It contains **no vocabulary** — only the prose, its
+translation, and spans that point at lexemes by id.
 
 ```jsonc
 {
   "title": "Mardi matin",
-  "topic": "café",
   "sections": [
     {
-      "index": 1,
       "sentences": [
         {
           "id": "s1",
+          "source": "Hier, je suis allée dans un petit café près du canal.",
           "native": "Gestern bin ich in ein kleines Café am Kanal gegangen.",
-          "tokens": [
-            { "t": "Hier" },
-            { "t": ", " },
-            { "t": "je suis allée", "g": "g2", "mark": true },
-            { "t": " dans un petit " },
-            { "t": "café", "g": "g3" }
+          "spans": [
+            {
+              "at": 6, "len": 13,                       // "je suis allée"
+              "lexeme": "9f1c…",                        // → lexemes.id (aller · verb · 1)
+              "mark": true,                             // one of the chosen highlights
+              "here": "ich bin gegangen",               // what this form means in this sentence
+              "nativeMarks": ["bin ich", "gegangen"]    // the parts of `native` that render it
+            },
+            { "at": 34, "len": 4, "lexeme": "2b77…", "here": "Café", "nativeMarks": ["Café"] }
           ]
         }
       ]
     }
-  ],
-  "glosses": {
-    "g2": {
-      "surface": "je suis allée",
-      "lemma": "aller",
-      "trans": "ich bin gegangen",
-      "nativeMarks": ["bin ich", "gegangen"],
-      "note": "Passé composé mit être; das -e zeigt, dass eine Frau spricht.",
-      "tag": "passé composé",
-      "card": { "front": "aller", "back": "gehen", "example": "je suis allée au café" }
-    }
-  }
+  ]
 }
 ```
 
-Why this shape:
-
-- **`tokens` is a flat run list**, which is exactly what `InlineFlow` already takes — the reading
-  screen's renderer barely changes, only where the pieces come from.
-- **`mark: true`** says "this is one of the ~7 chosen highlights of the section". Every token with
-  a `g` is tappable; only marked ones get a tint. **No `tier` in the content** — it is derived per
-  render from the deck (§1). This is the one real departure from the parked plan and it is forced
-  by requirement 3.
-- **`native` lives on the sentence, not the gloss.** Today's `content.ts` repeats the whole German
-  sentence inside every segment that sits in it; five segments in one sentence means five copies of
-  the same string, generated and stored five times.
-- **`nativeMarks` are substrings**, not indices — the existing `splitMarks(text, marks)` helper
-  already renders exactly that, and a model is far more reliable at quoting a phrase than at
-  counting characters. The server validates each one is really a substring (§6).
-- **`card`** is the flashcard the save button on the word screen creates, pre-written by the
-  generator so saving is one insert and no second model call.
+- **`source` is a real string.** The sentence exists as text — for TTS later, for search, for
+  export, for reading it in the database. Spans are data *about* the text, not a partition of it.
+- **`at` / `len` are UTF-16 code units**, computed by the server from the phrase the model quoted
+  (`indexOf`, nth occurrence for repeats) and consumed by the client's `String.prototype.slice`.
+  Both are JavaScript, so they agree; SQL never touches them. `source` is NFC-normalised before
+  offsets are computed and stored as-is afterwards; the client must not re-normalise.
+- **`nativeMarks` stay as substrings**, deliberately unlike spans. Spans are identity — *which*
+  word is tappable — and must be unambiguous when a word appears twice. Marks are highlight hints:
+  if one fails to match, the renderer skips it and the translation shows unhighlighted. Substrings
+  are what `splitMarks()` already takes.
+- **`here`** is the contextual meaning of the inflected form; the lexeme's gloss is the dictionary
+  meaning. The word screen shows both — `je suis allée · ich bin gegangen`, then `aller · gehen` —
+  which is a better screen than the one the design has.
+- **`mark`** says "this is one of the ~7 chosen highlights of the section". Every span is tappable;
+  only marked spans get a tint. **The tint itself is not stored** — it is `tierOf(box)` at render.
+- Every content word gets a span. Function words (`le`, `de`, `et`, `à`) do not.
 
 ### Tauschwörter mode is free
 
-The "Tauschwörter" section (German boxes that reveal the French on tap, `swapPairs` today) needs
-**no generated content at all**: pick N marked glosses in the section and render `gloss.trans`
-instead of `token.t`. It is a render mode over the same document. Nothing to generate, nothing to
-store, nothing to keep in sync.
+The "Tauschwörter" section (German boxes that reveal the French on tap) needs **no generated
+content**: take N marked spans of the section and render `span.here` in place of the source slice.
+It is a render mode over the same document.
+
+### What the reading screen loads
+
+Three queries by id array, all cacheable with the text:
+
+```sql
+select … from public.reading_texts where id = :id;                                     -- the document
+select l.*, g.trans, g.note from public.lexemes l
+  join public.lexeme_glosses g on g.lexeme_id = l.id and g.native_language = :native
+  where l.id = any(:lexeme_ids);                                                        -- the vocabulary
+select lexeme_id, box, reviews, lapses from public.flashcards
+  where user_id = (select auth.uid()) and lexeme_id = any(:lexeme_ids);                -- the tints
+```
+
+`:lexeme_ids` is a column on the row (§3), so nothing parses jsonb to find out what to load. If the
+third query fails (offline, stale deck), render untinted rather than block.
 
 ---
 
-## 3 The table
+## 3 Tables
 
 ```sql
 -- …_reading_texts.sql
@@ -169,15 +232,17 @@ create table public.reading_texts (
   source_conversation_id  uuid references public.conversations(id) on delete set null,
   level                   public.cefr_level not null,
   topic                   text,                       -- 'Café in Paris', echoed on the home card
-  title                   text,                       -- 'Mardi matin'
-  content                 jsonb,
-  section_count           smallint,                   -- "Abschnitt 2 von 3" without parsing content
+  title                   text,
+  draft                   jsonb,                      -- writer output, kept until ready so a retry resumes at the annotator
+  content                 jsonb,                      -- §2, set with status = 'ready'
+  lexeme_ids              uuid[] not null default '{}',
+  section_count           smallint,
   word_count              smallint,
   minutes                 smallint,                   -- "1 THEMA · 4 MIN"
   writer_model            text,
   annotator_model         text,
   prompt_version          text,
-  usage                   jsonb,                      -- both passes' token counts → cost per user
+  usage                   jsonb,                      -- every call's token counts → cost per user
   attempts                smallint not null default 0,
   current_section         smallint not null default 1,
   completed_at            timestamptz,
@@ -190,249 +255,340 @@ create index reading_texts_user_idx on public.reading_texts (user_id, created_at
 -- "Weiterlesen · Abschnitt 2 von 3": the newest ready text the learner has not finished.
 create index reading_texts_open_idx on public.reading_texts (user_id, language, created_at desc)
   where status = 'ready' and completed_at is null;
+-- "Every text where this learner met `prendre`", without a table for it.
+create index reading_texts_lexemes_idx on public.reading_texts using gin (lexeme_ids);
+-- Two taps on the home card must not start two generations.
+create unique index reading_texts_one_generating on public.reading_texts (user_id)
+  where status = 'generating';
+
+alter table public.reading_texts enable row level security;
+create policy "own texts: read" on public.reading_texts
+  for select to authenticated using ((select auth.uid()) = user_id);
+-- No client insert or update: rows are written by generate-reading (secret key), progress by the
+-- RPC below. This is simpler than the parked plan's column-level grants and cannot be misused.
 ```
 
-The section constraint matters because `current_section` is the one column the client may write
-(§5) — without it a client bug writes "Abschnitt 47 von 3".
-
-### Lookups (optional, recommended)
-
-One row per tapped word. It has no reader on day one except the next generation, which is
-precisely its point: the words a learner had to look up but did not save are the best input the
-next text can have.
+### Per-learner word state
 
 ```sql
-create table public.reading_lookups (
-  id            bigint generated always as identity primary key,
-  user_id       uuid not null references public.profiles(id) on delete cascade,
-  text_id       uuid not null references public.reading_texts(id) on delete cascade,
-  language      text not null references public.languages(code),
-  gloss_id      text not null,
-  lemma         text not null,
-  saved         boolean not null default false,   -- turned into a flashcard from the word screen
-  looked_up_at  timestamptz not null default now()
+-- One row per learner and word they have met. The reading-side complement of `flashcards`: a word
+-- read twelve times and never carded is known in a way box 1 cannot express.
+create table public.user_lexemes (
+  user_id        uuid not null references public.profiles(id) on delete cascade,
+  lexeme_id      uuid not null references public.lexemes(id) on delete cascade,
+  encounters     int not null default 0,              -- sections read that contained it
+  lookups        int not null default 0,              -- times tapped
+  first_seen_at  timestamptz not null default now(),
+  last_seen_at   timestamptz not null default now(),
+  primary key (user_id, lexeme_id)
 );
-create index reading_lookups_user_idx on public.reading_lookups (user_id, language, looked_up_at desc);
+alter table public.user_lexemes enable row level security;
+create policy "own lexeme stats: read" on public.user_lexemes
+  for select to authenticated using ((select auth.uid()) = user_id);
+-- Written by the two RPCs below, never directly.
 ```
 
-It also answers "was that text too hard?" (lookups per 100 words) without instrumenting anything
-else. Skip it if you would rather not store per-tap behaviour; nothing else depends on it.
+### Progress is an RPC, not a column write
+
+The client never updates `reading_texts`. Finishing a section is one call that advances the text
+and counts the words in that section as encountered — the server reads the lexemes out of the
+document, so the client cannot write anything it did not read:
+
+```sql
+create or replace function public.mark_section_read(text_id uuid, section int)
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  t public.reading_texts%rowtype;
+  ids uuid[];
+begin
+  select * into t from public.reading_texts
+    where id = text_id and user_id = (select auth.uid()) and status = 'ready';
+  if not found then raise exception 'text not found' using errcode = 'P0002'; end if;
+  if section < 1 or section > t.section_count then raise exception 'bad section'; end if;
+
+  select array_agg(distinct (s ->> 'lexeme')::uuid) into ids
+  from jsonb_array_elements(t.content -> 'sections' -> (section - 1) -> 'sentences') sent,
+       jsonb_array_elements(sent -> 'spans') s;
+
+  insert into public.user_lexemes (user_id, lexeme_id, encounters)
+  select t.user_id, id, 1 from unnest(ids) id
+  on conflict (user_id, lexeme_id) do update
+    set encounters = user_lexemes.encounters + 1, last_seen_at = now();
+
+  update public.reading_texts
+    set current_section = greatest(current_section, least(section + 1, section_count)),
+        completed_at = case when section = section_count then coalesce(completed_at, now())
+                            else completed_at end
+    where id = text_id;
+end $$;
+
+create or replace function public.record_lookup(lexeme uuid)
+returns void language sql security definer set search_path = public as $$
+  insert into public.user_lexemes (user_id, lexeme_id, lookups)
+  values ((select auth.uid()), lexeme, 1)
+  on conflict (user_id, lexeme_id) do update
+    set lookups = user_lexemes.lookups + 1, last_seen_at = now();
+$$;
+
+revoke all on function public.mark_section_read(uuid, int) from public;
+revoke all on function public.record_lookup(uuid) from public;
+grant execute on function public.mark_section_read(uuid, int) to authenticated;
+grant execute on function public.record_lookup(uuid) to authenticated;
+```
+
+`encounters` has no reader on day one except the next generation (§4), which is the point: the
+words a learner keeps looking up but never saves are the best input the next text can have. The
+tier in v1 is the box alone (that is the requirement); `encounters` is the obvious second input
+once there is data to look at.
 
 ---
 
 ## 4 Generation
 
-Two passes, because the work is two different jobs (see §8 for which model runs which):
+Three calls, because the work is three different jobs, and a database lookup sits between the
+second and third so the third only does what is new:
 
-| Pass          | Job                                                                                        | Output size |
-| ------------- | ------------------------------------------------------------------------------------------ | ----------- |
-| **Writer**    | write the text at the level, reusing the due words; one native translation per sentence    | ~800 tok    |
-| **Annotator** | split into tokens, produce every gloss: lemma, meaning, `nativeMarks`, note, flashcard     | ~2,700 tok  |
+| Call            | Model | Job                                                                       | ~out tokens |
+| --------------- | ----- | ------------------------------------------------------------------------- | ----------- |
+| **Writer**      | sol   | the prose at the level, reusing the due words; one `native` per sentence  | 800         |
+| **Lemmatiser**  | luna  | per sentence: content words as `{ surface, lemma, pos }`                   | 400         |
+| _server_        | —     | offsets; look up `lexemes` by `(language, lemma, pos)` with their glosses  |             |
+| **Annotator**   | luna  | per span: `here`, `nativeMarks`, and a full gloss **only when needed**     | 600 + 45×new |
 
-The writer's job is judgement — register, level, whether the French is idiomatic. The annotator's
-job is mechanical and, crucially, **deterministically checkable**: every `surface` must be a
-substring of the text the writer wrote, every `nativeMark` a substring of the sentence translation.
-A hallucinating annotator is caught by the validator, not by a user.
+The writer's job is judgement — register, level, whether the French is idiomatic. The other two
+are mechanical and **deterministically checkable**: every surface must be found in the sentence,
+every mark in its translation. A hallucinating annotator is caught by the validator, not by a user.
 
-Inputs the writer reads (the app sends ids only — never the prompt):
+Output shapes (structured outputs, strict):
+
+```ts
+// writer
+{ title: string; sections: { sentences: { source: string; native: string }[] }[] }
+
+// lemmatiser
+{ sentences: { id: string; words: { surface: string; lemma: string; pos: Pos }[] }[] }
+
+// annotator — input includes, per word, the candidate lexemes already in the table (with trans)
+{ spans: {
+    sentence: string; surface: string;
+    here: string; nativeMarks: string[];
+    lexeme: string | null;                       // an offered candidate id that fits this sentence…
+    gloss: null | {                              // …or a full gloss, when none was offered or none fits
+      trans: string; note: string | null; example: string | null;
+      tag: string | null; level: Level; gender: 'm' | 'f' | null;
+    };
+  }[] }
+```
+
+`resolveLexemes` (`_shared/lexemes.ts`, shared with `end-conversation`): for a span with a `gloss`,
+insert the lexeme (`sense` = max existing + 1 when a candidate was offered and refused, else 1) and
+its gloss for this native language; for a known lexeme missing a gloss in this native language,
+the annotator is asked for the gloss only. Returns the id per span.
+
+Inputs the writer reads (the app sends `{ language, topic? }` — never a prompt):
 
 - level and goal from `learner_languages`, native language from `profiles.app_language`
-- the fronts of up to 20 **due flashcards**, with the instruction to work at least 8 in naturally.
-  This is the feature's actual argument: spaced repetition that happens in prose instead of on a card.
-- the last finished conversation's `review.words` and `topic` — the text picks up what they just
-  talked about
+- the lemmas of up to 20 **due flashcards**, with the instruction to work at least 8 in naturally.
+  This is the feature's actual argument: spaced repetition that happens in prose instead of on a
+  card.
+- up to 10 lemmas from `user_lexemes` with the highest `lookups` and no flashcard
+- the last finished conversation's `review.words` and `topic`
 - the titles of the last 5 texts, so it stops writing about cafés
-- optionally a topic the user picked on the home card
+- the topic the user picked on the home card, if any
 
-Level discipline goes in the prompt as a rule with an escape hatch: *stay at CEFR {level}; at most
-8 words above it, and every one of those must appear in `glosses`.*
+Level discipline is a rule with an escape hatch: *stay at CEFR {level}; at most 8 words above it.*
 
 ### Job pattern
 
-The app calls `generate-reading`, which inserts the row as `generating`, returns the id
-immediately, and finishes the work in `EdgeRuntime.waitUntil()`. The app polls the row behind the
-existing "Pip baut deinen Text" screen — TanStack Query with `refetchInterval: 1500`, giving up at
-45 s.
+`generate-reading` inserts the row as `generating`, returns `{ textId }` at once, and finishes in
+`EdgeRuntime.waitUntil()`. The app polls the row behind the existing preparing screen — TanStack
+Query, `refetchInterval: 1500`, giving up at 45 s. After the writer succeeds, its output is saved to
+`draft`; a retry after an annotator failure resumes there instead of paying for the prose again.
 
-**Polling, not Realtime**, contra the parked plan: one websocket, one publication and realtime RLS
-config is a lot of machinery for a screen that is on-screen for fifteen seconds and already has to
-handle "come back to an unfinished row" anyway. Swap it in later if a second screen wants it.
+**Polling, not Realtime** (the parked plan said Realtime): one websocket, one publication and
+realtime RLS config is a lot of machinery for a screen that is visible for fifteen seconds and has
+to handle "come back to an unfinished row" anyway.
 
-A row left `generating` because the function instance died is swept the same way
-`start-conversation` sweeps stale calls: on each invocation, any of this user's rows still
-`generating` and older than 90 s becomes `failed` with `error_code = 'timeout'`. The 01d error
-screen's "Nochmal versuchen" re-runs the same row (`{ textId }`), bumping `attempts`.
+Rows left `generating` by a dead instance are swept the way `start-conversation` sweeps stale
+calls: on each invocation, this user's rows still `generating` and older than 90 s become `failed`
+with `error_code = 'timeout'`. 01d's "Nochmal versuchen" calls the function with `{ textId }`,
+which bumps `attempts` and resumes from `draft` when there is one.
 
 ### Caps
 
 `app_config.daily_generation_limit` = `{ "reading_texts": 2, "exercise_sets": 2 }`. The function
-counts today's rows (learner's local day, from `profiles.timezone`) with `status <> 'failed'` and
-refuses with `GENERATION_LIMIT`; the app then offers the stored texts.
+counts today's rows with `status <> 'failed'` and refuses with `GENERATION_LIMIT`; the app then
+offers the stored texts. "Today" is the UTC day until `profiles.timezone` lands with the activity
+migration (`lernen-plan.md` §5); nobody will notice a cap that resets at 01:00 or 02:00.
 
-Failed rows deliberately do not count — otherwise a provider blip costs the learner their day. So
-they need their own ceiling, or a retry loop is free compute: **max 10 attempts per user per hour**
-across both statuses. Cheap to check, and it is the only abuse surface this feature has.
+Failed rows deliberately do not count, so they need their own ceiling or a retry loop is free
+compute: **at most 10 attempts per user per hour** across all statuses.
 
----
-
-## 5 RLS and grants
-
-| Table              | read | client write                                 |
-| ------------------ | ---- | -------------------------------------------- |
-| `reading_texts`    | own  | update own, **only** `current_section`, `completed_at` |
-| `reading_lookups`  | own  | insert own, update own `saved`               |
-
-```sql
-alter table public.reading_texts enable row level security;
-create policy "own texts: read"   on public.reading_texts for select using (auth.uid() = user_id);
-create policy "own texts: update" on public.reading_texts for update
-  using (auth.uid() = user_id) with check (auth.uid() = user_id);
--- Rows are written by the function (secret key); no insert policy for clients.
-revoke update on public.reading_texts from authenticated;
-grant  update (current_section, completed_at) on public.reading_texts to authenticated;
-```
-
----
-
-## 6 Validation before `ready`
+### Validation before `ready`
 
 Structured outputs guarantee shape, not truth, and a wrong gloss is worse than no text: the learner
-memorises the error and then the flashcard keeps teaching it. The function validates and only then
-flips `status` to `ready`:
+memorises the error and then the flashcard keeps teaching it.
 
-1. every `token.g` resolves to a gloss — dangling refs dropped
-2. `gloss.surface` equals the text of the token that points at it — otherwise the word screen
-   explains a different word than the one tapped
-3. every `nativeMarks` entry is a substring of its sentence's `native` — non-matching marks dropped
-4. `sections.length` is 2–3, `word_count` within ±30 % of target, every sentence has a `native`
-5. every gloss has a non-empty `lemma` that survives normalisation
+1. every span's `surface` is found in its sentence — otherwise the span is dropped
+2. every span resolved to a lexeme id
+3. every `nativeMarks` entry is a substring of the sentence's `native` — non-matching marks dropped
+4. `sections.length` is 2–3, `word_count` within ±30 % of the level's target, every sentence has
+   a `native`
+5. at least 6 of the due lemmas appear among the spans — otherwise the writer is re-run once with
+   the shortfall named
 
-Dropping bad marks degrades gracefully (the word screen shows an unhighlighted translation).
-Failing 1, 2, 4 or 5 is fatal: `status = 'failed'`, `error_code = 'invalid_content'`, one automatic
-retry with the validator's complaint appended to the annotator input. Two failures reach the user
-as 01d.
+Dropping bad marks degrades gracefully. Failing 2 or 4 is fatal for that call: one automatic retry
+with the validator's complaint appended to the input; a second failure sets
+`status = 'failed'`, `error_code = 'invalid_content'`.
 
 ---
 
-## 7 Client changes
+## 5 Client changes
 
-| Piece            | Change                                                                                   |
-| ---------------- | ---------------------------------------------------------------------------------------- |
+| Piece            | Change                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------------- |
 | Home card        | "Lesetext erstellen" → "Weiterlesen · Abschnitt 2 von 3" when an unfinished ready text exists |
-| Route            | `/(app)/reading` takes `?textId`; preparing screen gains real polling instead of its 4 s timer |
-| `reading-screen` | `content.sections[n].sentences[].tokens` → `InlineFlow` pieces; tint from `tierOf(box)`   |
-| `word-screen`    | reads a gloss id; sentence and `nativeMarks` come from the document; "Speichern" inserts `gloss.card` + `lemma` |
-| `data/content.ts`| the hardcoded `segments` / `section1` / `swapSection` become the shape of one fixture used by `dev/` |
-| `respondJson`    | takes a `model` argument; it hardcodes `REVIEW_MODEL` today                                |
-| Offline          | the document is self-contained → cache it; if the deck query fails, render untinted rather than block |
+| Route            | `/(app)/reading?textId=`; preparing screen polls instead of its 4 s timer                    |
+| `reading-screen` | `sentences[].source` + `spans` → `InlineFlow` pieces; tint from `tierOf(box)`; "Weiter" calls `mark_section_read` |
+| `word-screen`    | `?textId=&sentence=&span=`; shows `here`, then lexeme · gloss, the sentence with marks, the note; on open calls `record_lookup`; "Speichern" inserts a flashcard with `lexeme_id` |
+| Rückblick        | "Wörter speichern" inserts cards with `review.words[].lexemeId`                             |
+| `data/content.ts`| the hardcoded segments become one fixture in the new shape, used by `dev/`                   |
+| `respondJson`    | takes a `model` argument (it hardcodes `REVIEW_MODEL`) and returns `usage` alongside the object |
+| Offline          | the three queries of §2 are cached together; the deck query failing renders untinted         |
 
 ---
 
-## 8 Which model writes the texts
+## 6 Which model writes the texts
 
 Reading the pasted columns as **input · cached input · cache write · output**, standard tier, per
-million tokens (tell me if that ordering is wrong — the recommendation turns on the ratios between
-the models, which hold under any sensible reading):
+million tokens (say if that ordering is wrong — the recommendation turns on the ratios between the
+models, which hold under any sensible reading):
 
-| Model            | in     | cached | out    | one text, single pass |
-| ---------------- | ------ | ------ | ------ | --------------------- |
-| `gpt-6-astra`    | $10.00 | $1.00  | $50.00 | **$0.225**            |
-| `gpt-5.6-sol`    | $4.00  | $0.40  | $20.00 | **$0.090**            |
-| `gpt-5.6-terra`  | $2.00  | $0.20  | $12.00 | **$0.053**            |
-| `gpt-5.6-luna`   | $0.20  | $0.02  | $1.20  | **$0.0053**           |
+| Model           | in     | cached | out    |
+| --------------- | ------ | ------ | ------ |
+| `gpt-6-astra`   | $10.00 | $1.00  | $50.00 |
+| `gpt-5.6-sol`   | $4.00  | $0.40  | $20.00 |
+| `gpt-5.6-terra` | $2.00  | $0.20  | $12.00 |
+| `gpt-5.6-luna`  | $0.20  | $0.02  | $1.20  |
 
-Sizing one generation: ~1.8k stable prompt (schema, rubric, few-shots) + ~700 dynamic (level, 20
-due words, last review, recent titles) = **~2.5k in**; a 250-word text, ~10 sentence translations
-and ~60 glosses with notes = **~3.2k out**, plus reasoning at low effort, call it **4k**.
+Sizing: the writer sees ~1.8k of stable prompt (rubric, few-shots, schema) + ~700 dynamic (level,
+due words, last review, recent titles) and writes ~800 tokens plus low-effort reasoning; the two
+luna calls see ~1.5k each and write 400 and 600–3,300 depending on how many words are new.
 
-**Recommendation: `gpt-5.6-sol` as the writer, `gpt-5.6-luna` as the annotator — about $0.030 a
-text.**
+| Setup                          | cold text | warm text | 2/day cap, month | realistic 12/month |
+| ------------------------------ | --------- | --------- | ---------------- | ------------------ |
+| **sol writes, luna annotates** | $0.031    | $0.028    | $1.86            | $0.34              |
+| terra single pass, no lexicon  | $0.053    | $0.053    | $3.18            | $0.64              |
+| terra single pass, lexicon     | $0.053    | $0.025    | $1.50            | $0.30              |
+| astra single pass              | $0.225    | $0.225    | $13.50           | $2.70              |
 
-- The writer's 800 output tokens are the ones worth paying for: level-accurate, idiomatic French,
-  and a correct German rendering of each sentence. This is where a cheap model fails in ways a
-  learner cannot detect and will memorise.
-- The annotator's 2,700 output tokens are bulk mechanical extraction against a strict schema, and
-  §6 checks its work deterministically. Paying writer rates for them is paying for judgement that
-  is not being exercised. Putting them on `luna` costs $0.003.
-- Net: a **better** writer than single-pass `terra`, at **60 % of the cost**, and each pass can be
-  tuned or swapped alone.
+**Recommendation: `sol` writes, `luna` does everything else — about three cents a text.**
 
-**If you want this shipped with one prompt and one call: `gpt-5.6-terra` single-pass, ~$0.053.**
-Same order of magnitude, half the code, and the split is a refactor you can do once gloss quality
-or the bill says so. That is a defensible way to start.
+- The writer's 800 tokens are the ones worth paying for: level-accurate, idiomatic prose and a
+  correct rendering of each sentence. This is where a cheap model fails in ways a learner cannot
+  detect and will memorise.
+- Everything else is bulk extraction against a strict schema that §4 checks deterministically.
+  Paying writer rates for it is paying for judgement that is not being exercised; on luna it costs
+  a few tenths of a cent.
 
-**`gpt-6-astra`: no.** Four times `terra` for a 250-word constrained text is not where a frontier
-model earns its keep. Where it does: **offline**, once — writing the gold few-shot examples and the
-CEFR rubric the cheap models then follow, and acting as judge over the eval set below. A few
-dollars, spent once, that raises the floor of every cheap generation afterwards.
+**An honest note on the lexicon and cost.** In this split the lexicon barely moves the bill: the
+gloss tokens it saves were already on luna, where 2,700 tokens cost $0.003. Its case is not
+dollars. It is that every learner sees `café` explained the same way every time, a wrong gloss is
+fixed once, flashcards join by key instead of by string, and the encounter counts exist at all.
+Where it *does* cut cost in half is single-pass `terra` — which makes that setup competitive again:
+one prompt, one call, $0.025 warm, with `terra` rather than `sol` writing the prose. That is the
+real trade: **sol+luna for the better writer, terra+lexicon for the simpler pipeline**, at
+roughly the same price.
 
-**`luna` as the writer: no.** It is the right annotator and the wrong author.
+**`astra`: no.** Seven times the cost for a 250-word constrained text. Where it earns its keep is
+**offline, once**: writing the gold few-shot examples and the CEFR rubric the cheap models then
+follow, and judging the eval set below. A few dollars, spent once.
 
-Monthly exposure per user, at the 2/day cap (worst case) and at a realistic 12 texts/month:
-
-| Setup              | per text | worst case | realistic |
-| ------------------ | -------- | ---------- | --------- |
-| sol + luna         | $0.030   | $1.80      | $0.36     |
-| terra single-pass  | $0.053   | $3.18      | $0.64     |
-| astra single-pass  | $0.225   | $13.50     | $2.70     |
+**`luna` as the writer: no.** The right annotator and the wrong author.
 
 Practical notes:
 
-- **Prompt caching barely helps here.** The cost is output-dominated; caching the 1.8k stable
-  prefix saves ~$0.003 a text on `terra`. Worth switching on, not worth designing around — unlike
-  the Live path.
-- **Model ids in env**, as `OPENAI_REVIEW_MODEL` already is: `OPENAI_READING_WRITER_MODEL`,
-  `OPENAI_READING_ANNOTATOR_MODEL`. Switching model becomes a secret change, not a deploy.
-- **Pin what ran into the row** (`writer_model`, `annotator_model`, `prompt_version`, `usage`), so
-  a bad text is traceable and `select sum(usage)` gives real cost per user per month.
-- **Evaluate before committing.** 20 texts per candidate, scored on: level fit, French
-  correctness, gloss accuracy in context, alignment correctness, and due-word coverage. `astra` as
-  judge for the first three. This is a half-day and it is the only way the choice above stops
-  being an argument from price ratios. I cannot verify these four models' capabilities from here —
-  the reasoning is the shape of the task plus what they cost.
-- Open question 3 in `docs/lernen-plan.md` ("which text model writes exercises and texts?") is
-  answered for texts; the exercise generator has the same two-pass shape and should follow.
+- Prompt caching barely matters here — the cost is output-dominated. Switch it on, don't design
+  around it (unlike the Live path).
+- Model ids in env, as `OPENAI_REVIEW_MODEL` already is: `OPENAI_READING_WRITER_MODEL`,
+  `OPENAI_READING_HELPER_MODEL`. Switching model is a secret change, not a deploy.
+- Pin what ran into the row (`writer_model`, `annotator_model`, `prompt_version`, `usage`) so a
+  bad text is traceable and `sum(usage)` is real cost per user per month.
+- **Evaluate before committing**: 20 texts per candidate writer, scored on level fit, French
+  correctness, gloss accuracy in context, alignment correctness, due-word coverage; `astra` as
+  judge. Half a day, and the only way the table above stops being an argument from price ratios —
+  I cannot verify these four models' abilities from here.
+- `lernen-plan.md` open question 3 ("which text model writes exercises and texts?") is answered
+  for texts; the exercise generator has the same writer/annotator shape and should follow.
 
 ---
 
-## 9 Order of work
+## 7 Migrations and order of work
 
-1. `…_flashcards_lemma.sql` — lemma column, unique swap, index; `lib/lemma.ts`; `lemma` into
-   `end-conversation`'s review schema
-2. `…_reading_texts.sql` — `generation_status`, `reading_texts`, RLS, column grants,
-   `app_config.daily_generation_limit`
-3. `generate-reading` — two passes, validator, caps, stale sweep; `respondJson` takes a model
-4. client: types + repository + query keys, preparing screen polls, reading screen renders the
-   document, word screen reads a gloss and saves a card
-5. tints: the deck query, `tierOf`, the "X % sicher" derivation
-6. `reading_lookups` and the "words you looked up" input to the next generation
+```
+…_lexemes.sql            lexeme_pos, lexemes, lexeme_glosses (+ RLS)
+…_flashcards_lexeme.sql  flashcards.lexeme_id, backfill, unique (user_id, lexeme_id)
+…_reading_texts.sql      generation_status, reading_texts (+ RLS, indexes), user_lexemes,
+                         mark_section_read, record_lookup, app_config.daily_generation_limit
+```
 
-Steps 1–4 are a working feature. 5 is what makes it Yori's.
+1. the three migrations; `_shared/lemma.ts`, `_shared/lexemes.ts`; `end-conversation` resolves
+   `review.words[].lexemeId`
+2. `generate-reading`: writer → lemmatiser → lookup → annotator → validate → `ready`; caps, stale
+   sweep, `draft` resume; `respondJson` takes a model and returns usage
+3. client: types, repository, query keys; preparing screen polls; reading screen renders the
+   document; word screen reads a span; both RPCs wired
+4. tints: the deck query, `tierOf`, "X % sicher"
+5. Rückblick "Wörter speichern" on the real table (it is unwired today and now has a lexeme id to
+   insert)
+6. `encounters` and `lookups` as writer inputs
 
----
-
-## 10 Differences from the parked plan (`lernen-plan.md` §4)
-
-| Parked                                    | Here                                                          | Why                                                   |
-| ----------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- |
-| `Segment` carries `tier`                  | tier derived from `flashcards.box` at render                  | the text must age with the learner, not with the row  |
-| segments match cards by `front`           | `lemma` on both sides, unique on `(user_id, language, lemma)` | `je suis allée` never equals `aller`                  |
-| pieces per section, sentence repeated per segment | sentences own `native`, tokens reference shared glosses | stop generating and storing the same string five times |
-| only marked segments are tappable         | every content word has a gloss                                | one call, no per-tap latency, cost, or network        |
-| `swapPairs` generated                     | derived from glosses at render                                | it is a render mode, not content                      |
-| Realtime on the row                       | polling, 1.5 s                                                | less machinery for a fifteen-second screen            |
-| one model                                 | writer + annotator                                            | judgement and bulk extraction have different prices   |
+1–3 is a working feature. 4 is what makes it Yori's.
 
 ---
 
-## 11 Open questions
+## 8 What is settled, what is reversible
 
-1. Does the learner pick the topic (a chip row on the home card) or does Pip always choose? Picking
-   is better copy ("1 THEMA") and one more input to the writer.
+| decision                                   | reversible?                                                          |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| `flashcards.lexeme_id`, unique on it       | **No** — it changes the identity of rows that will exist. Get it right now. |
+| `lexemes` split from `lexeme_glosses`      | Painful — merging later means denormalising real rows. Get it right now. |
+| spans (offsets) vs a token array           | Yes — a rewrite of stored jsonb.                                     |
+| jsonb document vs sentence/span tables     | Yes, one way: the GIN index on `lexeme_ids` answers the query people usually want a table for; a `reading_sentences` table can be filled from the jsonb in one migration if ever needed. |
+| three calls vs one                         | Yes — the row records which models ran.                              |
+| polling vs Realtime                        | Yes.                                                                 |
+
+Why not sentence and span tables from the start: a text is ~1 row + 12 sentences + 60 spans; at
+the cap that is ~4,400 rows per user per month for data that is always read whole and never
+queried into. `database-plan.md` §3.6 made this call for `transcript` and it holds here.
+
+---
+
+## 9 Differences from the parked plan (`lernen-plan.md` §4)
+
+| Parked                                    | Here                                                        | Why                                                     |
+| ----------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------- |
+| `Segment` carries `tier`                  | tier derived from `flashcards.box` at render                | the text must age with the learner, not with the row    |
+| segments match cards by `front`           | both point at `lexemes.id`                                  | `je suis allée` never equals `aller`; a key cannot mismatch |
+| glosses inside each text                  | shared `lexemes` + `lexeme_glosses`                         | one explanation per word, fixable once, joinable        |
+| pieces per section, German repeated per segment | `native` once per sentence, spans over `source`       | stop storing the same string five times                 |
+| only marked segments are tappable         | every content word is a span                                | no per-tap latency, cost or network                     |
+| `swapPairs` generated                     | derived from `span.here` at render                          | a render mode, not content                              |
+| client updates `current_section`         | `mark_section_read` RPC                                     | progress and encounter counts in one call; no client writes |
+| Realtime on the row                       | polling, 1.5 s                                              | less machinery for a fifteen-second screen              |
+| one model                                 | writer + two helper calls                                   | judgement and extraction have different prices          |
+
+---
+
+## 10 Open questions
+
+1. Does the learner pick the topic (a chip row on the home card) or does Pip always choose?
+   Picking is better copy ("1 THEMA") and one more input to the writer.
 2. Three sections is the design (`SECTIONS = 3`) and only two are built. Is section 3 the
    Tauschwörter render of section 2, or its own text?
-3. Should reading a section count toward `daily_activity.sections_read` and the daily goal minutes,
-   and at what rate?
-4. Keep `reading_lookups` (§3), or is per-tap behaviour more than you want to store?
-5. Does a saved word from a text start in box 1 like every other new card, or in box 2 because it
-   was met in context first?
+3. Should reading a section count toward `daily_activity.sections_read` and the daily goal minutes?
+   `mark_section_read` is the natural place to write it once that table exists.
+4. Does a word saved from a text start in box 1 like every card, or in box 2 because it was met in
+   context first? (`user_lexemes.encounters` would let the deck decide.)
+5. Who verifies glosses? `lexeme_glosses.verified` exists; nothing sets it yet. A dev screen that
+   lists unverified glosses by encounter count would be a cheap start.

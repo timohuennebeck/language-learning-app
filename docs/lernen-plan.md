@@ -82,9 +82,9 @@ create index exercise_attempts_user_idx on public.exercise_attempts (user_id, at
 
 ## 4 Reading texts
 
-> Superseded by `docs/lesetext-plan.md`, which takes this table forward (lemma join to the deck,
-> tier derived from the Leitner box, two-pass generation, model choice). The sketch below stays
-> for the record.
+> Superseded by `docs/lesetext-plan.md`, which takes this table forward (a shared `lexemes` table
+> that texts and flashcards both point at, tier derived from the Leitner box, spans over the
+> sentence, writer + helper calls, model choice). The sketch below stays for the record.
 
 ```sql
 create table public.reading_texts (
