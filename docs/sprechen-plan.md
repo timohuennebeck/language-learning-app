@@ -10,7 +10,7 @@ Conversations are the metered, paid thing (10 or 30 a month). Sprechen is where 
 them: a free conversation, or a **scenario**, which briefs Pip and the learner on a situation and a
 few tasks to complete in the talk. A scenario is a voice conversation with a briefing, nothing
 else: no reading text, no exercises of its own. Tapping a tile opens a preview (like the
-assessment intro): the situation, the tasks, the words to use, then "Gespräch starten".
+assessment intro): the situation, the tasks to complete, then "Gespräch starten".
 
 ---
 
