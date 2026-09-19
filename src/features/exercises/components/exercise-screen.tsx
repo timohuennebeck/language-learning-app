@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useMemo } from 'react';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -18,12 +19,21 @@ import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { ProgressTopBar } from '@/shared/ui/top-bar';
 
-/** Exercise flow. Dev/verification params: `?step=3&state=correct|wrong` (also pre-fill typed drafts). */
+/**
+ * Exercise flow. `?ids=s2,s5` runs only those steps (retry from the result screen).
+ * Dev/verification params: `?step=3&state=correct|wrong` (also pre-fill typed drafts).
+ */
 export function ExerciseScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ step?: string; state?: string }>();
-  const s = useExerciseSession(cafeExercise, {
+  const params = useLocalSearchParams<{ step?: string; state?: string; ids?: string }>();
+  const exercise = useMemo(() => {
+    if (!params.ids) return cafeExercise;
+    const ids = params.ids.split(',');
+    const steps = cafeExercise.steps.filter((step) => ids.includes(step.id));
+    return steps.length ? { ...cafeExercise, steps } : cafeExercise;
+  }, [params.ids]);
+  const s = useExerciseSession(exercise, {
     initialIndex: params.step ? Number(params.step) - 1 : 0,
     initialPhase: params.state === 'correct' || params.state === 'wrong' ? params.state : 'task',
     designDrafts: params.step !== undefined,
@@ -38,7 +48,11 @@ export function ExerciseScreen() {
     haptic(ok ? 'success' : 'error');
   };
   const onNext = () => {
-    if (!s.next()) router.replace('/(app)/daily-limit');
+    if (s.next()) return;
+    router.replace({
+      pathname: '/(app)/exercise/done',
+      params: { total: String(s.total), wrong: s.wrongIds.join(',') },
+    });
   };
 
   return (

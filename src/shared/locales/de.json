@@ -571,7 +571,16 @@
     "right": "Richtig",
     "inFrench": "Auf Französisch",
     "yourAnswer": "Deine Antwort",
-    "hintPieces": "Falsch gesetzt? Einfach antippen, um es zu entfernen"
+    "hintPieces": "Falsch gesetzt? Einfach antippen, um es zu entfernen",
+    "result": {
+      "title": "Gut gemacht, {{name}}.",
+      "badge": "{{right}} von {{total}}",
+      "sub": "Diese Antworten schaust du dir am besten noch einmal an.",
+      "subPerfect": "Alles richtig. Pip ist beeindruckt.",
+      "again": "Nochmal anschauen",
+      "retry": "{{n}} Aufgaben wiederholen",
+      "finish": "Fertig"
+    }
   },
   "reading": {
     "title": "Lesen",

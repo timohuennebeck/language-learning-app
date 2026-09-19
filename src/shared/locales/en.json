@@ -551,7 +551,16 @@
     "right": "Correct",
     "inFrench": "In French",
     "yourAnswer": "Your answer",
-    "hintPieces": "Placed wrongly? Just tap it to take it out"
+    "hintPieces": "Placed wrongly? Just tap it to take it out",
+    "result": {
+      "title": "Well done, {{name}}.",
+      "badge": "{{right}} of {{total}}",
+      "sub": "Worth a second look: these answers.",
+      "subPerfect": "All correct. Pip is impressed.",
+      "again": "Look at again",
+      "retry": "Repeat {{n}} tasks",
+      "finish": "Done"
+    }
   },
   "reading": {
     "title": "Reading",

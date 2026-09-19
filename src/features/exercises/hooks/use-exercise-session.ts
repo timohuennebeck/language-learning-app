@@ -53,6 +53,8 @@ export function useExerciseSession(
   const [answer, setAnswer] = useState<string | string[]>(() =>
     draftFor(step, initialPhase, designDrafts),
   );
+  /** Ids of the steps answered wrongly so far. */
+  const [wrongIds, setWrongIds] = useState<string[]>([]);
 
   const canCheck =
     step.kind === 'build' ? (answer as string[]).length >= 1 : String(answer).trim().length > 0;
@@ -62,6 +64,7 @@ export function useExerciseSession(
     if (step.kind === 'build') ok = JSON.stringify(answer) === JSON.stringify(step.answer);
     else ok = typeof answer === 'string' && normalize(answer) === normalize(step.answer);
     setPhase(ok ? 'correct' : 'wrong');
+    if (!ok) setWrongIds((ids) => (ids.includes(step.id) ? ids : [...ids, step.id]));
     return ok;
   }, [answer, step]);
 
@@ -80,7 +83,19 @@ export function useExerciseSession(
   );
 
   return useMemo(
-    () => ({ index, phase, step, total, answer, canCheck, setAnswer, check, next, reset }),
-    [index, phase, step, total, answer, canCheck, check, next, reset],
+    () => ({
+      index,
+      phase,
+      step,
+      total,
+      answer,
+      wrongIds,
+      canCheck,
+      setAnswer,
+      check,
+      next,
+      reset,
+    }),
+    [index, phase, step, total, answer, wrongIds, canCheck, check, next, reset],
   );
 }

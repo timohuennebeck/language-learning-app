@@ -266,6 +266,13 @@
     "onboarded": 1
   },
   {
+    "name": "19e-exercise-done",
+    "ref": "42D_Karten_durch.png",
+    "route": "/exercise/done",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
     "name": "3c-chapter-read",
     "ref": "3c_Lesen_expandiert.png",
     "route": "/course?station=0",
