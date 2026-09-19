@@ -227,6 +227,7 @@ create table public.reading_texts (
   language                text not null references public.languages(code),
   native_language         text not null references public.languages(code),
   status                  public.generation_status not null default 'generating',
+  stage                   smallint not null default 0,  -- 0 queued · 1 writing · 2 explaining · 3 done; drives the checklist
   error_code              text,                       -- 'invalid_content' | 'provider' | 'timeout'
   error                   text,                       -- the detail behind 01d's "Fehler 503"
   source_conversation_id  uuid references public.conversations(id) on delete set null,
@@ -268,52 +269,21 @@ create policy "own texts: read" on public.reading_texts
 -- RPC below. This is simpler than the parked plan's column-level grants and cannot be misused.
 ```
 
-### Per-learner word state
-
-```sql
--- One row per learner and word they have met. The reading-side complement of `flashcards`: a word
--- read twelve times and never carded is known in a way box 1 cannot express.
-create table public.user_lexemes (
-  user_id        uuid not null references public.profiles(id) on delete cascade,
-  lexeme_id      uuid not null references public.lexemes(id) on delete cascade,
-  encounters     int not null default 0,              -- sections read that contained it
-  lookups        int not null default 0,              -- times tapped
-  first_seen_at  timestamptz not null default now(),
-  last_seen_at   timestamptz not null default now(),
-  primary key (user_id, lexeme_id)
-);
-alter table public.user_lexemes enable row level security;
-create policy "own lexeme stats: read" on public.user_lexemes
-  for select to authenticated using ((select auth.uid()) = user_id);
--- Written by the two RPCs below, never directly.
-```
-
 ### Progress is an RPC, not a column write
 
-The client never updates `reading_texts`. Finishing a section is one call that advances the text
-and counts the words in that section as encountered — the server reads the lexemes out of the
-document, so the client cannot write anything it did not read:
+The client never updates `reading_texts`. Finishing a section is one call; the server checks the
+section number against the row, so the client cannot write "Abschnitt 47 von 3":
 
 ```sql
 create or replace function public.mark_section_read(text_id uuid, section int)
 returns void language plpgsql security definer set search_path = public as $$
 declare
   t public.reading_texts%rowtype;
-  ids uuid[];
 begin
   select * into t from public.reading_texts
     where id = text_id and user_id = (select auth.uid()) and status = 'ready';
   if not found then raise exception 'text not found' using errcode = 'P0002'; end if;
   if section < 1 or section > t.section_count then raise exception 'bad section'; end if;
-
-  select array_agg(distinct (s ->> 'lexeme')::uuid) into ids
-  from jsonb_array_elements(t.content -> 'sections' -> (section - 1) -> 'sentences') sent,
-       jsonb_array_elements(sent -> 'spans') s;
-
-  insert into public.user_lexemes (user_id, lexeme_id, encounters)
-  select t.user_id, id, 1 from unnest(ids) id
-  on conflict (user_id, lexeme_id) do update
-    set encounters = user_lexemes.encounters + 1, last_seen_at = now();
 
   update public.reading_texts
     set current_section = greatest(current_section, least(section + 1, section_count)),
@@ -322,24 +292,13 @@ begin
     where id = text_id;
 end $$;
 
-create or replace function public.record_lookup(lexeme uuid)
-returns void language sql security definer set search_path = public as $$
-  insert into public.user_lexemes (user_id, lexeme_id, lookups)
-  values ((select auth.uid()), lexeme, 1)
-  on conflict (user_id, lexeme_id) do update
-    set lookups = user_lexemes.lookups + 1, last_seen_at = now();
-$$;
-
 revoke all on function public.mark_section_read(uuid, int) from public;
-revoke all on function public.record_lookup(uuid) from public;
 grant execute on function public.mark_section_read(uuid, int) to authenticated;
-grant execute on function public.record_lookup(uuid) to authenticated;
 ```
 
-`encounters` has no reader on day one except the next generation (§4), which is the point: the
-words a learner keeps looking up but never saves are the best input the next text can have. The
-tier in v1 is the box alone (that is the requirement); `encounters` is the obvious second input
-once there is data to look at.
+An RPC rather than a column grant because it is the one place per-section side effects will land
+later — `daily_activity.sections_read`, and the encounter counts of §11 — without the client ever
+gaining write access to the row.
 
 ---
 
@@ -391,7 +350,6 @@ Inputs the writer reads (the app sends `{ language, topic? }` — never a prompt
 - the lemmas of up to 20 **due flashcards**, with the instruction to work at least 8 in naturally.
   This is the feature's actual argument: spaced repetition that happens in prose instead of on a
   card.
-- up to 10 lemmas from `user_lexemes` with the highest `lookups` and no flashcard
 - the last finished conversation's `review.words` and `topic`
 - the titles of the last 5 texts, so it stops writing about cafés
 - the topic the user picked on the home card, if any
@@ -401,9 +359,36 @@ Level discipline is a rule with an escape hatch: *stay at CEFR {level}; at most 
 ### Job pattern
 
 `generate-reading` inserts the row as `generating`, returns `{ textId }` at once, and finishes in
-`EdgeRuntime.waitUntil()`. The app polls the row behind the existing preparing screen — TanStack
-Query, `refetchInterval: 1500`, giving up at 45 s. After the writer succeeds, its output is saved to
-`draft`; a retry after an annotator failure resumes there instead of paying for the prose again.
+`EdgeRuntime.waitUntil()`. The app polls the row — TanStack Query, `refetchInterval: 1500`, giving
+up at 45 s — behind the same screen "Übung wiederholen" uses. After the writer succeeds, its output
+is saved to `draft` and `stage` moves to 2; a retry after an annotator failure resumes there instead
+of paying for the prose again.
+
+### The preparing screen
+
+"Text erstellen" opens `/(app)/reading/preparing`, the reading twin of `exercise/preparing`: the
+same `ProgressChecklist`, with its own copy under `reading.preparing.*` ("Pip baut deinen Text.").
+The exercise version fakes its progress with a 4 s timer; this one has real stages to show, because
+`stage` on the row is written between the calls:
+
+| `stage` | checklist                                          | ring |
+| ------- | -------------------------------------------------- | ---- |
+| 0       | ○ Deine fälligen Wörter ausgewählt                 | 0.10 |
+| 1       | ✓ … · ◌ Text wird geschrieben                      | 0.35 |
+| 2       | ✓ · ✓ · ◌ Wörter werden erklärt                    | 0.75 |
+| 3       | ✓ · ✓ · ✓ · ◌ Fertig                               | 1.00 |
+
+The ring eases toward the next stage's value while a stage is running, so it never sits still. The
+footer counts down from a 20 s estimate. On `ready` the screen `replace`s to `/(app)/reading?textId=`;
+on `failed` to `/(app)/reading/error?textId=`.
+
+The error screen is `ExerciseErrorScreen` made reusable: it takes the retry route and reads
+`error_code` and `ready_at`/`created_at` from the row for the "Fehler 503 · heute 18:42" pill (both
+are hardcoded copy today). Its "Nochmal versuchen" calls the function with `{ textId }` and goes
+back to preparing, where the checklist picks up at the stage the row is in — after a failed
+annotator that is stage 2, with the first two ticks already done.
+
+"Weiterlesen" skips all of this: an unfinished ready text opens directly.
 
 **Polling, not Realtime** (the parked plan said Realtime): one websocket, one publication and
 realtime RLS config is a lot of machinery for a screen that is visible for fifteen seconds and has
@@ -448,9 +433,11 @@ with the validator's complaint appended to the input; a second failure sets
 | Piece            | Change                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------- |
 | Home card        | "Lesetext erstellen" → "Weiterlesen · Abschnitt 2 von 3" when an unfinished ready text exists |
-| Route            | `/(app)/reading?textId=`; preparing screen polls instead of its 4 s timer                    |
+| Route            | `/(app)/reading?textId=`, plus `reading/preparing` and `reading/error`                       |
+| Preparing        | `ProgressChecklist` with `reading.preparing.*` copy, driven by `stage` on the polled row      |
+| Error            | `ExerciseErrorScreen` takes a retry route and the row's `error_code`; reading copy under `reading.error.*` |
 | `reading-screen` | `sentences[].source` + `spans` → `InlineFlow` pieces; tint from `tierOf(box)`; "Weiter" calls `mark_section_read` |
-| `word-screen`    | `?textId=&sentence=&span=`; shows `here`, then lexeme · gloss, the sentence with marks, the note; on open calls `record_lookup`; "Speichern" inserts a flashcard with `lexeme_id` |
+| `word-screen`    | `?textId=&sentence=&span=`; shows `here`, then lexeme · gloss, the sentence with marks, the note; "Speichern" inserts a flashcard with `lexeme_id` |
 | Rückblick        | "Wörter speichern" inserts cards with `review.words[].lexemeId`                             |
 | `data/content.ts`| the hardcoded segments become one fixture in the new shape, used by `dev/`                   |
 | `respondJson`    | takes a `model` argument (it hardcodes `REVIEW_MODEL`) and returns `usage` alongside the object |
@@ -532,20 +519,19 @@ Practical notes:
 ```
 …_lexemes.sql            lexeme_pos, lexemes, lexeme_glosses (+ RLS)
 …_flashcards_lexeme.sql  flashcards.lexeme_id, backfill, unique (user_id, lexeme_id)
-…_reading_texts.sql      generation_status, reading_texts (+ RLS, indexes), user_lexemes,
-                         mark_section_read, record_lookup, app_config.daily_generation_limit
+…_reading_texts.sql      generation_status, reading_texts (+ RLS, indexes), mark_section_read,
+                         app_config.daily_generation_limit
 ```
 
 1. the three migrations; `_shared/lemma.ts`, `_shared/lexemes.ts`; `end-conversation` resolves
    `review.words[].lexemeId`
 2. `generate-reading`: writer → lemmatiser → lookup → annotator → validate → `ready`; caps, stale
    sweep, `draft` resume; `respondJson` takes a model and returns usage
-3. client: types, repository, query keys; preparing screen polls; reading screen renders the
-   document; word screen reads a span; both RPCs wired
+3. client: types, repository, query keys; preparing and error screens on the polled row; reading
+   screen renders the document; word screen reads a span; `mark_section_read` wired
 4. tints: the deck query, `tierOf`, "X % sicher"
 5. Rückblick "Wörter speichern" on the real table (it is unwired today and now has a lexeme id to
    insert)
-6. `encounters` and `lookups` as writer inputs
 
 1–3 is a working feature. 4 is what makes it Yori's.
 
@@ -578,7 +564,7 @@ queried into. `database-plan.md` §3.6 made this call for `transcript` and it ho
 | pieces per section, German repeated per segment | `native` once per sentence, spans over `source`       | stop storing the same string five times                 |
 | only marked segments are tappable         | every content word is a span                                | no per-tap latency, cost or network                     |
 | `swapPairs` generated                     | derived from `span.here` at render                          | a render mode, not content                              |
-| client updates `current_section`         | `mark_section_read` RPC                                     | progress and encounter counts in one call; no client writes |
+| client updates `current_section`         | `mark_section_read` RPC                                     | server checks the section; no client writes to the row  |
 | Realtime on the row                       | polling, 1.5 s                                              | less machinery for a fifteen-second screen              |
 | one model                                 | writer + two helper calls                                   | judgement and extraction have different prices          |
 
@@ -593,6 +579,33 @@ queried into. `database-plan.md` §3.6 made this call for `transcript` and it ho
 3. Should reading a section count toward `daily_activity.sections_read` and the daily goal minutes?
    `mark_section_read` is the natural place to write it once that table exists.
 4. Does a word saved from a text start in box 1 like every card, or in box 2 because it was met in
-   context first? (`user_lexemes.encounters` would let the deck decide.)
+   context first?
 5. Who verifies glosses? `lexeme_glosses.verified` exists; nothing sets it yet. A dev screen that
    lists unverified glosses by encounter count would be a cheap start.
+
+---
+
+## 11 Later: per-learner word counts
+
+Cut from v1 because nothing reads it yet. When the writer should know which words a learner keeps
+looking up but never saves, or when the tint should reflect "read twelve times, never carded" as
+well as the box, this is the table:
+
+```sql
+-- One row per learner and word they have met. Per user, so it cannot live on the shared `lexemes`
+-- row; about un-carded words too, so it cannot live on `flashcards`.
+create table public.user_lexemes (
+  user_id        uuid not null references public.profiles(id) on delete cascade,
+  lexeme_id      uuid not null references public.lexemes(id) on delete cascade,
+  encounters     int not null default 0,              -- sections read that contained it
+  lookups        int not null default 0,              -- times tapped
+  first_seen_at  timestamptz not null default now(),
+  last_seen_at   timestamptz not null default now(),
+  primary key (user_id, lexeme_id)
+);
+```
+
+`mark_section_read` gains an upsert of `encounters + 1` for every lexeme in the section (read out
+of the document with `jsonb_array_elements`, so the client still writes nothing); the word screen
+gains a `record_lookup(lexeme_id)` RPC. One migration, two function bodies, no change to anything
+above.
