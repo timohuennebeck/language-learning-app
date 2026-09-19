@@ -6,6 +6,10 @@ import { LiveCallScreen } from '@/features/live/components/live-call-screen';
 export function AssessmentCallStep() {
   const router = useRouter();
   return (
-    <LiveCallScreen hideBack onEnd={() => router.push('/(onboarding)/assessment-evaluating')} />
+    <LiveCallScreen
+      hideBack
+      tasksHref="/(onboarding)/assessment-tasks"
+      onEnd={() => router.push('/(onboarding)/assessment-evaluating')}
+    />
   );
 }

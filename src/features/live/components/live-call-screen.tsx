@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
 import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, Ellipse, RadialGradient, Rect, Stop } from 'react-native-svg';
@@ -58,10 +58,16 @@ type Props = {
   onEnd?: () => void;
   /** Placement call: no way back, but the header keeps its layout. */
   hideBack?: boolean;
+  /** Where the checklist circle goes; onboarding passes its own route (the app group is locked until then). */
+  tasksHref?: Href;
 };
 
 /** 02c · Live-Gespräch · Vollbild-Call (also used as the placement call in onboarding). */
-export function LiveCallScreen({ onEnd, hideBack = false }: Props) {
+export function LiveCallScreen({
+  onEnd,
+  hideBack = false,
+  tasksHref = '/(app)/live/tasks',
+}: Props) {
   const { t } = useTranslation();
   const router = useRouter();
   return (
@@ -83,7 +89,7 @@ export function LiveCallScreen({ onEnd, hideBack = false }: Props) {
           icon={<ChecklistIcon />}
           size={40}
           accessibilityLabel={t('live.tasks.cta')}
-          onPress={() => router.push('/(app)/live/tasks')}
+          onPress={() => router.push(tasksHref)}
         />
       </View>
       <View className="flex-1 items-center justify-center" style={{ minHeight: 0 }}>
