@@ -1,3 +1,4 @@
+import { CheckIcon, XIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -5,7 +6,6 @@ import { MarkedRuns } from '@/features/exercises/components/marked-runs';
 import type { Run } from '@/features/exercises/data/types';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
-import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
@@ -48,9 +48,9 @@ export function FeedbackCard({ correct, why, wrongWhy, youLine, rightLine }: Pro
             style={{ backgroundColor: c.icon }}
           >
             {correct ? (
-              <CheckIcon size={13} color={colors.ok.check} strokeWidth={3.2} />
+              <CheckIcon size={13} color={colors.ok.check} weight="bold" />
             ) : (
-              <CloseIcon size={11} color={colors.err.check} strokeWidth={3.2} />
+              <XIcon size={11} color={colors.err.check} weight="bold" />
             )}
           </View>
           <Text

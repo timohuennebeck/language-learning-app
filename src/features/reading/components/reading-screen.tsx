@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
+import { ArrowLeftIcon, ArrowRightIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +18,6 @@ import { useGoToCourse } from '@/shared/hooks/use-back';
 import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
-import { ArrowLeft, ArrowRight } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Screen } from '@/shared/ui/screen';
@@ -162,7 +162,7 @@ export function ReadingScreen() {
               {t('reading.german')}
             </Text>
           </View>
-          <ArrowRight size={16} color={colors.dim3} />
+          <ArrowRightIcon size={16} color={colors.dim3} weight="bold" />
           <View className="rounded-[6px] bg-accent-300 px-[8px] py-[2px]">
             <Text className="text-accent-900" style={{ fontSize: 13.5 }}>
               {t('reading.french')}
@@ -187,7 +187,7 @@ export function ReadingScreen() {
             onPress={() => (section > 1 ? setSection(1) : router.back())}
             className="h-[58px] w-[58px] items-center justify-center rounded-full bg-surface"
           >
-            <ArrowLeft />
+            <ArrowLeftIcon size={22} color={colors.accent[900]} weight="bold" />
           </Tap>
           <Button
             className="flex-1"

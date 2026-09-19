@@ -1,7 +1,9 @@
 import { useRouter } from 'expo-router';
+import { GearIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { colors } from '@/shared/theme/tokens';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { AvatarPicker } from '@/features/profile/components/avatar-picker';
 import { LevelCard } from '@/features/profile/components/level-card';
@@ -10,7 +12,6 @@ import { StreakCard } from '@/shared/components/streak-card';
 import { MONTHLY_TALK_QUOTA } from '@/features/profile/data/repository';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
-import { CogIcon } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
@@ -54,7 +55,7 @@ export function ProfileScreen() {
               accessibilityLabel={t('profile.settings.title')}
               onPress={() => router.push('/(app)/profile/settings')}
             >
-              <CogIcon size={24} />
+              <GearIcon size={24} color={colors.glyph} weight="regular" />
             </Tap>
           }
         />

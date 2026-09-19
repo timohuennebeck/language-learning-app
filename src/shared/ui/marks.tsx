@@ -1,9 +1,9 @@
+import { CheckIcon } from 'phosphor-react-native';
 import { View, type ViewProps } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
 import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 
 interface CheckCircleProps extends ViewProps {
@@ -32,7 +32,11 @@ export function CheckCircle({
       style={[{ width: size, height: size, backgroundColor: bg }, style]}
       {...props}
     >
-      <CheckIcon size={iconSize ?? Math.round(size * 0.54)} color={color} strokeWidth={stroke} />
+      <CheckIcon
+        size={iconSize ?? Math.round(size * 0.54)}
+        color={color}
+        weight={stroke >= 2.4 ? 'bold' : 'regular'}
+      />
     </View>
   );
 }
@@ -92,7 +96,7 @@ export function Checkbox({ checked, bg = colors.accent[800], className }: Checkb
         backgroundColor: checked ? bg : 'transparent',
       }}
     >
-      {checked ? <CheckIcon size={14} color={colors.accent[100]} strokeWidth={2} /> : null}
+      {checked ? <CheckIcon size={14} color={colors.accent[100]} weight="regular" /> : null}
     </View>
   );
 }

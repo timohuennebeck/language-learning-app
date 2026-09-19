@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { CheckIcon, XIcon } from 'phosphor-react-native';
 import { Text as RNText, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -9,7 +10,6 @@ import { useSwipeDeck } from '@/features/flashcards/hooks/use-swipe-deck';
 import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
-import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
@@ -118,7 +118,7 @@ export function FlashcardsScreen() {
           accessibilityLabel={t('flashcards.again')}
           className="h-[68px] w-[68px] items-center justify-center rounded-full bg-surface"
         >
-          <CloseIcon size={26} color={colors.sub} strokeWidth={2.2} />
+          <XIcon size={26} color={colors.sub} weight="regular" />
         </Tap>
         <View style={{ width: 80 }} />
         <Tap
@@ -128,7 +128,7 @@ export function FlashcardsScreen() {
           accessibilityLabel={t('flashcards.known')}
           className="h-[68px] w-[68px] items-center justify-center rounded-full bg-accent-800"
         >
-          <CheckIcon size={26} color={colors.accent[100]} strokeWidth={2.2} />
+          <CheckIcon size={26} color={colors.accent[100]} weight="regular" />
         </Tap>
       </View>
     </Screen>

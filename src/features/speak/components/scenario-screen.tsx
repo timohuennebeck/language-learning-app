@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { MicrophoneIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +13,6 @@ import { localized } from '@/shared/lib/i18n';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
-import { MicSmall } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { CheckCircle } from '@/shared/ui/marks';
 import { NavCircle } from '@/shared/ui/nav-circle';
@@ -71,7 +71,7 @@ export function ScenarioScreen() {
           height={60}
           size={17}
           label={t('speak.scenario.cta', { minutes: s.minutes })}
-          left={<MicSmall size={18} />}
+          left={<MicrophoneIcon size={18} color={colors.accent[100]} weight="fill" />}
           // `scenario` is forwarded so start-conversation can add the briefing once it exists.
           onPress={() => router.push({ pathname: '/(app)/live', params: { scenario: s.slug } })}
         />

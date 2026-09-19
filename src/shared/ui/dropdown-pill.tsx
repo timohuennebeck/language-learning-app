@@ -1,4 +1,5 @@
-import { ChevronDown, ChevronUp } from '@/shared/ui/icons';
+import { CaretDownIcon, CaretUpIcon } from 'phosphor-react-native';
+import { colors } from '@/shared/theme/tokens';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -22,9 +23,9 @@ export function DropdownPill({ label, open = false, onPress }: Props) {
         {label}
       </Text>
       {open ? (
-        <ChevronUp size={14} strokeWidth={2.4} />
+        <CaretUpIcon size={14} color={colors.accent[900]} weight="bold" />
       ) : (
-        <ChevronDown size={14} strokeWidth={2.4} />
+        <CaretDownIcon size={14} color={colors.accent[900]} weight="bold" />
       )}
     </Tap>
   );

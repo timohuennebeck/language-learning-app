@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo } from 'react';
+import { ArrowCounterClockwiseIcon } from 'phosphor-react-native';
 import { ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +17,6 @@ import { haptic } from '@/shared/lib/haptics';
 import { playSound } from '@/shared/lib/sounds';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
-import { ResetGlyph } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { ProgressTopBar } from '@/shared/ui/top-bar';
@@ -148,7 +148,7 @@ export function ExerciseScreen() {
               accessibilityLabel={t('common.reset')}
               className="h-[56px] w-[56px] items-center justify-center rounded-full bg-surface2"
             >
-              <ResetGlyph />
+              <ArrowCounterClockwiseIcon size={17} color={colors.muted} weight="bold" />
             </Tap>
           ) : null}
           <Button

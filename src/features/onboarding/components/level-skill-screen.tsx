@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { PlusIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +12,6 @@ import {
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';
-import { PlusGlyph } from '@/shared/ui/icons';
 import { Illustration, type IllustrationName } from '@/shared/ui/illustration';
 import { CheckCircle } from '@/shared/ui/marks';
 import { Kicker } from '@/shared/ui/kicker';
@@ -156,7 +156,7 @@ export function LevelSkillScreen({ skill }: { skill: Skill }) {
         {work.map((item) => (
           <View key={item} className="flex-row items-start" style={{ columnGap: 12 }}>
             <View className="h-[22px] w-[22px] items-center justify-center rounded-full bg-surface">
-              <PlusGlyph />
+              <PlusIcon size={12} color={colors.accent[800]} weight="bold" />
             </View>
             <Text className="flex-1 text-ink" style={{ fontSize: 15.5, lineHeight: 22 }}>
               {item}

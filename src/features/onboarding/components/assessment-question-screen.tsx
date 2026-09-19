@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { CheckIcon, XIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -6,7 +7,6 @@ import { PlacementTop } from '@/features/onboarding/components/placement-top';
 import { roundParam, usePlacement } from '@/features/onboarding/lib/placement-store';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
-import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
@@ -48,7 +48,7 @@ export function AssessmentQuestionScreen() {
             height={58}
             size={16.5}
             haptic="light"
-            left={<CheckIcon size={15} color={colors.accent[800]} strokeWidth={2.6} />}
+            left={<CheckIcon size={15} color={colors.accent[800]} weight="bold" />}
             label={t('common.yes')}
             labelClassName="font-semibold text-accent-800"
             onPress={() => answer(true)}
@@ -57,7 +57,7 @@ export function AssessmentQuestionScreen() {
             className="flex-1"
             height={58}
             size={16.5}
-            left={<CloseIcon size={15} color={colors.accent[100]} strokeWidth={2.6} />}
+            left={<XIcon size={15} color={colors.accent[100]} weight="bold" />}
             label={t('common.no')}
             onPress={() => answer(false)}
           />

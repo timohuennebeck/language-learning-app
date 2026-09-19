@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { useEffect } from 'react';
+import { CaretDownIcon, ListBulletsIcon } from 'phosphor-react-native';
 import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, Ellipse, RadialGradient, Rect, Stop } from 'react-native-svg';
@@ -21,7 +22,6 @@ import { formatClock } from '@/shared/lib/time';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
-import { ChecklistIcon, ChevronDown } from '@/shared/ui/icons';
 import { NavCircle } from '@/shared/ui/nav-circle';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
@@ -137,11 +137,14 @@ export function LiveCallScreen({
         {hideBack ? (
           <View style={{ width: 40, height: 40 }} />
         ) : (
-          <NavCircle icon={<ChevronDown size={18} strokeWidth={2.2} />} size={40} />
+          <NavCircle
+            icon={<CaretDownIcon size={18} color={colors.accent[900]} weight="regular" />}
+            size={40}
+          />
         )}
         <CallTimer label={t('live.timer', { time: formatClock(call.elapsed) })} />
         <NavCircle
-          icon={<ChecklistIcon />}
+          icon={<ListBulletsIcon size={20} color={colors.accent[900]} weight="bold" />}
           size={40}
           accessibilityLabel={t('live.tasks.cta')}
           onPress={() => router.push(tasksHref)}

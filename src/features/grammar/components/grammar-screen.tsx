@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { PlayIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -6,7 +7,6 @@ import { forms } from '@/features/grammar/data/content';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
-import { Play } from '@/shared/ui/icons';
 import { Ring } from '@/shared/ui/ring';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
@@ -54,7 +54,7 @@ export function GrammarScreen() {
           className="absolute flex-row items-center rounded-pill bg-accent-800 px-[18px] py-[11px]"
           style={{ left: 24, bottom: 22, columnGap: 8 }}
         >
-          <Play size={14} color={colors.accent[100]} />
+          <PlayIcon size={14} color={colors.accent[100]} weight="fill" />
           <Text className="font-medium text-accent-100" style={{ fontSize: 15 }}>
             {t('grammar.practiceNow')}
           </Text>

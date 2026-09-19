@@ -1,12 +1,14 @@
 import { useRouter } from 'expo-router';
+import { EnvelopeIcon } from 'phosphor-react-native';
 import { Alert, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { colors } from '@/shared/theme/tokens';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { Button } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
-import { GoogleLogo, MailIcon } from '@/shared/ui/icons';
+import { GoogleLogo } from '@/shared/ui/google-logo';
 import { Text } from '@/shared/ui/text';
 import { TextLink } from '@/shared/ui/text-link';
 
@@ -48,7 +50,7 @@ export function AccountStep() {
           height={60}
           size={17}
           label={t('onboarding.account.email')}
-          left={<MailIcon />}
+          left={<EnvelopeIcon size={20} color={colors.accent[100]} weight="regular" />}
           className="[column-gap:2px]"
           onPress={() => router.push('/(onboarding)/account-email')}
         />

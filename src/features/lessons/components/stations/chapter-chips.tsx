@@ -1,8 +1,8 @@
+import { CheckIcon, LockIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { colors } from '@/shared/theme/tokens';
-import { CheckIcon, Lock } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -18,7 +18,7 @@ export function ChapterChips({ className }: { className?: string }) {
           className="flex-row items-center rounded-pill bg-surface2 px-[13px] py-[8px]"
           style={{ columnGap: 6 }}
         >
-          <CheckIcon size={12} color={colors.accent[600]} strokeWidth={2.3} />
+          <CheckIcon size={12} color={colors.accent[600]} weight="regular" />
           <Text className="text-muted" style={{ fontSize: 13.5 }}>
             {chapters[0]}
           </Text>
@@ -35,7 +35,7 @@ export function ChapterChips({ className }: { className?: string }) {
           className="flex-row items-center rounded-pill bg-surface2 px-[13px] py-[8px]"
           style={{ columnGap: 6 }}
         >
-          <Lock size={12} />
+          <LockIcon size={12} color={colors.dim3} weight="fill" />
           <Text className="text-dim3" style={{ fontSize: 13.5 }} numberOfLines={1}>
             {chapters[2]}
           </Text>

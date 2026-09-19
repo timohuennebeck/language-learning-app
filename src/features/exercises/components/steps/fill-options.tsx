@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { CheckIcon, XIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +10,6 @@ import type { StepProps } from '@/features/exercises/components/steps/types';
 import { InlineFlow } from '@/shared/components/inline-flow';
 import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
@@ -75,11 +75,11 @@ export function FillOptions({ step, phase, answer, setAnswer }: StepProps<'fill-
               bg = colors.ok.chip;
               color = colors.ok.text;
               ring = insetRing(2, colors.ok.ring);
-              icon = <CheckIcon size={16} color={colors.ok.icon} strokeWidth={2.6} />;
+              icon = <CheckIcon size={16} color={colors.ok.icon} weight="bold" />;
             } else if (isPicked) {
               bg = colors.err.chip;
               color = colors.err.text;
-              icon = <CloseIcon size={14} color={colors.err.icon} strokeWidth={2.6} />;
+              icon = <XIcon size={14} color={colors.err.icon} weight="bold" />;
             } else {
               bg = colors.surface2;
               color = colors.dim7;

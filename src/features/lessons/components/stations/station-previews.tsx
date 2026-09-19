@@ -1,3 +1,4 @@
+import { ArrowRightIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 
 import type { StationKind } from '@/features/lessons/data/types';
@@ -9,7 +10,6 @@ import {
 } from '@/shared/components/previews';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
-import { ArrowRight } from '@/shared/ui/icons';
 import { Text } from '@/shared/ui/text';
 
 function Pill({ label, strike }: { label: string; strike?: boolean }) {
@@ -81,7 +81,7 @@ export function ExpandedPreview({ kind }: { kind: StationKind }) {
                 tu veux
               </Text>
             </View>
-            <ArrowRight size={18} color={colors.lilac} />
+            <ArrowRightIcon size={18} color={colors.lilac} weight="bold" />
             <View className="rounded-[13px] bg-accent-100 px-[12px] py-[7px]">
               <Text className="font-medium text-accent-900" style={{ fontSize: 14.5 }}>
                 vous voulez

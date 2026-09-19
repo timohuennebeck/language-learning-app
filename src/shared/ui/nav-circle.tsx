@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
+import { CaretLeftIcon, XIcon } from 'phosphor-react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { colors } from '@/shared/theme/tokens';
 import { useBack } from '@/shared/hooks/use-back';
 import { cn } from '@/shared/lib/cn';
 import { Tap, type TapProps } from '@/shared/ui/tap';
-import { BackIcon, CloseIcon } from '@/shared/ui/icons';
 
 interface Props extends Omit<TapProps, 'children' | 'style'> {
   style?: StyleProp<ViewStyle>;
@@ -48,9 +49,9 @@ export function NavCircle({
       {...props}
     >
       {icon === 'back' ? (
-        <BackIcon size={14} color={color} />
+        <CaretLeftIcon size={14} color={color ?? colors.glyph} weight="bold" />
       ) : icon === 'close' ? (
-        <CloseIcon size={18} color={color} />
+        <XIcon size={18} color={color ?? colors.accent[900]} weight="bold" />
       ) : (
         icon
       )}

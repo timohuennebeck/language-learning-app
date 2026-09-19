@@ -1,9 +1,13 @@
+import {
+  ClosedCaptioningIcon,
+  MicrophoneSlashIcon,
+  PhoneDisconnectIcon,
+} from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
-import { MicSlash, PhoneEnd, Subtitles } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -50,7 +54,7 @@ export function CallControls({
           className="items-center justify-center rounded-full bg-surface"
           style={{ width: sideSize, height: sideSize }}
         >
-          <MicSlash size={26} />
+          <MicrophoneSlashIcon size={26} color={colors.accent[900]} weight="fill" />
         </Tap>
         {label(t('live.mute'))}
       </View>
@@ -67,7 +71,7 @@ export function CallControls({
             boxShadow: endShadow,
           }}
         >
-          <PhoneEnd size={34} color={colors.accent[100]} />
+          <PhoneDisconnectIcon size={34} color={colors.accent[100]} weight="fill" />
         </Tap>
         {label(t('live.end'), true)}
       </View>
@@ -79,7 +83,7 @@ export function CallControls({
           className="items-center justify-center rounded-full"
           style={{ width: sideSize, height: sideSize, backgroundColor: subtitlesBg }}
         >
-          <Subtitles size={26} />
+          <ClosedCaptioningIcon size={26} color={colors.accent[900]} weight="fill" />
         </Tap>
         {label(t('live.subtitles'))}
       </View>

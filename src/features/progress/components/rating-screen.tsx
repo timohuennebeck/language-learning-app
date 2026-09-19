@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { StarIcon } from 'phosphor-react-native';
 import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +9,6 @@ import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
-import { Star } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
@@ -45,7 +45,11 @@ export function RatingScreen() {
             onPress={() => setRating(i)}
             className="h-[48px] w-[48px] items-center justify-center"
           >
-            <Star size={34} color={i <= rating ? colors.accent[700] : '#d6d1f7'} />
+            <StarIcon
+              size={34}
+              color={i <= rating ? colors.accent[700] : '#d6d1f7'}
+              weight="fill"
+            />
           </Tap>
         ))}
       </View>

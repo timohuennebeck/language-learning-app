@@ -1,14 +1,15 @@
 import { useRouter } from 'expo-router';
+import { ClockIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { colors } from '@/shared/theme/tokens';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
 import { CardsPreview, ExercisePreview, ReadPreview } from '@/shared/components/previews';
 import { GradientHeader } from '@/shared/components/gradient-header';
 import { TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
-import { Clock } from '@/shared/ui/icons';
 import { useGoHome } from '@/shared/hooks/use-back';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
@@ -28,7 +29,7 @@ export function DailyLimitScreen() {
           className="flex-row items-center rounded-pill bg-bg px-[16px] py-[8px]"
           style={{ columnGap: 8, boxShadow: '0 2px 10px rgba(41,43,49,.06)' }}
         >
-          <Clock size={17} />
+          <ClockIcon size={17} color={colors.accent[800]} weight="bold" />
           <Text className="font-medium text-accent-900" style={{ fontSize: 14.5 }}>
             {t('dailyLimit.practiced', { done: goal, goal })}
           </Text>

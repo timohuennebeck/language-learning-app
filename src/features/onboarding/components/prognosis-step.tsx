@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { ArrowRightIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +11,6 @@ import {
 } from '@/features/onboarding/components/onboarding-frame';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration, type IllustrationName } from '@/shared/ui/illustration';
-import { ArrowRight } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Screen } from '@/shared/ui/screen';
@@ -101,7 +101,7 @@ export function PrognosisStep() {
                 <Text className="text-muted line-through" style={{ fontSize: 15 }}>
                   {r.from}
                 </Text>
-                <ArrowRight size={14} color={colors.muted} />
+                <ArrowRightIcon size={14} color={colors.muted} weight="bold" />
                 <View className="rounded-pill bg-accent-800 px-[12px] py-[5px]">
                   <Text className="font-semibold text-accent-100" style={{ fontSize: 13 }}>
                     {nextLevel(r.from)}

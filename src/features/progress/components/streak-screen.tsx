@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { CheckIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
@@ -8,7 +9,6 @@ import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
-import { CheckIcon } from '@/shared/ui/icons';
 import { useGoHome } from '@/shared/hooks/use-back';
 import { Screen } from '@/shared/ui/screen';
 import { Kicker } from '@/shared/ui/kicker';
@@ -74,7 +74,7 @@ export function StreakScreen() {
               }
             >
               {i === 0 ? (
-                <CheckIcon size={18} color={colors.accent[100]} strokeWidth={2.6} />
+                <CheckIcon size={18} color={colors.accent[100]} weight="bold" />
               ) : (
                 <Text className="text-muted" style={{ fontSize: 15 }}>
                   {i + 1}

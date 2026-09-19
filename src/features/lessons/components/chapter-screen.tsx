@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { CheckIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +12,6 @@ import { HomeHeader } from '@/shared/components/home-header';
 import { cn } from '@/shared/lib/cn';
 import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { CheckIcon } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
@@ -21,7 +21,7 @@ function StepDot({ state, n }: { state: 'done' | 'current' | 'pending'; n: numbe
   if (state === 'done') {
     return (
       <View className="h-[26px] w-[26px] items-center justify-center rounded-full bg-lavender3">
-        <CheckIcon size={12} color={colors.accent[900]} strokeWidth={2.4} />
+        <CheckIcon size={12} color={colors.accent[900]} weight="bold" />
       </View>
     );
   }

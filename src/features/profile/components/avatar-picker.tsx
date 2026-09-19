@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { PencilSimpleIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { colors } from '@/shared/theme/tokens';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { avatarUrl, pickAvatar, removeAvatar, uploadAvatar } from '@/features/profile/data/avatar';
-import { PencilGlyph } from '@/shared/ui/icons';
 import { Avatar } from '@/shared/ui/illustration';
 import { Spinner } from '@/shared/ui/spinner';
 import { Tap } from '@/shared/ui/tap';
@@ -64,7 +65,11 @@ export function AvatarPicker({ size = 62 }: { size?: number }) {
           className="absolute bottom-0 right-0 items-center justify-center rounded-full bg-accent-800"
           style={{ width: badge, height: badge, borderWidth: 2, borderColor: '#fff' }}
         >
-          <PencilGlyph size={Math.round(badge * 0.55)} />
+          <PencilSimpleIcon
+            size={Math.round(badge * 0.62)}
+            color={colors.accent[100]}
+            weight="bold"
+          />
         </View>
       )}
     </Tap>

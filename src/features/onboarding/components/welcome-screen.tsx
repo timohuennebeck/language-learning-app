@@ -1,14 +1,15 @@
 import { useRouter } from 'expo-router';
+import { StarIcon } from 'phosphor-react-native';
 import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { colors } from '@/shared/theme/tokens';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { MarkedHeadline } from '@/shared/components/marked-headline';
 import { Button } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
-import { Star } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 import { TextLink } from '@/shared/ui/text-link';
@@ -46,7 +47,7 @@ export function WelcomeScreen() {
       <View className="mt-[18px] flex-row items-center" style={{ columnGap: 10 }}>
         <View className="flex-row" style={{ columnGap: 3 }}>
           {[0, 1, 2, 3, 4].map((i) => (
-            <Star key={i} size={17} />
+            <StarIcon key={i} size={17} color={colors.accent[700]} weight="fill" />
           ))}
         </View>
         <Text className="font-semibold text-ink" style={{ fontSize: 15 }}>

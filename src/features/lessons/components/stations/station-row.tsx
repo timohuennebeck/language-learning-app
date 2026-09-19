@@ -1,3 +1,4 @@
+import { CheckIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +8,6 @@ import { cn } from '@/shared/lib/cn';
 import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
-import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -44,7 +44,7 @@ export function StationRow({ kind, index, done, onPress }: Props) {
         style={done ? undefined : { boxShadow: insetRing(1.5, colors.line2) }}
       >
         {done ? (
-          <CheckIcon size={14} color={colors.accent[900]} strokeWidth={2.4} />
+          <CheckIcon size={14} color={colors.accent[900]} weight="bold" />
         ) : (
           <Text className="font-semibold text-dim2" style={{ fontSize: 14 }}>
             {index + 1}

@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
+import { CaretRightIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 
-import { ChevronRight } from '@/shared/ui/icons';
+import { colors } from '@/shared/theme/tokens';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
@@ -44,7 +45,7 @@ export function ProfileRow({ label, sub, value, right, left, onPress, last }: Pr
           </Text>
         ) : null}
         {right}
-        <ChevronRight />
+        <CaretRightIcon size={12} color={colors.faint} weight="bold" />
       </Tap>
       {!last ? <View className="mx-[18px] h-[1px] bg-line" /> : null}
     </>

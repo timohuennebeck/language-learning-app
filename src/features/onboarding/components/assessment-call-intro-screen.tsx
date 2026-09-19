@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { MicrophoneIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,7 +15,6 @@ import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
-import { MicSmall } from '@/shared/ui/icons';
 import { Kicker } from '@/shared/ui/kicker';
 import { CheckCircle } from '@/shared/ui/marks';
 import { PAGE_TOP, Screen } from '@/shared/ui/screen';
@@ -50,7 +50,7 @@ export function AssessmentCallIntroScreen() {
           height={60}
           size={17}
           label={t('onboarding.placement.call.cta')}
-          left={<MicSmall size={18} />}
+          left={<MicrophoneIcon size={18} color={colors.accent[100]} weight="fill" />}
           onPress={() => router.push('/(onboarding)/assessment-call')}
         />
       }

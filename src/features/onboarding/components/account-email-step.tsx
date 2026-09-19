@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
+import { EyeIcon } from 'phosphor-react-native';
 import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +10,6 @@ import { OnboardingFrame } from '@/features/onboarding/components/onboarding-fra
 import { NO_OUTLINE } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
-import { Eye } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
@@ -162,7 +162,7 @@ export function AccountEmailStep() {
                   : 'onboarding.accountEmail.showPassword',
               )}
             >
-              <Eye />
+              <EyeIcon size={20} color={colors.muted} weight="regular" />
             </Tap>
           </View>
           {login || !password ? null : (

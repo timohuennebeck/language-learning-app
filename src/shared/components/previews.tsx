@@ -1,7 +1,7 @@
+import { WaveformIcon } from 'phosphor-react-native';
 import { View } from 'react-native';
 
 import { colors } from '@/shared/theme/tokens';
-import { SpeakGlyph } from '@/shared/ui/icons';
 import { Text } from '@/shared/ui/text';
 
 const shadow = { boxShadow: '0 4px 14px rgba(41,43,49,.08)' };
@@ -44,7 +44,7 @@ export function TalkPreview() {
         style={{ columnGap: 11, ...shadow }}
       >
         <View className="h-[30px] w-[30px] items-center justify-center rounded-full bg-accent-800">
-          <SpeakGlyph />
+          <WaveformIcon size={17} color={colors.accent[100]} weight="bold" />
         </View>
         <View className="flex-1" style={{ rowGap: 6 }}>
           <Text className="font-medium text-accent-900" style={{ fontSize: 14 }}>
