@@ -7,7 +7,7 @@ import { MicSlash, PhoneEnd, Subtitles } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   onMute?: () => void;
   onEnd?: () => void;
   onSubtitles?: () => void;
@@ -19,7 +19,7 @@ type Props = {
   labelSize?: number;
   subtitlesBg?: string;
   className?: string;
-};
+}
 
 /** Mute / End / Subtitles control row shared by the live and placement calls. */
 export function CallControls({

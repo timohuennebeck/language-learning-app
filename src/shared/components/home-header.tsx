@@ -8,13 +8,13 @@ import { DropdownPill } from '@/shared/ui/dropdown-pill';
 import { Avatar } from '@/shared/ui/illustration';
 import { Tap } from '@/shared/ui/tap';
 
-type Props = {
+interface Props {
   className?: string;
   /** Extra control rendered after the language pill (e.g. the settings cog on Profil). */
   right?: ReactNode;
   /** Hide the avatar shortcut (the profile tab shows the big one right below). */
   avatar?: boolean;
-};
+}
 
 /** Avatar (→ profile) on the left, "Französisch · A2" pill (→ languages) on the right. */
 export function HomeHeader({ className, right, avatar = true }: Props) {

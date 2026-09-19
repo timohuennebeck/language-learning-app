@@ -6,7 +6,7 @@ import { colors } from '@/shared/theme/tokens';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   /** Number in the leading 46px circle (minutes, talks). */
   n: number;
   label: string;
@@ -19,7 +19,7 @@ type Props = {
   onLayout?: (e: LayoutChangeEvent) => void;
   /** Trailing content: bars, price, radio mark. */
   children?: ReactNode;
-};
+}
 
 /** White selectable row with a number circle, label + sub line and trailing content. */
 export function OptionRow({

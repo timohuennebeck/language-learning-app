@@ -9,7 +9,7 @@ import {
   signOut,
   signUpWithEmail,
 } from '@/features/auth/data/repository';
-import { DEFAULT_SESSION, SessionSchema, type Session } from '@/features/auth/data/schemas';
+import { DEFAULT_SESSION, parseCachedSession, type Session } from '@/features/auth/data/types';
 import { acceptCurrentLegalDocuments } from '@/features/legal/data/repository';
 import { detectLanguage, setAppLanguage } from '@/shared/lib/i18n';
 import { readJson, removeKey, writeJson } from '@/shared/lib/storage';
@@ -18,7 +18,7 @@ import { supabase } from '@/shared/lib/supabase';
 /** Offline copy of the last loaded session (used only when Supabase cannot be reached). */
 const SESSION_CACHE_KEY = 'yori.session.v2';
 
-export type SessionContextValue = {
+export interface SessionContextValue {
   status: 'loading' | 'ready';
   session: Session;
   /** Message of the last failed write or load; cleared by the next successful one. */
@@ -35,7 +35,7 @@ export type SessionContextValue = {
   reset: () => Promise<void>;
   /** Deletes the account server-side, then starts a fresh anonymous session. */
   deleteAccount: () => Promise<void>;
-};
+}
 
 /** Read through `useSession()` (features/auth/hooks). */
 export const SessionContext = createContext<SessionContextValue | null>(null);
@@ -65,7 +65,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       setError(null);
       return next;
     } catch (e) {
-      const cached = await readJson(SESSION_CACHE_KEY, SessionSchema);
+      const cached = await readJson(SESSION_CACHE_KEY, parseCachedSession);
       const fallback = cached ?? { ...DEFAULT_SESSION, appLanguage: detectLanguage() };
       sessionRef.current = fallback;
       setSessionState(fallback);

@@ -19,7 +19,7 @@ export const PLACEMENT_STEPS = {
   prognosis: 15,
 } as const;
 
-type Props = {
+interface Props {
   /** Onboarding step shown in the progress bar; omit for a plain back bar (e.g. login). */
   step?: number;
   title: string;
@@ -29,7 +29,7 @@ type Props = {
   /** Bottom actions (primary button + optional text button). */
   footer?: ReactNode;
   onBack?: () => void;
-};
+}
 
 /** Onboarding step chrome: progress bar, headline, scrolling content, pinned footer. Padding 56/20/34. */
 export function OnboardingFrame({ step, title, sub, kicker, children, footer, onBack }: Props) {

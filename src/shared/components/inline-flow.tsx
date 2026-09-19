@@ -5,7 +5,7 @@ import { Text } from '@/shared/ui/text';
 
 export type FlowPiece = string | { key: string; node: ReactNode };
 
-type Props = {
+interface Props {
   pieces: FlowPiece[];
   /** Applied to every plain word. Must include `fontSize` and `lineHeight`. */
   textStyle: TextStyle;
@@ -13,7 +13,7 @@ type Props = {
   textClassName?: string;
   className?: string;
   style?: StyleProp<ViewStyle>;
-};
+}
 
 /**
  * A paragraph that mixes plain words with inline boxes (highlighted words, chips, inputs).

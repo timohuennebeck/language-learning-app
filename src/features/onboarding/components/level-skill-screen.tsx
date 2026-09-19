@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { LEVELS, type Level } from '@/features/auth/data/schemas';
+import { LEVELS, type Level } from '@/features/auth/data/types';
 import { useSession } from '@/features/auth/hooks/use-session';
 import {
   ONBOARDING_STEPS,

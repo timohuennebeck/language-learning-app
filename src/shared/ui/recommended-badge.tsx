@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Text } from '@/shared/ui/text';
 
-type Props = { style?: StyleProp<ViewStyle>; size?: number; paddingVertical?: number };
+interface Props {
+  style?: StyleProp<ViewStyle>;
+  size?: number;
+  paddingVertical?: number;
+}
 
 /**
  * Absolutely positioned "Empfohlen" pill hanging over a card edge. Render it as the LAST child of

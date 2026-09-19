@@ -12,23 +12,23 @@ import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-type HeroCardData = {
+interface HeroCardData {
   key: string;
   preview: ReactNode;
   kicker: string;
   title: string;
   cta: string;
   onPress?: () => void;
-};
+}
 
 const GAP = 10;
 const SIDE = 22;
 
-type Props = {
+interface Props {
   cards: HeroCardData[];
   className?: string;
   dotsClassName?: string;
-};
+}
 
 /** Horizontally paged 248px cards (width = screen − 44) with pagination dots. */
 export function HeroCarousel({ cards, className, dotsClassName = 'mt-[12px]' }: Props) {

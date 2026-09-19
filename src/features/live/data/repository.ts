@@ -1,6 +1,6 @@
 import { FunctionsHttpError } from '@supabase/supabase-js';
 
-import type { Level } from '@/features/auth/data/schemas';
+import type { Level } from '@/features/auth/data/types';
 import type {
   ConversationReview,
   ConversationSummary,

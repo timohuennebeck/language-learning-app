@@ -2,23 +2,23 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import {
-  LearningLanguageSchema,
+  LEARNING_LANGUAGES,
   UPCOMING_LEARNING_LANGUAGES,
   type LearningLanguage,
-} from '@/features/auth/data/schemas';
+} from '@/features/auth/data/types';
 import { SelectRow } from '@/shared/components/select-row';
 import { Flag } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-const LANGS = LearningLanguageSchema.options;
+const LANGS = LEARNING_LANGUAGES;
 
-type Props = {
+interface Props {
   value: LearningLanguage;
   onChange: (l: LearningLanguage) => void;
   frSub?: string;
   className?: string;
-};
+}
 
 /** Language list shared by 03a (onboarding) and 09c (profile). */
 export function LearningLanguageList({ value, onChange, frSub, className }: Props) {

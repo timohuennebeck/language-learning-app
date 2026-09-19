@@ -1,4 +1,4 @@
-import type { DeckResult } from '@/features/flashcards/data/schemas';
+import type { DeckResult } from '@/features/flashcards/data/types';
 
 /** Design sample for 41b (64-card free practice) shown when the results screen is opened directly. */
 export const demoResult: DeckResult = {

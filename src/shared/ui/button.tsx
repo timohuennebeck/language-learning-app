@@ -42,7 +42,7 @@ const labelByVariant: Record<Variant, string> = {
   disabled: 'text-faint font-semibold',
 };
 
-type ButtonProps = Omit<TapProps, 'children' | 'style'> & {
+interface ButtonProps extends Omit<TapProps, 'children' | 'style'> {
   style?: StyleProp<ViewStyle>;
   label?: string;
   variant?: Variant;
@@ -54,7 +54,7 @@ type ButtonProps = Omit<TapProps, 'children' | 'style'> & {
   labelClassName?: string;
   left?: ReactNode;
   children?: ReactNode;
-};
+}
 
 /** Pill-shaped call to action. Fires a medium haptic by default. */
 export function Button({

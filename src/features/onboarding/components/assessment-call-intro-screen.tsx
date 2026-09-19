@@ -8,7 +8,7 @@ import {
   ONBOARDING_STEPS,
   PLACEMENT_STEPS,
 } from '@/features/onboarding/components/onboarding-frame';
-import { localized } from '@/features/speak/data/schemas';
+import { localized } from '@/features/speak/data/types';
 import { usePlacementScenario } from '@/features/speak/hooks/use-scenarios';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';

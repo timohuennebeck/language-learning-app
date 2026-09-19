@@ -6,12 +6,12 @@ import { colors } from '@/shared/theme/tokens';
  * Inline answer chip inside a sentence (green when correct, red + strikethrough when wrong).
  * A real View so the rounded background renders on native; place it as an `InlineFlow` piece.
  */
-type Props = {
+interface Props {
   text: string;
   ok: boolean;
   size: number;
   /** Total chip height; matches the task-phase gap box. */ height: number;
-};
+}
 
 export function AnswerChip({ text, ok, size, height }: Props) {
   // Natural line height: extra leading would sit above the glyphs on iOS and sink the word.

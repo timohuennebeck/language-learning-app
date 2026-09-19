@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { ExpandedPreview } from '@/features/lessons/components/stations/station-previews';
-import type { StationKind } from '@/features/lessons/data/schemas';
+import type { StationKind } from '@/features/lessons/data/types';
 import { Button } from '@/shared/ui/button';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';

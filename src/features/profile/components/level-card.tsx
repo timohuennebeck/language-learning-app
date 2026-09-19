@@ -1,19 +1,19 @@
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { LEVELS, type Level } from '@/features/auth/data/schemas';
+import { LEVELS, type Level } from '@/features/auth/data/types';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Kicker } from '@/shared/ui/kicker';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   level: Level;
   /** Progress inside the current level, 0..1. */
   progress: number;
   className?: string;
-};
+}
 
 /** "Niveau" card: one bar per CEFR level, filled up to the current one. */
 export function LevelCard({ level, progress, className }: Props) {

@@ -5,7 +5,12 @@ import { View } from 'react-native';
 import { colors } from '@/shared/theme/tokens';
 import { Text } from '@/shared/ui/text';
 
-type Props = { url: string; label: string; size?: number; radius?: number };
+interface Props {
+  url: string;
+  label: string;
+  size?: number;
+  radius?: number;
+}
 
 /** Scenario illustration from Storage; a dashed placeholder until the file exists. */
 export function ScenarioArt({ url, label, size = 96, radius = 18 }: Props) {

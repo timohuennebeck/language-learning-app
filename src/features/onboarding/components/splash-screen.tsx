@@ -6,7 +6,10 @@ import { Gradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { Text } from '@/shared/ui/text';
 
-type Props = { children?: React.ReactNode; holdMs?: number };
+interface Props {
+  children?: React.ReactNode;
+  holdMs?: number;
+}
 
 /** 01 · Splash. Shows the brand for a moment, then renders `children` (typically a Redirect). */
 export function SplashScreen({ children, holdMs = 900 }: Props) {

@@ -1,4 +1,4 @@
-import type { Level } from '@/features/auth/data/schemas';
+import type { Level } from '@/features/auth/data/types';
 
 export type LiveKind = 'placement' | 'free' | 'scenario';
 

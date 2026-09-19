@@ -1,11 +1,4 @@
-import {
-  ChapterSchema,
-  HomeFeedSchema,
-  LessonSchema,
-  type Chapter,
-  type HomeFeed,
-  type Lesson,
-} from '@/features/lessons/data/schemas';
+import type { Chapter, HomeFeed, Lesson } from '@/features/lessons/data/types';
 import { delay } from '@/shared/lib/time';
 
 /**
@@ -37,19 +30,19 @@ const lessons: Lesson[] = [
     meta: 'Einchecken · 6 Min',
     placeholder: 'Illustration: Koffer',
   },
-].map((l) => LessonSchema.parse(l));
+];
 
 export async function getChapter(id: string): Promise<Chapter> {
   await delay();
-  return ChapterSchema.parse({
+  return {
     id,
     title: 'Im Café',
     stations: ['read', 'cards', 'grammar', 'practice', 'live'],
     current: 0,
-  });
+  };
 }
 
 export async function getHomeFeed(): Promise<HomeFeed> {
   await delay();
-  return HomeFeedSchema.parse({ minutesToday: 6, goalMinutes: 10, dueCards: 12, lessons });
+  return { minutesToday: 6, goalMinutes: 10, dueCards: 12, lessons };
 }

@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { LearningLanguage } from '@/features/auth/data/schemas';
+import type { LearningLanguage } from '@/features/auth/data/types';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { LearningLanguageList } from '@/shared/components/learning-language-list';
 import { TitledFrame } from '@/shared/components/titled-frame';

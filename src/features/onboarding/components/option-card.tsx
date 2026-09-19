@@ -6,7 +6,7 @@ import { RadioMark } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   badge: string;
   name: string;
   /** Plain sub text. */
@@ -18,7 +18,7 @@ type Props = {
   onPress?: () => void;
   nameSize?: 21 | 20;
   subSize?: 15 | 14.5;
-};
+}
 
 /** Level option (surface card, or accent-800 when selected) from the level pickers. */
 export function OptionCard({

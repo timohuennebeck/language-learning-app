@@ -1,6 +1,6 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
-import type { LearningLanguage } from '@/features/auth/data/schemas';
+import type { LearningLanguage } from '@/features/auth/data/types';
 import { getPlacementScenario, getScenario, listScenarios } from '@/features/speak/data/repository';
 
 export const speakKeys = createQueryKeys('speak', {

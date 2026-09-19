@@ -7,7 +7,11 @@ import screens from '../../../../design/screens.json';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Entry = { name: string; route: string; onboarded?: boolean };
+interface Entry {
+  name: string;
+  route: string;
+  onboarded?: boolean;
+}
 
 /**
  * Every screen from the Claude Design canvas, in design order, for quick visual checks.

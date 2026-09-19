@@ -7,7 +7,9 @@ import {
 
 import { cn } from '@/shared/lib/cn';
 
-export type TextProps = RNTextProps & { className?: string };
+export interface TextProps extends RNTextProps {
+  className?: string;
+}
 
 /** Design body defaults: 15px Inter, line-height 1.55 (inherited by everything without its own). */
 const BODY_SIZE = 15;

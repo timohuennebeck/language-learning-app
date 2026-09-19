@@ -4,13 +4,13 @@ import { colors } from '@/shared/theme/tokens';
 import { Caret } from '@/shared/ui/caret';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   /** Up to six characters; missing trailing characters render as empty boxes. */
   value: string;
   /** Index of the box that shows the caret (redeem screen). */
   activeIndex?: number;
   variant: 'input' | 'display';
-};
+}
 
 /** Two groups of three character boxes separated by a dot (redeem / share code). */
 export function CodeBoxes({ value, activeIndex, variant }: Props) {

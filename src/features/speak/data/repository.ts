@@ -1,5 +1,5 @@
-import type { LearningLanguage } from '@/features/auth/data/schemas';
-import { ScenarioSchema, type Scenario } from '@/features/speak/data/schemas';
+import type { LearningLanguage } from '@/features/auth/data/types';
+import type { Localized, Scenario, ScenarioTask } from '@/features/speak/data/types';
 import type { Tables } from '@/shared/lib/database.types';
 import { supabase } from '@/shared/lib/supabase';
 
@@ -26,10 +26,10 @@ type Row = Pick<
 
 function toScenario(row: Row): Scenario {
   const { data } = supabase.storage.from('scenarios').getPublicUrl(row.illustration_storage_path);
-  return ScenarioSchema.parse({
+  return {
     id: row.id,
     slug: row.slug,
-    language: row.language,
+    language: row.language as LearningLanguage,
     title: row.title,
     theme: row.theme,
     levelMin: row.level_min,
@@ -37,11 +37,11 @@ function toScenario(row: Row): Scenario {
     minutes: row.minutes,
     illustrationUrl: data.publicUrl,
     isPlacement: row.is_placement,
-    subtitle: row.subtitle,
-    brief: row.brief,
-    tasks: row.tasks,
+    subtitle: row.subtitle as Localized,
+    brief: row.brief as Localized,
+    tasks: row.tasks as unknown as ScenarioTask[],
     sortOrder: row.sort_order,
-  });
+  };
 }
 
 /** The active catalogue for one learning language, in display order. `pip_prompt` never leaves the server. */

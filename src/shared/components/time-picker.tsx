@@ -8,13 +8,13 @@ import { Gradient } from '@/shared/ui/gradient';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   hour: number;
   minute: number;
   minuteStep?: 5 | 15;
   onChange: (next: { hour: number; minute: number }) => void;
   className?: string;
-};
+}
 
 const dim = (offset: number) => (offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.4 : 0.16);
 

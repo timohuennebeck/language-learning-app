@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import type { LearningLanguage } from '@/features/auth/data/schemas';
+import type { LearningLanguage } from '@/features/auth/data/types';
 import { queries } from '@/shared/data/keys';
 
 /** The catalogue changes rarely: keep it for a day (docs/sprechen-plan.md §5). */

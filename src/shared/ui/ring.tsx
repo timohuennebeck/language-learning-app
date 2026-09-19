@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-type Props = {
+interface Props {
   size: number;
   stroke: number;
   /** 0..1 */
@@ -10,7 +10,7 @@ type Props = {
   color: string;
   children?: React.ReactNode;
   linecap?: 'round' | 'butt';
-};
+}
 
 /** Circular progress ring, drawn from 12 o'clock clockwise. */
 export function Ring({

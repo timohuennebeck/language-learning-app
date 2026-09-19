@@ -1,4 +1,4 @@
-import type { ExerciseStep } from '@/features/exercises/data/schemas';
+import type { ExerciseStep } from '@/features/exercises/data/types';
 
 /**
  * Loose comparison for typed answers: case, surrounding whitespace and punctuation are ignored

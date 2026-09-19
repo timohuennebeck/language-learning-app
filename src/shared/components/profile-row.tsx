@@ -5,7 +5,7 @@ import { ChevronRight } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   label: string;
   sub?: string;
   value?: string;
@@ -15,7 +15,7 @@ type Props = {
   onPress?: () => void;
   /** Last row in a group: no divider below. */
   last?: boolean;
-};
+}
 
 /** Settings row (label, optional sub/value, chevron) inside a rounded group. */
 export function ProfileRow({ label, sub, value, right, left, onPress, last }: Props) {

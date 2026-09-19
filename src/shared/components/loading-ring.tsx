@@ -5,7 +5,12 @@ import { Illustration, type IllustrationName } from '@/shared/ui/illustration';
 import { Ring } from '@/shared/ui/ring';
 import { Text } from '@/shared/ui/text';
 
-type Props = { progress: number; label: string; pip: IllustrationName; pipSize?: number };
+interface Props {
+  progress: number;
+  label: string;
+  pip: IllustrationName;
+  pipSize?: number;
+}
 
 /** 250px progress ring with Pip inside and a percentage pill at the bottom edge. */
 export function LoadingRing({ progress, label, pip, pipSize = 148 }: Props) {

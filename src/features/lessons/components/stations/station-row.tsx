@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { RowPreview } from '@/features/lessons/components/stations/station-previews';
-import type { StationKind } from '@/features/lessons/data/schemas';
+import type { StationKind } from '@/features/lessons/data/types';
 import { cn } from '@/shared/lib/cn';
 import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
@@ -11,7 +11,12 @@ import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = { kind: StationKind; index: number; done: boolean; onPress: () => void };
+interface Props {
+  kind: StationKind;
+  index: number;
+  done: boolean;
+  onPress: () => void;
+}
 
 /** A collapsed station row (done or pending). Tapping it expands the station. */
 export function StationRow({ kind, index, done, onPress }: Props) {

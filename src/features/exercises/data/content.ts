@@ -1,8 +1,4 @@
-import {
-  ExerciseSessionSchema,
-  type ExerciseSession,
-  type ExerciseStep,
-} from '@/features/exercises/data/schemas';
+import type { ExerciseSession, ExerciseStep } from '@/features/exercises/data/types';
 
 const fillOptions = (
   id: string,
@@ -14,7 +10,7 @@ const fillFree = (
 ): ExerciseStep => ({ kind: 'fill-free', id, ...o });
 
 /** The four task types from the design (steps 3–6) plus simple variants for the remaining steps. */
-export const cafeExercise: ExerciseSession = ExerciseSessionSchema.parse({
+export const cafeExercise: ExerciseSession = {
   id: 'cafe',
   steps: [
     fillOptions('s1', {
@@ -208,4 +204,4 @@ export const cafeExercise: ExerciseSession = ExerciseSessionSchema.parse({
       ],
     },
   ],
-});
+};

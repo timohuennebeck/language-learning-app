@@ -11,7 +11,7 @@ import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-type CardProps = {
+interface CardProps {
   dark?: boolean;
   preview: React.ReactNode;
   kicker: string;
@@ -20,7 +20,7 @@ type CardProps = {
   sub: string;
   cta: string;
   onPress: () => void;
-};
+}
 
 function LessonCard({ dark, preview, kicker, badge, title, sub, cta, onPress }: CardProps) {
   return (

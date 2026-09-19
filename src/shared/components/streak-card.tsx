@@ -7,14 +7,14 @@ import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   streakDays: number;
   minutesToday: number;
   goalMinutes: number;
   /** Mon..Sun: 0 = missed, 1 = done, 2 = today (pending). */
   week: number[];
   className?: string;
-};
+}
 
 /** "Serie" card with the weekly day circles and waving Pip. */
 export function StreakCard({ streakDays, minutesToday, goalMinutes, week, className }: Props) {

@@ -14,7 +14,7 @@ export const PAGE_TOP = 8;
 const HEADER_GAP = 8;
 const HEADER_FADE = 18;
 
-type ScreenProps = ViewProps & {
+interface ScreenProps extends ViewProps {
   className?: string;
   /** Extra top padding added on top of the safe-area inset and the page gap. */
   top?: number;
@@ -37,7 +37,7 @@ type ScreenProps = ViewProps & {
   footer?: ReactNode;
   /** Pinned top section (the tab header). Content scrolls underneath it. */
   header?: ReactNode;
-};
+}
 
 /** Full-height screen container with the app background and safe-area aware padding. */
 export function Screen({

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MarkedRuns } from '@/features/exercises/components/marked-runs';
 import { PROMPT, STEP_TOP } from '@/features/exercises/components/steps/layout';
 import type { StepProps } from '@/features/exercises/components/steps/types';
-import type { Run } from '@/features/exercises/data/schemas';
+import type { Run } from '@/features/exercises/data/types';
 import { Hint } from '@/shared/components/hint';
 import { NO_OUTLINE, ring } from '@/shared/lib/styles';
 import { splitMarks } from '@/shared/lib/text';

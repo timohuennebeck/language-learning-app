@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
-import type { Level } from '@/features/auth/data/schemas';
+import type { Level } from '@/features/auth/data/types';
 import {
   FIRST_PLACEMENT_TEXT,
   passes,
@@ -10,7 +10,7 @@ import {
 
 export type Round = 1 | 2;
 
-export type RoundStats = {
+export interface RoundStats {
   taps: number;
   correct: number;
   total: number;
@@ -18,14 +18,14 @@ export type RoundStats = {
   knownPct: number;
   /** Words tapped as unknown (become flashcards). */
   cards: string[];
-};
+}
 
 /** Strips punctuation around a token so the flashcard shows the bare word. */
 export function bareWord(token: string) {
   return token.replace(/^[«"“(]+|[»"”),.;:!?…]+$/g, '');
 }
 
-type Store = {
+interface Store {
   textFor: (round: Round) => PlacementText;
   wordsFor: (round: Round) => string[];
   tappedFor: (round: Round) => Set<number>;
@@ -34,7 +34,7 @@ type Store = {
   readingLevel: Level | null;
   toggleWord: (round: Round, i: number) => void;
   setAnswer: (round: Round, q: number, value: boolean) => void;
-};
+}
 
 const PlacementContext = createContext<Store | null>(null);
 

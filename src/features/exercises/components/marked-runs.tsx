@@ -1,19 +1,19 @@
 import { View } from 'react-native';
 
-import type { Run } from '@/features/exercises/data/schemas';
+import type { Run } from '@/features/exercises/data/types';
 import { InlineFlow, type FlowPiece } from '@/shared/components/inline-flow';
 import { InlineMark } from '@/shared/components/inline-mark';
 import { colors } from '@/shared/theme/tokens';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   runs: Run[];
   /** Colour of the plain words. */
   color: string;
   size?: number;
   /** Text colour inside the marks; defaults to the green/red mark colours. */
   markColor?: string;
-};
+}
 
 /**
  * Sentence with rounded inline highlights and superscript footnote numbers (feedback lines,

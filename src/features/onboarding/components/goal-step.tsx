@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import type { LearningGoal } from '@/features/auth/data/schemas';
+import type { LearningGoal } from '@/features/auth/data/types';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
 import { cn } from '@/shared/lib/cn';

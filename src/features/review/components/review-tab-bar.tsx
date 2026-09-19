@@ -14,7 +14,7 @@ const PAGES: Record<string, { lead: string; label: string; count: number }> = {
   next: { lead: 'review.leadNext', label: 'review.tabNext', count: nextTime.length },
 };
 
-type Props = {
+interface Props {
   state: TabNavigationState<Record<string, object | undefined>>;
   navigation: {
     emit: (event: { type: 'tabPress'; target: string; canPreventDefault: true }) => {
@@ -22,7 +22,7 @@ type Props = {
     };
     navigate: (name: string) => void;
   };
-};
+}
 
 /** Lead sentence plus the two underlined tabs with count pills; tapping or swiping switches pages. */
 export function ReviewTabBar({ state, navigation }: Props) {

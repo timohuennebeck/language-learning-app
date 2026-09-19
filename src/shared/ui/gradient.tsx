@@ -6,7 +6,9 @@ import { cn } from '@/shared/lib/cn';
 // Let NativeWind resolve `className` on the gradient like on a View.
 cssInterop(LinearGradient, { className: 'style' });
 
-type Props = LinearGradientProps & { className?: string };
+interface Props extends LinearGradientProps {
+  className?: string;
+}
 
 /** The recurring soft header gradient (#e7e5fe → #eceafe → #f3f5fe, top to bottom). */
 export const HEADER_GRADIENT = {

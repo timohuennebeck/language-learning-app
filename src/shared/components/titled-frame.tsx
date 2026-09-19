@@ -5,7 +5,7 @@ import { Headline } from '@/shared/components/headline';
 import { Screen } from '@/shared/ui/screen';
 import { TopBar } from '@/shared/ui/top-bar';
 
-type Props = {
+interface Props {
   /** Compact top-bar title ("Lernsprache"). */
   title: string;
   headline: string;
@@ -15,7 +15,7 @@ type Props = {
   footer?: ReactNode;
   /** Scroll when the content is taller than the viewport (the daily-goal list). */
   scroll?: boolean;
-};
+}
 
 /** Sub-page chrome shared by the profile settings screens and the redeem screen: back bar, 30px headline, content, pinned actions. */
 export function TitledFrame({ title, headline, sub, children, footer, scroll = false }: Props) {

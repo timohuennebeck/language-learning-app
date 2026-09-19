@@ -78,8 +78,8 @@ Rules of the road:
 
 - Schema changes are always a new file in `supabase/migrations/` (`supabase migration new <name>`),
   never edits in Studio. `supabase db reset` replays migrations + seed and must stay green.
-- `db:types` runs after every migration; the generated types are committed. Zod schemas in
-  `features/*/data/schemas.ts` stay as the domain layer and parse rows into the app's shapes.
+- `db:types` runs after every migration; the generated types are committed. The interfaces in
+  `features/*/data/types.ts` are the domain layer; each repository maps rows into those shapes.
 - Production: `supabase link --project-ref …` once, then `supabase db push` from CI.
 - Secrets for edge functions (`OPENAI_API_KEY`, `REVENUECAT_API_KEY`) live in
   `supabase/.env.local` locally and `supabase secrets set` in production.
@@ -645,9 +645,9 @@ Suggested build order in the app:
 Not database work, but the schema above assumes them:
 
 - `SUPPORTED_APP_LANGUAGES` (`shared/lib/i18n.ts`, today `['de']`) and
-  `LearningLanguageSchema` / `UPCOMING_LEARNING_LANGUAGES` (`features/auth/data/schemas.ts`,
+  `LEARNING_LANGUAGES` / `UPCOMING_LEARNING_LANGUAGES` (`features/auth/data/types.ts`,
   today `['fr']` / `['en','es','de']`) become mirrors of the `languages` table: the pickers render
-  from the query, the Zod enums stay as type guards and are checked against the seed in a test.
+  from the query, the constant lists stay as type guards and are checked against the seed in a test.
 - Locale files for `es`, `fr`, `it`, `pt` next to `de.json` / `en.json`.
 - French-specific copy is parameterised by the learning language: "Warum lernst du Französisch?",
   the goal options ("Reise nach Frankreich", "Freunde in Frankreich"), "B1 in etwa 8 Monaten",

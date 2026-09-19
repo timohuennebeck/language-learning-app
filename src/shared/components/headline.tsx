@@ -2,13 +2,13 @@ import { View } from 'react-native';
 
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   title: string;
   sub?: string;
   /** Onboarding: 33px / -.035em / 1.06. Profile: 30px / -.035em / 1.08. */
   size?: 33 | 30;
   titleMarginTop?: number;
-};
+}
 
 const lineHeight: Record<NonNullable<Props['size']>, number> = { 33: 34.98, 30: 32.4 };
 

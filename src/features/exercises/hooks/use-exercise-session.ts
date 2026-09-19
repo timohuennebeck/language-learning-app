@@ -1,16 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import type { ExerciseSession, ExerciseStep } from '@/features/exercises/data/schemas';
+import type { ExerciseSession, ExerciseStep } from '@/features/exercises/data/types';
 import { isSameAnswer, wrongRows } from '@/features/exercises/lib/answers';
 
 export type Phase = 'task' | 'correct' | 'wrong';
 
-type Options = {
+interface Options {
   initialIndex?: number;
   initialPhase?: Phase;
   /** Pre-fill free-text drafts with the design's sample input (dev / screenshot verification only). */
   designDrafts?: boolean;
-};
+}
 
 function draftFor(s: ExerciseStep, p: Phase, designDrafts: boolean): string | string[] {
   if (s.kind === 'conjugate')

@@ -21,11 +21,11 @@ const DAILY_GOAL_OPTIONS = [
 
 type DailyGoalMinutes = (typeof DAILY_GOAL_OPTIONS)[number]['min'];
 
-type OptionsProps = {
+interface OptionsProps {
   value: number;
   onChange: (min: DailyGoalMinutes) => void;
   className?: string;
-};
+}
 
 /** The four "N Min a day" rows with weekly bars and a recommended badge on 15. */
 export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {

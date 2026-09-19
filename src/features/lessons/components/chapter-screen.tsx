@@ -6,7 +6,7 @@ import { ChapterChips } from '@/features/lessons/components/stations/chapter-chi
 import { StationCard } from '@/features/lessons/components/stations/station-card';
 import { StationRow } from '@/features/lessons/components/stations/station-row';
 import { useChapter } from '@/features/lessons/hooks/use-lessons';
-import type { StationKind } from '@/features/lessons/data/schemas';
+import type { StationKind } from '@/features/lessons/data/types';
 import { HomeHeader } from '@/shared/components/home-header';
 import { cn } from '@/shared/lib/cn';
 import { ring } from '@/shared/lib/styles';

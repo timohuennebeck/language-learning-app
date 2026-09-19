@@ -1,4 +1,4 @@
-import type { ExerciseStep } from '@/features/exercises/data/schemas';
+import type { ExerciseStep } from '@/features/exercises/data/types';
 import type { Phase } from '@/features/exercises/hooks/use-exercise-session';
 
 /** Props shared by every exercise step renderer. */

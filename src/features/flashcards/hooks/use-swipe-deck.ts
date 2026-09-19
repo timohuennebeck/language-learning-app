@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 import { runOnJS, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import type { Flashcard } from '@/features/flashcards/data/schemas';
+import type { Flashcard } from '@/features/flashcards/data/types';
 import { haptic } from '@/shared/lib/haptics';
 
 /** Horizontal drag distance (px) after which a released card flies out. */
@@ -10,7 +10,10 @@ const THRESHOLD = 110;
 const FLY_DISTANCE = 520;
 
 /** Swipe / flip state for a stack of flashcards: gestures, shared values and counters. */
-type Outcome = { known: number; againIds: string[] };
+interface Outcome {
+  known: number;
+  againIds: string[];
+}
 
 export function useSwipeDeck(cards: Flashcard[], onFinish?: (outcome: Outcome) => void) {
   const [index, setIndex] = useState(0);

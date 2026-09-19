@@ -8,10 +8,10 @@ import { ScenarioArt } from '@/features/speak/components/scenario-art';
 import {
   fitsLevel,
   localized,
-  ScenarioThemeSchema,
+  SCENARIO_THEMES,
   themeForGoal,
   type ScenarioTheme,
-} from '@/features/speak/data/schemas';
+} from '@/features/speak/data/types';
 import { useScenarios } from '@/features/speak/hooks/use-scenarios';
 import { HomeHeader } from '@/shared/components/home-header';
 import { TalkPreview } from '@/shared/components/previews';
@@ -26,7 +26,7 @@ import { Text } from '@/shared/ui/text';
 const CREDITS = { left: 18, total: 30 };
 
 type Chip = 'forYou' | ScenarioTheme;
-const CHIPS: Chip[] = ['forYou', ...ScenarioThemeSchema.options];
+const CHIPS: Chip[] = ['forYou', ...SCENARIO_THEMES];
 
 /**
  * Sprechen tab · Freies Sprechen: a topic-less call, the theme chips and the scenario tiles from

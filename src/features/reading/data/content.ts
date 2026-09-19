@@ -1,12 +1,12 @@
 /** Reading text "Mardi matin" with tappable segments; tier drives highlight strength (0 = strong). */
-type Segment = {
+interface Segment {
   word: string;
   trans: string;
   tier: 0 | 1 | 2;
   stats: { right: number; total: number };
   /** `deMarks`: the phrase(s) inside `de` that translate the word, highlighted on the word screen. */
   sentence: { pre: string; post: string; de: string; deMarks: string[] };
-};
+}
 
 export const segments: Record<string, Segment> = {
   allee: {

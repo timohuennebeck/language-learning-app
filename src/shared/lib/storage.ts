@@ -1,16 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { z } from 'zod';
 
-/** Typed, schema-validated AsyncStorage access. Corrupt values are treated as missing. */
-export async function readJson<S extends z.ZodTypeAny>(
+/**
+ * Typed AsyncStorage access. `parse` turns the stored JSON into a value or returns null; corrupt or
+ * missing values are treated as absent.
+ */
+export async function readJson<T>(
   key: string,
-  schema: S,
-): Promise<z.infer<S> | null> {
+  parse: (raw: unknown) => T | null,
+): Promise<T | null> {
   try {
     const raw = await AsyncStorage.getItem(key);
     if (raw == null) return null;
-    const parsed = schema.safeParse(JSON.parse(raw));
-    return parsed.success ? parsed.data : null;
+    return parse(JSON.parse(raw));
   } catch {
     return null;
   }

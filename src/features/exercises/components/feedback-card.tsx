@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { MarkedRuns } from '@/features/exercises/components/marked-runs';
-import type { Run } from '@/features/exercises/data/schemas';
+import type { Run } from '@/features/exercises/data/types';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
 import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
@@ -16,13 +16,13 @@ const PIP_ABOVE = 84;
 /** Space between the content above and the card; Pip's head reaches into it. */
 const CARD_TOP = 62;
 
-type Props = {
+interface Props {
   correct: boolean;
   why: string;
   wrongWhy: string[];
   youLine?: Run[];
   rightLine?: Run[];
-};
+}
 
 /** The green/red feedback card with Pip peeking over the top-right corner. */
 export function FeedbackCard({ correct, why, wrongWhy, youLine, rightLine }: Props) {

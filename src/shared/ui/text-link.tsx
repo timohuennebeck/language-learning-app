@@ -5,7 +5,9 @@ import { cn } from '@/shared/lib/cn';
 import { haptic } from '@/shared/lib/haptics';
 import { Text, type TextProps } from '@/shared/ui/text';
 
-type Props = TextProps & { onPress: (e: GestureResponderEvent) => void };
+interface Props extends TextProps {
+  onPress: (e: GestureResponderEvent) => void;
+}
 
 /**
  * Inline link inside flowing text (legal sentences). A touchable cannot sit mid-sentence, so this

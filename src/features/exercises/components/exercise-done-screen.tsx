@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { cafeExercise } from '@/features/exercises/data/content';
-import type { ExerciseStep } from '@/features/exercises/data/schemas';
+import type { ExerciseStep } from '@/features/exercises/data/types';
 import { ResultHero } from '@/shared/components/result-hero';
 import { useGoToCourse } from '@/shared/hooks/use-back';
 import { colors } from '@/shared/theme/tokens';

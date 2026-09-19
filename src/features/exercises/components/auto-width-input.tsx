@@ -5,14 +5,17 @@ import { NO_OUTLINE } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Text } from '@/shared/ui/text';
 
-type Props = Pick<TextInputProps, 'autoCapitalize' | 'onSubmitEditing' | 'returnKeyType'> & {
+interface Props extends Pick<
+  TextInputProps,
+  'autoCapitalize' | 'onSubmitEditing' | 'returnKeyType'
+> {
   value: string;
   onChangeText: (v: string) => void;
   fontSize: number;
   lineHeight: number;
   color?: string;
   ref?: Ref<TextInput>;
-};
+}
 
 /**
  * Single-line text input whose width follows its content. The value is drawn by a regular Text

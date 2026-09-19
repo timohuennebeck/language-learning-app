@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { demoResult } from '@/features/flashcards/data/content';
-import type { DeckResult } from '@/features/flashcards/data/schemas';
+import type { DeckResult } from '@/features/flashcards/data/types';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
 import { ResultHero } from '@/shared/components/result-hero';
 import { useBack } from '@/shared/hooks/use-back';

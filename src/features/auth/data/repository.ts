@@ -2,12 +2,10 @@ import type { User } from '@supabase/supabase-js';
 
 import {
   DEFAULT_SESSION,
-  LearningGoalSchema,
-  LearningLanguageSchema,
-  LevelSchema,
+  isLearningLanguage,
   REMINDER_REPEATS,
   type Session,
-} from '@/features/auth/data/schemas';
+} from '@/features/auth/data/types';
 import { detectLanguage, isAppLanguage, type AppLanguage } from '@/shared/lib/i18n';
 import type { Tables, TablesUpdate } from '@/shared/lib/database.types';
 import { supabase } from '@/shared/lib/supabase';
@@ -76,7 +74,6 @@ function toReminder(row: ProfileRow): Session['reminder'] {
 }
 
 function toSession(user: User, profile: ProfileRow, learner: LearnerRow | null): Session {
-  const learningLanguage = LearningLanguageSchema.safeParse(profile.active_language);
   return {
     userId: user.id,
     email: user.email ?? null,
@@ -84,16 +81,16 @@ function toSession(user: User, profile: ProfileRow, learner: LearnerRow | null):
     onboardingComplete: profile.onboarding_completed_at != null,
     name: profile.first_name,
     appLanguage: isAppLanguage(profile.app_language) ? profile.app_language : 'de',
-    learningLanguage: learningLanguage.success
-      ? learningLanguage.data
+    learningLanguage: isLearningLanguage(profile.active_language)
+      ? profile.active_language
       : DEFAULT_SESSION.learningLanguage,
-    level: learner ? LevelSchema.parse(learner.level) : DEFAULT_SESSION.level,
+    level: learner?.level ?? DEFAULT_SESSION.level,
     levelSource: learner?.level_source ?? DEFAULT_SESSION.levelSource,
-    targetLevel: learner ? LevelSchema.parse(learner.target_level) : DEFAULT_SESSION.targetLevel,
+    targetLevel: learner?.target_level ?? DEFAULT_SESSION.targetLevel,
     readingLevel: null,
     dailyGoalMinutes: profile.goal_minutes,
     reminder: toReminder(profile),
-    goal: learner ? LearningGoalSchema.nullable().parse(learner.goal) : DEFAULT_SESSION.goal,
+    goal: learner ? learner.goal : DEFAULT_SESSION.goal,
     plusActive: DEFAULT_SESSION.plusActive,
   };
 }

@@ -7,14 +7,14 @@ import { NavCircle } from '@/shared/ui/nav-circle';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Text } from '@/shared/ui/text';
 
-type TopBarProps = {
+interface TopBarProps {
   title?: string;
   left?: 'back' | 'close' | ReactNode | null;
   right?: ReactNode;
   onLeftPress?: () => void;
   /** Title font size: 20 (large, "Lesen") or 16 (compact, "Profil"). */
   titleSize?: 16 | 20;
-};
+}
 
 /** 40px tall bar: 40px left slot, centered title, 40px right slot. */
 export function TopBar({ title, left = 'back', right, onLeftPress, titleSize = 16 }: TopBarProps) {
@@ -43,7 +43,7 @@ export function TopBar({ title, left = 'back', right, onLeftPress, titleSize = 1
   );
 }
 
-type ProgressTopBarProps = {
+interface ProgressTopBarProps {
   /** 0..1 */
   progress: number;
   label: string;
@@ -54,7 +54,7 @@ type ProgressTopBarProps = {
   /** Background of the back circle (white on gradient headers). */
   backBg?: string;
   className?: string;
-};
+}
 
 /** Back circle + 6px progress bar + trailing counter ("3 von 13", "3 / 8"). */
 export function ProgressTopBar({

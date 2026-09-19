@@ -3,13 +3,13 @@ import { View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   text: string;
   /** Glyph inside the 20px circle. */
   glyph?: '?' | 'i';
   align?: 'center' | 'start';
   className?: string;
-};
+}
 
 /** Small surface circle with "?"/"i" followed by a muted sentence. */
 export function Hint({ text, glyph = '?', align = 'center', className }: Props) {

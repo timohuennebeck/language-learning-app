@@ -3,7 +3,7 @@ import { GestureDetector, type ComposedGesture } from 'react-native-gesture-hand
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 
-import type { Flashcard } from '@/features/flashcards/data/schemas';
+import type { Flashcard } from '@/features/flashcards/data/types';
 import { cn } from '@/shared/lib/cn';
 import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
@@ -60,13 +60,13 @@ function Stamp({
   );
 }
 
-type Props = {
+interface Props {
   card: Flashcard;
   flipped: boolean;
   gesture: ComposedGesture;
   dx: SharedValue<number>;
   leaving: SharedValue<number>;
-};
+}
 
 /** The draggable, flippable front card with its "Nochmal" / "Gewusst" stamps. */
 export function SwipeCard({ card, flipped, gesture, dx, leaving }: Props) {

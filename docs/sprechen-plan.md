@@ -73,8 +73,8 @@ create index scenarios_feed_idx on public.scenarios (language, active, sort_orde
 
 Why jsonb for the localized strings: six locales times a handful of short strings per scenario do
 not justify a translations table; the app reads the whole row and picks `subtitle[app_language]`
-with an `en` fallback. The `tasks` shape gets a Zod schema in
-`features/speak/data/schemas.ts`, which is also what the content check below runs.
+with an `en` fallback. The `tasks` shape is the `ScenarioTask` interface in
+`features/speak/data/types.ts`, which is also what the content check below runs.
 
 **The placement call is a scenario too.** `is_placement = true` marks one row per learning
 language (`slug = 'placement'`, partial unique index on `language`): its `brief` is the intro

@@ -5,7 +5,12 @@ import { colors } from '@/shared/theme/tokens';
 import { Ring } from '@/shared/ui/ring';
 import { Text } from '@/shared/ui/text';
 
-type StatTile = { n: number; pct: number; label: string; sub: string };
+interface StatTile {
+  n: number;
+  pct: number;
+  label: string;
+  sub: string;
+}
 
 /** Two side-by-side stat tiles with a progress ring and a big number. */
 export function StatTiles({ tiles, className }: { tiles: StatTile[]; className?: string }) {

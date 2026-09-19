@@ -9,7 +9,7 @@ import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
 import { NavCircle } from '@/shared/ui/nav-circle';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   /** Close (X) or back chevron in the top-left. */
   left?: 'close' | 'back';
   onLeftPress?: () => void;
@@ -22,7 +22,7 @@ type Props = {
   /** Bottom padding of the gradient block. */
   paddingBottom?: number;
   style?: StyleProp<ViewStyle>;
-};
+}
 
 /**
  * Top gradient block (#e7e5fe → #f3f5fe) that bleeds under the status bar and hosts a

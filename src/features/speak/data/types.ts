@@ -1,50 +1,44 @@
-import { z } from 'zod';
-
 import {
-  LearningLanguageSchema,
   LEVELS,
-  LevelSchema,
   type LearningGoal,
+  type LearningLanguage,
   type Level,
-} from '@/features/auth/data/schemas';
-import { Constants } from '@/shared/lib/database.types';
+} from '@/features/auth/data/types';
+import { Constants, type Enums } from '@/shared/lib/database.types';
 
 /** Strings keyed by app locale (`de`, `en`, …). */
-export const LocalizedSchema = z.record(z.string(), z.string());
-export type Localized = z.infer<typeof LocalizedSchema>;
+export type Localized = Record<string, string>;
 
-export const ScenarioThemeSchema = z.enum(Constants.public.Enums.scenario_theme);
-export type ScenarioTheme = z.infer<typeof ScenarioThemeSchema>;
+export const SCENARIO_THEMES = Constants.public.Enums.scenario_theme;
+export type ScenarioTheme = Enums<'scenario_theme'>;
 
 /** One thing to do in the talk. `text` is in the app language, `hint` in the learning language. */
-export const ScenarioTaskSchema = z.object({
-  id: z.string(),
-  level: LevelSchema.optional(),
-  text: LocalizedSchema,
-  hint: z.string().optional(),
-});
-export type ScenarioTask = z.infer<typeof ScenarioTaskSchema>;
+export interface ScenarioTask {
+  id: string;
+  level?: Level;
+  text: Localized;
+  hint?: string;
+}
 
-export const ScenarioSchema = z.object({
-  id: z.string(),
+export interface Scenario {
+  id: string;
   /** Language-neutral situation id ('cafe'); the same across the three learning languages. */
-  slug: z.string(),
-  language: LearningLanguageSchema,
+  slug: string;
+  language: LearningLanguage;
   /** In the learning language ("Au café"). */
-  title: z.string(),
-  theme: ScenarioThemeSchema,
-  levelMin: LevelSchema,
-  levelMax: LevelSchema,
-  minutes: z.number().int(),
-  illustrationUrl: z.string(),
+  title: string;
+  theme: ScenarioTheme;
+  levelMin: Level;
+  levelMax: Level;
+  minutes: number;
+  illustrationUrl: string;
   /** The Einstufungsgespräch: one per language, never listed on the Sprechen tab. */
-  isPlacement: z.boolean(),
-  subtitle: LocalizedSchema,
-  brief: LocalizedSchema,
-  tasks: z.array(ScenarioTaskSchema),
-  sortOrder: z.number().int(),
-});
-export type Scenario = z.infer<typeof ScenarioSchema>;
+  isPlacement: boolean;
+  subtitle: Localized;
+  brief: Localized;
+  tasks: ScenarioTask[];
+  sortOrder: number;
+}
 
 /** Picks the app-language string, falling back to English, then to whatever exists. */
 export function localized(map: Localized, locale: string): string {

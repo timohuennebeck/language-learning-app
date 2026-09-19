@@ -10,7 +10,11 @@ import Animated, {
 
 import { colors } from '@/shared/theme/tokens';
 
-type Props = { height?: number; color?: string; style?: object };
+interface Props {
+  height?: number;
+  color?: string;
+  style?: object;
+}
 
 /** Blinking 2px text caret used in the typed-input mockups. */
 export function Caret({ height = 22, color = colors.accent[700], style }: Props) {

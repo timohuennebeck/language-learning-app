@@ -2,12 +2,12 @@ import { ChevronDown, ChevronUp } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   label: string;
   /** Flips the chevron while a picker is open. */
   open?: boolean;
   onPress?: () => void;
-};
+}
 
 /** Surface pill with a label and a chevron ("Französisch · A2", the terms document picker). */
 export function DropdownPill({ label, open = false, onPress }: Props) {

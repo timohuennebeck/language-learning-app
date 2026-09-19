@@ -6,14 +6,14 @@ import { colors } from '@/shared/theme/tokens';
 import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
 
-type CheckCircleProps = ViewProps & {
+interface CheckCircleProps extends ViewProps {
   size?: number;
   bg?: string;
   color?: string;
   stroke?: number;
   iconSize?: number;
   className?: string;
-};
+}
 
 /** Filled circle with a check mark (selected rows, completed steps). */
 export function CheckCircle({
@@ -37,7 +37,7 @@ export function CheckCircle({
   );
 }
 
-type RadioProps = {
+interface RadioProps {
   selected: boolean;
   size?: number;
   /** Ring color when unselected. */
@@ -49,7 +49,7 @@ type RadioProps = {
   checkStroke?: number;
   /** Check glyph size; defaults to 54% of the circle. */
   checkSize?: number;
-};
+}
 
 /** Radio indicator: empty inset ring, or filled circle with a check. */
 export function RadioMark({
@@ -75,11 +75,11 @@ export function RadioMark({
   );
 }
 
-type CheckboxProps = {
+interface CheckboxProps {
   checked: boolean;
   bg?: string;
   className?: string;
-};
+}
 
 /** 26px rounded-square (7px) checkbox from the recap / wizard lists. */
 export function Checkbox({ checked, bg = colors.accent[800], className }: CheckboxProps) {

@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import type { StationKind } from '@/features/lessons/data/schemas';
+import type { StationKind } from '@/features/lessons/data/types';
 import {
   CardFanPreview,
   ChipsPreview,

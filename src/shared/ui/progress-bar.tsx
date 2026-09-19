@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 
-type Props = {
+interface Props {
   /** 0..1 */
   progress: number;
   height?: number;
@@ -11,7 +11,7 @@ type Props = {
   fillColor?: string;
   radius?: number;
   className?: string;
-};
+}
 
 export function ProgressBar({
   progress,

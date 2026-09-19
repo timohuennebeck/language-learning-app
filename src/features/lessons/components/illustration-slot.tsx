@@ -4,7 +4,11 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { colors } from '@/shared/theme/tokens';
 import { Text } from '@/shared/ui/text';
 
-type Props = { placeholder: string; width?: number; height?: number };
+interface Props {
+  placeholder: string;
+  width?: number;
+  height?: number;
+}
 
 /**
  * Lesson artwork slot: the design's empty placeholder (dashed ring, image glyph, caption) until

@@ -40,7 +40,7 @@ function StepsList({ steps }: { steps: { label: string; state: StepState }[] }) 
   );
 }
 
-type Props = {
+interface Props {
   /** 0..1 shown on the ring and as its label ("62 %"). */
   progress: number;
   label: string;
@@ -53,7 +53,7 @@ type Props = {
   active: number;
   /** Muted line pinned under the centred block ("8 Sekunden übrig"). */
   footer: string;
-};
+}
 
 /** "Pip is working" layout: loading ring, headline and checklist centred, a countdown below. */
 export function ProgressChecklist({

@@ -25,7 +25,11 @@ import Svg, { Path, Rect } from 'react-native-svg';
 
 import { colors } from '@/shared/theme/tokens';
 
-type IconProps = { size?: number; color?: string; strokeWidth?: number };
+interface IconProps {
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+}
 
 /** Back chevron inside the 32px nav circle (design: 11px, 1.9 stroke on a 12 box). */
 export function BackIcon({ size = 12, color = colors.glyph, strokeWidth = 3.6 }: IconProps) {

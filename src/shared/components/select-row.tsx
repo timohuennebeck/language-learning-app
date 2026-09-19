@@ -8,7 +8,7 @@ import { CheckCircle } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   flag: FlagCode;
   label: string;
   sub?: string;
@@ -16,7 +16,7 @@ type Props = {
   onPress?: () => void;
   /** Not selectable yet (e.g. an interface language that has no translation). */
   disabled?: boolean;
-};
+}
 
 /** White rounded row with a flag, label and check used by every language picker. */
 export function SelectRow({ flag, label, sub, selected, onPress, disabled }: Props) {

@@ -8,11 +8,11 @@ import type { FlagCode } from '@/shared/ui/illustration';
 /** Every interface language the design lists; only the supported ones are selectable. */
 const OPTIONS: FlagCode[] = ['de', 'en', 'es', 'fr', 'it', 'pt'];
 
-type Props = {
+interface Props {
   value: AppLanguage;
   onChange: (l: AppLanguage) => void;
   className?: string;
-};
+}
 
 /** Interface-language list shared by 03 (onboarding) and 09d (profile). */
 export function AppLanguageList({ value, onChange, className }: Props) {

@@ -4,7 +4,7 @@ import { View, type PressableProps } from 'react-native';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   children: ReactNode;
   /** Font size of the word; the line height defaults to 1.3× so the box hugs the glyphs. */
   size: number;
@@ -21,7 +21,7 @@ type Props = {
   onPress?: () => void;
   sound?: 'click' | 'none';
   accessibilityState?: PressableProps['accessibilityState'];
-};
+}
 
 /**
  * A word or phrase in a rounded box, placed as an `InlineFlow` piece: reading segments, the

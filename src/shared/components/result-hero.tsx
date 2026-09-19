@@ -7,14 +7,14 @@ import { Text } from '@/shared/ui/text';
 
 const RING = { size: 190, stroke: 8, badge: 36 };
 
-type Props = {
+interface Props {
   /** 0..1, drawn as the ring. */
   progress: number;
   /** Pill on the ring's bottom edge ("41 von 64"). */
   badge: string;
   title: string;
   sub: string;
-};
+}
 
 /** Result header shared by the flashcards and exercise done screens: progress ring around Pip with the trophy, badge, headline, sub line. */
 export function ResultHero({ progress, badge, title, sub }: Props) {

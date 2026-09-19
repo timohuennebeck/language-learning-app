@@ -7,7 +7,7 @@ import { cn } from '@/shared/lib/cn';
 import { Tap, type TapProps } from '@/shared/ui/tap';
 import { BackIcon, CloseIcon } from '@/shared/ui/icons';
 
-type Props = Omit<TapProps, 'children' | 'style'> & {
+interface Props extends Omit<TapProps, 'children' | 'style'> {
   style?: StyleProp<ViewStyle>;
   icon: 'back' | 'close' | ReactNode;
   size?: number;
@@ -16,7 +16,7 @@ type Props = Omit<TapProps, 'children' | 'style'> & {
   color?: string;
   /** When true, a missing onPress falls back to going back (or home). */
   autoBack?: boolean;
-};
+}
 
 /** 36px circular icon button used for back/close in every top bar. */
 export function NavCircle({

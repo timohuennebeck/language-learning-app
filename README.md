@@ -7,16 +7,16 @@ to be connected next.
 
 ## Stack
 
-| Concern    | Choice                                                                                                      |
-| ---------- | ----------------------------------------------------------------------------------------------------------- |
-| Platform   | Expo SDK 57, Expo Router (file based, [protected routes](https://docs.expo.dev/router/advanced/protected/)) |
-| Styling    | NativeWind 4 (Tailwind 3) with design tokens in `tailwind.config.js`, `cn()` via `extendTailwindMerge`      |
-| Icons      | Heroicons (`react-native-heroicons`) plus a few bespoke `react-native-svg` glyphs                           |
-| Data       | TanStack Query 5 with `@lukemorales/query-key-factory` key registry, optimistic mutations                   |
-| Validation | Zod schemas for all domain/session data                                                                     |
-| i18n       | i18next + react-i18next, `de` (default) and `en`                                                            |
-| Haptics    | `expo-haptics` through the shared `Tap` / `Button` primitives; `expo-audio` for the exercise result chimes  |
-| Tooling    | TypeScript strict, ESLint (expo + tanstack query), Prettier (tailwind plugin)                               |
+| Concern  | Choice                                                                                                      |
+| -------- | ----------------------------------------------------------------------------------------------------------- |
+| Platform | Expo SDK 57, Expo Router (file based, [protected routes](https://docs.expo.dev/router/advanced/protected/)) |
+| Styling  | NativeWind 4 (Tailwind 3) with design tokens in `tailwind.config.js`, `cn()` via `extendTailwindMerge`      |
+| Icons    | Heroicons (`react-native-heroicons`) plus a few bespoke `react-native-svg` glyphs                           |
+| Data     | TanStack Query 5 with `@lukemorales/query-key-factory` key registry, optimistic mutations                   |
+| Types    | Generated Supabase types plus plain interfaces per feature (`features/*/data/types.ts`)                     |
+| i18n     | i18next + react-i18next, `de` (default) and `en`                                                            |
+| Haptics  | `expo-haptics` through the shared `Tap` / `Button` primitives; `expo-audio` for the exercise result chimes  |
+| Tooling  | TypeScript strict, ESLint (expo + tanstack query), Prettier (tailwind plugin)                               |
 
 ## Structure
 

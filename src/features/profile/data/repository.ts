@@ -1,9 +1,4 @@
-import {
-  ProfileSchema,
-  ProgressSchema,
-  type Profile,
-  type Progress,
-} from '@/features/profile/data/schemas';
+import type { Profile, Progress } from '@/features/profile/data/types';
 import { supabase } from '@/shared/lib/supabase';
 
 async function currentUser() {
@@ -21,7 +16,7 @@ export async function getProfile(): Promise<Profile> {
     .eq('id', user.id)
     .single();
   if (error) throw new Error(error.message);
-  return ProfileSchema.parse({ email: user.email ?? '', dailyGoalMinutes: data.goal_minutes });
+  return { email: user.email ?? '', dailyGoalMinutes: data.goal_minutes };
 }
 
 export async function updateProfile(patch: Partial<Profile>): Promise<Profile> {
@@ -37,7 +32,7 @@ export async function updateProfile(patch: Partial<Profile>): Promise<Profile> {
 }
 
 /** The design's progress values; also shown by the profile while the query is loading. */
-export const DESIGN_PROGRESS: Progress = ProgressSchema.parse({
+export const DESIGN_PROGRESS: Progress = {
   streakDays: 12,
   minutesToday: 6,
   week: [1, 1, 1, 1, 1, 0, 0],
@@ -45,7 +40,7 @@ export const DESIGN_PROGRESS: Progress = ProgressSchema.parse({
   wordsSaved: 86,
   wordsGoal: 100,
   talks: 19,
-});
+};
 
 /**
  * Words saved and talks held are real counts; streak, week strip and level progress stay at
@@ -61,9 +56,9 @@ export async function getProgress(): Promise<Progress> {
       .eq('user_id', user.id)
       .eq('status', 'ended'),
   ]);
-  return ProgressSchema.parse({
+  return {
     ...DESIGN_PROGRESS,
     wordsSaved: words.count ?? 0,
     talks: talks.count ?? 0,
-  });
+  };
 }

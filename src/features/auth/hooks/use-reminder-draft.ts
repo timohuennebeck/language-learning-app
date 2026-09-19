@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { Session } from '@/features/auth/data/schemas';
+import type { Session } from '@/features/auth/data/types';
 import { formatTime } from '@/shared/lib/time';
 
 /** Editable copy of the reminder (time + repeat) for the onboarding step and the profile screen. */

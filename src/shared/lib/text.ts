@@ -1,4 +1,7 @@
-type MarkedRun = { text: string; marked: boolean };
+interface MarkedRun {
+  text: string;
+  marked: boolean;
+}
 
 /**
  * Splits `text` into plain and marked runs for every occurrence of the given phrases

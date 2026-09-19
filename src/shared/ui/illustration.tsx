@@ -46,12 +46,12 @@ const illustrations = {
 export type IllustrationName = keyof typeof illustrations;
 export type FlagCode = 'de' | 'en' | 'es' | 'fr' | 'it' | 'pt';
 
-type Props = Omit<ImageProps, 'source'> & {
+interface Props extends Omit<ImageProps, 'source'> {
   name: IllustrationName;
   size?: number;
   width?: number;
   height?: number;
-};
+}
 
 /** Renders a bundled illustration at a fixed size with `contain` fit. */
 export function Illustration({

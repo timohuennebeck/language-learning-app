@@ -3,7 +3,7 @@ import { View, type StyleProp, type TextStyle, type ViewStyle } from 'react-nati
 import { InlineFlow } from '@/shared/components/inline-flow';
 import { Text } from '@/shared/ui/text';
 
-type Props = {
+interface Props {
   pre?: string;
   mark: string;
   post?: string;
@@ -11,7 +11,7 @@ type Props = {
   textStyle: TextStyle;
   textClassName?: string;
   style?: StyleProp<ViewStyle>;
-};
+}
 
 /** Every word followed by exactly one space, whatever the surrounding whitespace in the copy. */
 const spaced = (s: string) =>

@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
-import type { LearningLanguage } from '@/features/auth/data/schemas';
+import type { LearningLanguage } from '@/features/auth/data/types';
 import { cn } from '@/shared/lib/cn';
 import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
