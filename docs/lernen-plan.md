@@ -1,171 +1,259 @@
-# Yori · Lernen plan (database + generation)
+# Yori · Lernen & Sprechen plan (database + generation)
 
-Companion to `docs/database-plan.md`. Scope: everything reachable from the **Lernen** tab. **Kurs**
-(authored chapters with five stations) stays separate; the seams are marked `→ Kurs`.
+Companion to `docs/database-plan.md`. Scope: the **Sprechen** tab (scenarios, built first) and the
+**Lernen** tab (the generated carousel, the streak, built next). **Kurs** (authored chapters with
+five stations, including the grammar station) is planned separately; seams are marked `→ Kurs`.
 
-## 0. What Lernen is for
+## 0. What the two tabs are for
 
-Lernen is the daily practice loop between conversations. Conversations are the metered, paid
-thing (10 or 30 a month); Lernen is where the learner spends the days in between, and where what
-they said and got wrong turns into practice ("Deine Gespräche werden deine Übungen").
+Conversations are the metered, paid thing (10 or 30 a month). **Sprechen** is where the learner
+spends them: a free conversation, or a scenario that briefs Pip and the learner on a situation and
+a few tasks to complete. **Lernen** is the daily loop between conversations: what the learner said
+and got wrong becomes a reading text, an exercise set and flashcards ("Deine Gespräche werden
+deine Übungen").
 
 Decisions behind this plan:
 
-- **Kurs is authored.** Chapters, their texts and tasks are written once and served to everyone.
-  Zero generation. (Planned separately.)
-- **Scenarios are voice conversations with a briefing.** A tile on the home screen opens a
-  preview (like the assessment intro): what the situation is, which tasks to complete in the
-  talk, then "Gespräch starten". No reading text or exercises of their own.
-- **The home carousel generates on tap.** "Lesetext erstellen" and "Übung starten" ask a text
-  model for content built from the learner's own conversations, mistakes and due words. A daily
-  cap per user bounds the cost; content is stored and replayed for free ("Übung wiederholen").
-- **Flashcards and grammar never call a model.** The deck is the learner's own table; grammar
-  forms are authored and scored per user.
+- **Kurs is authored.** Chapters, texts, tasks and the grammar overview are written once and
+  served to everyone. Zero generation. (Planned separately.)
+- **Scenarios are voice conversations with a briefing.** A tile on the Sprechen tab opens a
+  preview (like the assessment intro): the situation, the tasks to complete in the talk, the
+  words to use, then "Gespräch starten". No reading text or exercises of their own.
+- **The Lernen carousel generates on tap**, capped per day and stored, so replays are free.
+- **Flashcards never call a model.** The deck is the learner's own table.
 
-What each screen needs:
-
-| Screen                                  | Needs                                                                                                |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 01 Lernen (home)                        | minutes today vs goal, due-card count, four hero cards with live state, filter chips, scenario tiles |
-| 01b Szenario (Au café)                  | an authored scenario: title, level, vocabulary, the tasks to complete, "Gespräch starten"            |
-| 01c/01d Übung wird vorbereitet / Fehler | an async generation job with a ready/failed state and a retry                                        |
-| 19/25 Aufgaben (4 step kinds)           | an exercise set: ordered steps with answers, distractors, explanations; per-step attempts            |
-| 14a/14b/14e Lesen, 16a Worterklärung    | a generated text in sections, tappable segments with explanation, "1× wiederholt", right/total       |
-| 05 Grammatik                            | grammar forms with right/total per user, the weakest one, an overall score                           |
-| 04 Karteikarten, 42d Karten durch       | due cards for the active language, swipe outcomes, cards grouped by miss count                       |
-| 08 Tägliches Limit, 08b Serie           | minutes today, reset time, streak days, the Mon–Sun strip                                            |
+Build order: **Part A (Sprechen)** needs one table and one column. **Part B (Lernen)** adds the
+generated content and activity tables and is not needed for Part A.
 
 ---
 
-## 1. Authored content
+## Part A · Sprechen tab
 
-### 1.1 Scenarios
+### A.1 Catalogue: how many, which themes, which levels
 
-The tiles on the home screen ("Se présenter", "Demander son chemin", "Au restaurant", "À la
-réception") and their preview screen. One row per situation and learning language.
+**Size.** Launch with **24 scenarios per learning language** (72 rows for fr / en / es) and grow
+toward 50–60 in the first year. A learner has at most 30 conversations a month and replays
+favourites, so the catalogue must cover every goal at every level rather than be large.
+
+**Themes** reuse the onboarding goals, so the "Für dich" chip is a direct match:
+
+| `theme`    | Chip              | Serves the goal | Example situations                                             |
+| ---------- | ----------------- | --------------- | -------------------------------------------------------------- |
+| `everyday` | Alltag            | family, fun     | café, bakery, pharmacy, small talk with a neighbour            |
+| `travel`   | Reisen            | travel          | hotel check-in, asking directions, train ticket, lost luggage  |
+| `work`     | Arbeit & Studium  | work            | introducing yourself at work, a meeting, a job interview       |
+| `social`   | Freunde & Familie | friends, family | making plans, a birthday invitation, the weekend, the in-laws  |
+| `culture`  | Kultur & Medien   | media           | a series, a concert, a book, football                          |
+| `food`     | Essen & Trinken   | everyone        | ordering dinner, a market stall, cooking together, a complaint |
+
+Four situations per theme at launch. The chip labels live in the locale files under
+`speak.themes.<theme>`.
+
+**Levels.** One scenario, one **window** (`level_min` / `level_max`), no copy per level: the
+situation is the same for an A1 and an A2 learner, and Pip already gets the learner's level in the
+prompt. What differs by level is authored inside the row: each task and each vocabulary entry can
+carry a `level`, and the preview shows the entries at or below the learner's level. Suggested
+split of the 24: ten A1–A2, eight A2–B1, six B1–B2.
+
+### A.2 Table
+
+A scenario is one concept ("cafe") realised once per learning language. The language-neutral
+`key` ties the variants together and owns the illustration, theme and level window; per-language
+rows carry the title, Pip's prompt and the vocabulary; per-app-language strings are jsonb keyed
+by locale.
 
 ```sql
-create type public.scenario_theme as enum ('everyday', 'travel', 'friends', 'work', 'culture');
+create type public.scenario_theme as enum ('everyday', 'travel', 'work', 'social', 'culture', 'food');
 
 create table public.scenarios (
   id            uuid primary key default gen_random_uuid(),
-  language      text not null references public.languages(code),
-  slug          text not null,                         -- 'au-cafe' (route param)
-  title         text not null,                         -- in the learning language
-  theme         public.scenario_theme not null,        -- home filter chips
+  key           text not null,                          -- 'cafe' · same across languages, names the illustration
+  language      text not null references public.languages(code),   -- learning language of this variant
+  title         text not null,                          -- 'Au café' · in the learning language
+  theme         public.scenario_theme not null,
   level_min     public.cefr_level not null default 'A1',
   level_max     public.cefr_level not null default 'B2',
-  minutes       smallint not null default 5,           -- "3–5 Min" on the preview
-  illustration  text,                                  -- asset key; placeholder caption until then
-  subtitle      jsonb not null default '{}',           -- { "de": "Kennenlernen", "en": "Getting to know" }
-  brief         jsonb not null default '{}',           -- { "de": "Du bist in einem Café in Paris …" } shown on the preview + given to Pip
-  tasks         jsonb not null default '[]',           -- [{ "id": "order", "text": { "de": "Bestelle einen Kaffee" }, "hint": "un café, s’il vous plaît" }]
-  vocabulary    jsonb not null default '[]',           -- [{ "term": "l’addition", "meaning": { "de": "die Rechnung" }, "example": "…" }]
-  pip_prompt    text not null,                         -- role + situation for the system prompt, learning language
+  minutes       smallint not null default 5,            -- "3–5 Min" on the preview
+  illustration  text not null,                          -- storage path: 'scenarios/cafe.webp'
+  subtitle      jsonb not null default '{}',            -- { "de": "Bestellen und bezahlen", "en": "Order and pay" }
+  brief         jsonb not null default '{}',            -- { "de": "Du sitzt in einem Café in Paris. …" } · shown on the preview
+  tasks         jsonb not null default '[]',            -- [{ "id": "order", "level": "A1", "text": { "de": "Bestelle einen Kaffee" }, "hint": "un café, s’il vous plaît" }]
+  vocabulary    jsonb not null default '[]',            -- [{ "term": "l’addition", "level": "A1", "meaning": { "de": "die Rechnung" }, "example": "L’addition, s’il vous plaît." }]
+  pip_prompt    text not null,                          -- Pip's role and the situation, in the learning language
   sort_order    smallint not null default 0,
   active        boolean not null default true,
-  unique (language, slug)
+  unique (key, language)
 );
 create index scenarios_feed_idx on public.scenarios (language, active, sort_order);
 ```
 
-Why jsonb for the localized strings: six locales times a handful of short strings per scenario
-do not justify a translations table; the app reads the whole row and picks `subtitle[app_language]`
-with an `en` fallback.
+Why jsonb for the localized strings: six locales times a handful of short strings per scenario do
+not justify a translations table; the app reads the whole row and picks `subtitle[app_language]`
+with an `en` fallback. The `tasks` / `vocabulary` shapes get a Zod schema in
+`features/speak/data/schemas.ts`, which is also what the content check below runs.
 
-Preview screen (01b, restyled after 06 "Einstufung Intro"): title, `brief`, the `tasks` as the
-"stages" list, `vocabulary` as chips, CTA "Gespräch starten · 3–5 Min". The CTA calls
-`start-conversation` with `scenario_id`; the function adds `pip_prompt`, `tasks` and `vocabulary`
-to the system prompt. `end-conversation`'s review marks each task `done` or `missed` (see
-`review.tasks` below), which the Rückblick shows as a checklist.
+Read-only for clients (`select` for `anon, authenticated`), written by the seed.
 
-Filter chips: "Für dich" = scenarios whose theme matches the learner's `goal` (travel → travel,
-media → culture, friends → friends, work → work, family → everyday) inside the level window;
-"Alltag / Reisen / Freunde" = the theme directly.
+### A.3 Content pipeline: one source, three languages, six locales
 
-Database-plan changes this pulls in (they were deferred to Kurs): `conversations.scenario_id`
-(nullable FK) and the `conversation_kind` value `scenario`. `→ Kurs` adds `lesson_id` for its own
-live station later; the two never overlap.
+The repo holds the catalogue; the database is only ever filled from it.
 
-`review` (database plan §3.6) gains:
+```
+content/scenarios/
+  cafe.json                      one file per key, all learning-language variants inside
+  hotel-checkin.json
+  …
+content/illustrations/
+  cafe.webp                      one image per key, ~600 px, no text baked in
+scripts/
+  check-content.js               fails when a key lacks a learnable language or a jsonb lacks a locale
+  gen-seed-scenarios.js          writes supabase/seed/scenarios.sql from content/scenarios
+```
+
+`cafe.json`:
+
+```json
+{
+  "key": "cafe",
+  "theme": "everyday",
+  "level": ["A1", "B1"],
+  "minutes": 5,
+  "subtitle": {
+    "de": "Bestellen und bezahlen",
+    "en": "…",
+    "es": "…",
+    "fr": "…",
+    "it": "…",
+    "pt": "…"
+  },
+  "brief": { "de": "Du sitzt in einem Café in Paris …", "en": "…" },
+  "variants": {
+    "fr": {
+      "title": "Au café",
+      "pip_prompt": "Tu es serveur dans un café parisien …",
+      "tasks": [
+        {
+          "id": "order",
+          "level": "A1",
+          "text": { "de": "Bestelle einen Kaffee", "en": "…" },
+          "hint": "un café, s’il vous plaît"
+        }
+      ],
+      "vocabulary": [
+        {
+          "term": "l’addition",
+          "level": "A1",
+          "meaning": { "de": "die Rechnung", "en": "the bill" },
+          "example": "…"
+        }
+      ]
+    },
+    "en": { "title": "At the café", "…": "…" },
+    "es": { "title": "En la cafetería", "…": "…" }
+  }
+}
+```
+
+`check-content.js` runs in CI and before `db:reset`: every key has a variant for every language
+with `learnable = true` in the seed; every `subtitle`, `brief`, task `text` and vocabulary
+`meaning` has all six locales; every `illustration` file exists; task ids are unique per key;
+levels lie inside the window. Missing content is a build error, not something noticed in the app.
+First drafts of the translations can be model-generated from the German master and reviewed by a
+native speaker per language; the check proves presence, not quality.
+
+**Images** go to a public Storage bucket `scenarios` (one file per key, cached by expo-image).
+Storage rather than bundled assets because scenarios are added through the database and a new one
+must not wait for an app release for its picture. Uploaded by `gen-seed-scenarios.js` via the
+service role locally and in CI.
+
+### A.4 Conversations: the scenario link
+
+Database-plan changes (pulled forward from the deferred list):
+
+```sql
+alter type public.conversation_kind add value 'scenario';
+alter table public.conversations add column scenario_id uuid references public.scenarios(id) on delete set null;
+```
+
+`start-conversation` takes `scenario_id?`; the function adds `pip_prompt`, the tasks and the
+vocabulary at or below the learner's level to the system prompt and stores the id. A call from
+the "Freies Gespräch" card is `kind = 'free'` with no scenario. `end-conversation`'s review gains
+a task checklist, which the Rückblick shows:
 
 ```json
 "tasks": [{ "id": "order", "done": true, "evidence": "Je voudrais un café, s’il vous plaît." }]
 ```
 
-### 1.2 Grammar forms
+`→ Kurs` adds `lesson_id` for its own live station later; the two never overlap.
 
-The rows of the grammar overview ("Vouvoiement · vous · -ez"). Authored per language, referenced
-by exercise steps and reading segments, scored per user.
+### A.5 Screens
 
-```sql
-create table public.grammar_forms (
-  id          uuid primary key default gen_random_uuid(),
-  language    text not null references public.languages(code),
-  slug        text not null,                     -- 'passe-compose'
-  name        text not null,                     -- 'Passé composé' (learning language)
-  hint        text not null,                     -- 'avoir + Partizip' style shorthand
-  level       public.cefr_level not null,        -- when it is introduced
-  sort_order  smallint not null default 0,
-  unique (language, slug)
-);
+| Screen                          | Reads                                                                                                                                                                             | Writes                                 |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Sprechen tab                    | `scenarios` for the active language (theme chips, level window, "Für dich" from `learner_languages.goal`); credits: RevenueCat customer info + `count(conversations)` this period |                                        |
+| Freies Gespräch card            |                                                                                                                                                                                   | `start-conversation` (`kind = 'free'`) |
+| Scenario preview (01b restyled) | one `scenarios` row: `brief`, `tasks` and `vocabulary` filtered by level, `minutes`                                                                                               | `start-conversation` (`scenario_id`)   |
+| Rückblick                       | `conversations.review.tasks`                                                                                                                                                      |                                        |
 
--- Per user and form: how often it was used correctly, across exercises and conversations.
-create table public.grammar_stats (
-  user_id     uuid not null references public.profiles(id) on delete cascade,
-  form_id     uuid not null references public.grammar_forms(id) on delete cascade,
-  correct     int not null default 0,
-  total       int not null default 0,
-  updated_at  timestamptz not null default now(),
-  primary key (user_id, form_id)
-);
+Client: `features/speak/` gets `data/schemas.ts` (scenario, task, vocabulary), `data/repository.ts`
+(`listScenarios(language)`, `getScenario(key)`), `data/keys.ts`, and the preview screen replaces
+the current lesson start screen for scenarios. The `lessons` sample data and the home feed's
+`lessons` field go away with it.
+
+### A.6 Migration, seed, order
+
+```
+supabase/migrations/…_scenarios.sql     scenario_theme, scenarios (+ RLS), conversations.scenario_id,
+                                        conversation_kind 'scenario'
+supabase/seed.sql                       includes supabase/seed/scenarios.sql (generated); the four
+                                        design scenarios first, the full 24 as content is written
 ```
 
-"Schwächste Form" = lowest `correct / total` among forms with `total >= 3`; "72 / 100" =
-`sum(correct) / sum(total)`. "Jetzt üben" requests an exercise set with `grammar_form_id`.
+1. Schema + the content folder with the four design scenarios in fr / en / es, the check script,
+   the seed generator, the Storage bucket.
+2. Sprechen tab on real rows; scenario preview; `start-conversation` with `scenario_id`.
+3. Task checklist in the Rückblick once `end-conversation` exists.
 
 ---
 
-## 2. Generated content
+## Part B · Lernen tab (next)
 
-### 2.1 When a model is called, and how much
+Everything below is needed for the carousel and the streak card, not for Sprechen.
+
+### B.1 When a model is called, and how much
 
 | Trigger                                                   | Produces                           | Counts against the daily cap |
 | --------------------------------------------------------- | ---------------------------------- | ---------------------------- |
 | `end-conversation` (every finished call)                  | review (words, paraphrases, tasks) | no                           |
 | Home card "Text erstellen"                                | one reading text                   | yes                          |
-| Home card "Übung starten", 05 "Jetzt üben"                | one exercise set                   | yes                          |
+| Home card "Übung starten"                                 | one exercise set                   | yes                          |
 | "Übung wiederholen", "Weiterlesen", retry of a failed job | nothing (stored content)           | no                           |
 
 `app_config` gains `daily_generation_limit` (default `{ "reading_texts": 2, "exercise_sets": 2 }`).
 The generator counts the user's rows created today (local day) with `status <> 'failed'` and
-refuses with `GENERATION_LIMIT` when the cap is reached; the app then offers the stored items.
-Order of magnitude: a set plus a text is ~13k tokens, a few cents; with the cap, the worst case is
-well under a dollar per user per month, and typical use is far lower.
+refuses with `GENERATION_LIMIT` when the cap is reached; the app then offers the stored items. A
+set plus a text is ~13k tokens, a few cents; with the cap, the worst case is well under a dollar
+per user per month.
 
-Inputs the generators read (all server-side, the app sends only ids): the learner's level and
-native language; the last finished conversation's `transcript` and `review` when one exists (this
-is what makes it "aus deinem Gespräch"); the learner's last 20 wrong `exercise_attempts`; the
-three weakest `grammar_forms`; the fronts of the due `flashcards`. Without any conversation yet,
-the text and the set are built from level, goal, and the due words.
+Inputs the generators read (server-side, the app sends only ids): level and native language; the
+last finished conversation's `transcript` and `review` when one exists; the learner's last 20
+wrong `exercise_attempts`; the fronts of the due `flashcards`. Without any conversation yet, the
+text and the set are built from level, goal and the due words.
 
-### 2.2 Job pattern
+### B.2 Job pattern
 
 The app calls the function, which inserts the row with `status = 'generating'`, returns its id at
 once, and finishes in the background. The app watches the row (Supabase Realtime on `id`, 20 s
 timeout) behind "Pip baut deine Übung". `ready` opens the content; `failed` shows 01d with
-"Nochmal versuchen", which re-runs the same row (no new row, no cap hit). The four progress lines
-on 01c are an animation.
-
-Content is one jsonb document validated by the existing Zod schemas on the client; the database
-does not look inside it. Rows are written by the functions (service role); the user reads their
-own rows and may update only the progress columns (column-level grants, §5).
+"Nochmal versuchen", which re-runs the same row. Content is one jsonb document validated by the
+existing Zod schemas on the client. Rows are written by the functions (service role); the user
+reads their own rows and may update only the progress columns (column-level grants, B.6).
 
 ```sql
 create type public.generation_status as enum ('generating', 'ready', 'failed');
 ```
 
-### 2.3 Exercise sets
+### B.3 Exercise sets
 
 ```sql
 create table public.exercise_sets (
@@ -176,40 +264,34 @@ create table public.exercise_sets (
   status                  public.generation_status not null default 'generating',
   error                   text,                                   -- "Fehler 503" on 01d
   source_conversation_id  uuid references public.conversations(id) on delete set null,
-  grammar_form_id         uuid references public.grammar_forms(id) on delete set null,  -- 05 "Jetzt üben"
   level                   public.cefr_level not null,
   content                 jsonb,             -- { steps: ExerciseStep[] } (features/exercises/data/schemas.ts)
   step_count              smallint,          -- "5 Aufgaben" without parsing content
   model                   text,
   prompt_version          text,
   usage                   jsonb,
-  -- progress, updated by the app
-  current_step            smallint not null default 0,
+  current_step            smallint not null default 0,            -- progress, updated by the app
   completed_at            timestamptz,
   created_at              timestamptz not null default now()
 );
 create index exercise_sets_user_idx on public.exercise_sets (user_id, created_at desc);
 
--- One row per checked answer. Feeds grammar_stats and "Deine Fehler werden zu neuen Aufgaben".
+-- One row per checked answer: the "Deine Fehler werden zu neuen Aufgaben" input.
 create table public.exercise_attempts (
-  id               bigint generated always as identity primary key,
-  set_id           uuid not null references public.exercise_sets(id) on delete cascade,
-  user_id          uuid not null references public.profiles(id) on delete cascade,
-  step_id          text not null,                -- ExerciseStep.id inside content
-  step_kind        text not null,                -- fill-options | fill-free | build | translate-free
-  grammar_form_id  uuid references public.grammar_forms(id) on delete set null,
-  correct          boolean not null,
-  answer           text,                         -- what the user typed / built (open question 4)
-  attempted_at     timestamptz not null default now()
+  id            bigint generated always as identity primary key,
+  set_id        uuid not null references public.exercise_sets(id) on delete cascade,
+  user_id       uuid not null references public.profiles(id) on delete cascade,
+  step_id       text not null,                -- ExerciseStep.id inside content
+  step_kind     text not null,                -- fill-options | fill-free | build | translate-free
+  tag           text,                         -- free-text grammar tag from the step ('Passé composé') → Kurs maps it to grammar_forms
+  correct       boolean not null,
+  answer        text,                         -- what the user typed / built (open question 4)
+  attempted_at  timestamptz not null default now()
 );
 create index exercise_attempts_user_idx on public.exercise_attempts (user_id, attempted_at desc);
 ```
 
-Each `ExerciseStep` in `content` gains an optional `grammarFormId`; after each check the app
-inserts the attempt and upserts `grammar_stats`. `→ Kurs` tasks write the same two tables with
-`set_id` null and a `kurs_task_id` added then.
-
-### 2.4 Reading texts
+### B.4 Reading texts
 
 ```sql
 create table public.reading_texts (
@@ -228,56 +310,38 @@ create table public.reading_texts (
   model                   text,
   prompt_version          text,
   usage                   jsonb,
-  -- progress, updated by the app
-  current_section         smallint not null default 1,
+  current_section         smallint not null default 1,              -- progress, updated by the app
   completed_at            timestamptz,
   created_at              timestamptz not null default now()
 );
 create index reading_texts_user_idx on public.reading_texts (user_id, created_at desc);
 ```
 
-A `Segment` in `content` carries the static part of the word screen: `word`, `trans`, `tag`,
-`why`, `from` (the conversation it came from), `tier`, `grammarFormId?`, `flashcardFront?`. The
-two dynamic lines ("1× wiederholt", "5 von 11 richtig") are joined at render time from
-`flashcards` (`reps`, `lapses`) and `grammar_stats`, so an old text shows current numbers.
+A `Segment` in `content` carries the static part of the word screen (`word`, `trans`, `tag`,
+`why`, `from`, `tier`, `flashcardFront?`); "1× wiederholt" is joined at render time from
+`flashcards` so an old text shows current numbers. Home card state: "Lesetext erstellen" when no
+unfinished text exists, "Weiterlesen · Abschnitt 2 von 3" when one does; likewise "Übung starten"
+vs "Übung wiederholen · 5 Aufgaben".
 
-Home card state: "Lesetext erstellen" when no unfinished text exists for the active language,
-"Weiterlesen · Abschnitt 2 von 3" when one does. Same for the exercise card: "Übung starten"
-generates, "Übung wiederholen · 5 Aufgaben" replays the latest set.
+### B.5 Flashcards and activity
 
-### 2.5 Flashcards (already in the schema)
+Flashcards: `flashcards` + `flashcard_reviews` already exist; the deck adds the due query
+(`due <= now()`, plus N new cards per day), `ts-fsrs` on the device, batched writes, and 42d
+computed from the run grouped by `lapses`.
 
-`flashcards` + `flashcard_reviews` from the database plan are the deck; Lernen adds behaviour, no
-columns:
-
-- **Due deck**: `where user_id = … and language = … and due <= now() order by due limit 20`, plus
-  up to N new cards per day (`state = 0`, client constant). "12 Karteikarten fällig" is the count
-  of the first part.
-- **Card sources**: the Rückblick (`source_conversation_id`), a scenario's `vocabulary` after the
-  call, a reading segment tapped "merken" on the word screen.
-- **Swipe** → `ts-fsrs` on the device → FSRS columns + a `flashcard_reviews` row, batched at the
-  end of the deck.
-- **Karten durch (42d)**: computed from the run, grouped by `lapses`; "N Karteikarten
-  wiederholen" restarts the deck with the `again` ids.
-
----
-
-## 3. Activity and streaks
-
-Deferred from the database plan; now that Lernen produces the minutes, it goes in. One row per
-user and calendar day in the user's time zone; the streak is derived from the rows, no cached
-columns, no database function.
+Activity (moved here from the database plan's deferred list): one row per user and local day; the
+streak is derived on the client from the rows, no cached columns, no function.
 
 ```sql
-alter table public.profiles add column timezone text not null default 'UTC';  -- from expo-localization on every launch
+alter table public.profiles add column timezone text not null default 'UTC';
 
 create table public.daily_activity (
   user_id          uuid not null references public.profiles(id) on delete cascade,
   day              date not null,                     -- local calendar day, computed by the app
   seconds_learned  int not null default 0,
-  conversations    smallint not null default 0,
+  conversations    smallint not null default 0,       -- written by end-conversation
   cards_reviewed   smallint not null default 0,
-  exercises_done   smallint not null default 0,       -- checked steps
+  exercises_done   smallint not null default 0,
   sections_read    smallint not null default 0,
   goal_minutes     smallint not null,                 -- snapshot of profiles.goal_minutes that day
   updated_at       timestamptz not null default now(),
@@ -285,49 +349,17 @@ create table public.daily_activity (
 );
 ```
 
-Writes: the app's `logActivity({ seconds, cards, exercises, sections })` reads today's row, adds,
-and upserts it (own row, RLS). Conversations are logged by `end-conversation` (service role) so a
-call counts even if the app dies.
+Streak: `select day … where seconds_learned > 0 order by day desc limit 400`, walk back from
+today (or yesterday if today is empty). Week strip: the current week's rows. 08 "Tägliches Limit":
+`seconds_learned >= goal_minutes * 60`, countdown to local midnight, a celebration not a lock.
 
-Reads:
+### B.6 Row-level security and grants
 
-- **Home / Profil**: today's row → "6 von 10 Min heute".
-- **Streak**: `select day from daily_activity where user_id = … and seconds_learned > 0 order by
-day desc limit 400`; the client walks back from today (or yesterday if today is empty) counting
-  consecutive days; longest streak is the longest run in the same list.
-- **Mon–Sun strip**: the current week's rows.
-- **08 Tägliches Limit**: shown when today's `seconds_learned >= goal_minutes * 60` after a unit;
-  the countdown is the time to local midnight. A celebration, not a lock.
-- **08b Serie gestartet**: after the first unit of a day that extends the streak.
-
----
-
-## 4. Edge functions
-
-| Function             | Input                                             | Writes                                                                           |
-| -------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `start-conversation` | + `scenario_id?`                                  | `conversations.scenario_id`; prompt from `pip_prompt`, `tasks`, `vocabulary`     |
-| `end-conversation`   | unchanged                                         | + `review.tasks`, `grammar_stats` for forms used, `daily_activity.conversations` |
-| `generate-exercises` | `{ language, grammar_form_id?, set_id? (retry) }` | `exercise_sets` row; enforces the daily cap                                      |
-| `generate-reading`   | `{ language, text_id? (retry) }`                  | `reading_texts` row; enforces the daily cap                                      |
-
-The generators return JSON matching the Zod schema; the function validates before writing
-`ready`, otherwise `failed` + `error`. The text model is a separate choice from the voice model
-(open question 3).
-
----
-
-## 5. Row-level security and grants
-
-| Table                             | read     | client write                                                             |
-| --------------------------------- | -------- | ------------------------------------------------------------------------ |
-| `scenarios`, `grammar_forms`      | everyone | none                                                                     |
-| `grammar_stats`, `daily_activity` | own      | insert / update own                                                      |
-| `exercise_attempts`               | own      | insert own                                                               |
-| `exercise_sets`, `reading_texts`  | own      | update own, **only** `current_step` / `current_section` / `completed_at` |
-
-The last line uses column-level grants on top of RLS, so the app can never touch `content`,
-`status` or the cap-relevant `created_at`:
+| Table                            | read | client write                                                             |
+| -------------------------------- | ---- | ------------------------------------------------------------------------ |
+| `daily_activity`                 | own  | insert / update own                                                      |
+| `exercise_attempts`              | own  | insert own                                                               |
+| `exercise_sets`, `reading_texts` | own  | update own, **only** `current_step` / `current_section` / `completed_at` |
 
 ```sql
 revoke update on public.exercise_sets from authenticated;
@@ -336,65 +368,47 @@ revoke update on public.reading_texts from authenticated;
 grant  update (current_section, completed_at) on public.reading_texts to authenticated;
 ```
 
-Inserts on both tables stay with the service role (the generators).
+### B.7 Edge functions and migrations
 
----
-
-## 6. Screen → data map
-
-| Screen                     | Reads                                                                                                                                             | Writes                                                                   |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 01 Lernen                  | `daily_activity` (today), `profiles.goal_minutes`, due `flashcards` count, latest `reading_texts` / `exercise_sets`, `scenarios` by theme + level | `generate-reading` / `generate-exercises` (taps)                         |
-| 01b Szenario               | `scenarios` row                                                                                                                                   | `start-conversation` (`scenario_id`)                                     |
-| 01c / 01d                  | `exercise_sets.status` / `.error` (Realtime)                                                                                                      | retry                                                                    |
-| 19/25 Aufgaben             | `exercise_sets.content`                                                                                                                           | `exercise_attempts`, `grammar_stats`, progress columns, `daily_activity` |
-| 14 Lesen                   | `reading_texts.content`, `flashcards`, `grammar_stats`                                                                                            | progress columns, `daily_activity`                                       |
-| 16a Worterklärung          | segment from `content`, `flashcards`, `grammar_stats`                                                                                             | `flashcards` (merken)                                                    |
-| 05 Grammatik               | `grammar_forms` × `grammar_stats`                                                                                                                 | `generate-exercises` (weakest form)                                      |
-| 04 Karteikarten            | due `flashcards`                                                                                                                                  | `flashcards` (FSRS), `flashcard_reviews`, `daily_activity`               |
-| 42d Karten durch           | deck run (memory), `flashcards.lapses`                                                                                                            |                                                                          |
-| 3h Rückblick               | + `review.tasks` checklist                                                                                                                        |                                                                          |
-| 08 / 08b / 09b streak card | `daily_activity`                                                                                                                                  |                                                                          |
-
----
-
-## 7. Migrations and build order
+| Function             | Input                            | Writes                                           |
+| -------------------- | -------------------------------- | ------------------------------------------------ |
+| `generate-exercises` | `{ language, set_id? (retry) }`  | `exercise_sets` row; enforces the daily cap      |
+| `generate-reading`   | `{ language, text_id? (retry) }` | `reading_texts` row; enforces the daily cap      |
+| `end-conversation`   | unchanged                        | + `review.tasks`, `daily_activity.conversations` |
 
 ```
-supabase/migrations/
-  …_scenarios.sql            scenario_theme, scenarios, conversations.scenario_id + enum value
-                             'scenario' (+ RLS)
-  …_activity.sql             profiles.timezone, daily_activity (+ RLS)
-  …_grammar.sql              grammar_forms, grammar_stats (+ RLS)
-  …_generated_content.sql    generation_status, exercise_sets, exercise_attempts, reading_texts
-                             (+ RLS, column grants); app_config.daily_generation_limit
-supabase/seed.sql            the four French scenarios from the design with tasks + vocabulary,
-                             the four grammar forms from 05; the dev user gets one ready exercise
-                             set and one ready reading text (the design's "Café" content) so every
-                             screen renders locally.
+…_activity.sql             profiles.timezone, daily_activity (+ RLS)
+…_generated_content.sql    generation_status, exercise_sets, exercise_attempts, reading_texts
+                           (+ RLS, column grants); app_config.daily_generation_limit
 ```
 
-App order:
-
-1. Activity + streaks: `logActivity`, real numbers on home, profile, 08 and 08b.
-2. Flashcard deck on the real table: due query, `ts-fsrs`, batched writes, 42d from the run.
-3. Scenarios from the database: tiles, filters, preview screen (restyle 01b after 06), call with
-   `scenario_id`, task checklist in the Rückblick.
-4. `generate-exercises` + the preparing/error screens on Realtime; attempts and grammar stats;
-   daily cap.
-5. `generate-reading` + reading progress + word screen joins.
-6. Grammar overview.
+Order: activity + streak card → flashcard deck on the real table → `generate-exercises` with the
+preparing/error screens → `generate-reading` with the word screen.
 
 ---
 
-## 8. Open questions
+## Moved to Kurs
 
-1. Daily cap values: 2 texts + 2 exercise sets per day, or should Plus lift the cap?
-2. "Lesetext erstellen" before any conversation: generate from level, goal and due words (assumed),
-   or send the learner to a scenario first?
-3. Which text model writes exercises and texts? Separate from the voice model; JSON output is
-   enough. Also decides the DPA note in the Datenschutzerklärung.
+`grammar_forms` and `grammar_stats` (the grammar overview is a Kurs station; nothing on Lernen or
+Sprechen opens it). Until then, generated steps and segments carry a free-text `tag`, and
+`exercise_attempts.tag` lets Kurs backfill the stats later.
+
+---
+
+## Open questions
+
+**Sprechen**
+
+1. Themes: the six above, or fewer at launch (four themes × six situations)?
+2. Preview copy: should the tasks show a hint in the learning language (assumed, from `hint`) or
+   stay in the app language only?
+3. Illustrations: commission 24 in the Pip style, or generate first drafts?
+
+**Lernen**
+
 4. Keep the typed answer text in `exercise_attempts` (useful for the next generation, but
    user-written content under GDPR) or only correct/incorrect?
-5. New flashcards per day and the maximum deck size (the design shows a 64-card run).
-6. Scenario tasks: fixed list per scenario (assumed), or a subset picked by level?
+5. Daily cap values: 2 texts + 2 exercise sets per day, or should Plus lift the cap?
+6. Which text model writes exercises and texts? Separate from the voice model. Also decides the
+   DPA note in the Datenschutzerklärung.
+7. New flashcards per day and the maximum deck size (the design shows a 64-card run).
