@@ -196,6 +196,13 @@ interface LemmatisedWord {
   pos: Pos;
 }
 
+/**
+ * The bare form of a word key. The keys are shown to the annotator inside brackets — `[s1w2]` — and
+ * the first run took the brackets to be part of the key and answered `"[s1w2]"` for all 58 words.
+ * It was doing what it was told, so the lookup forgives anything that is not the key itself.
+ */
+const keyOf = (raw: string) => (raw ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
 /** Runs the three calls and stores the result. Errors land on the row, never on the caller. */
 async function generate(db: Db, textId: string, ctx: Context, draft: WriterText | null) {
   const usage: Usage[] = [];
@@ -203,6 +210,9 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
   let complaint: string | null = null;
   // Survives the retry: prose that was fine is annotated again rather than rewritten.
   let text: WriterText | null = draft;
+  // Why spans were thrown away, kept across attempts so a failed row says what went wrong. The
+  // first two failures wrote none of this, and the row read as "nothing worth explaining".
+  let dropped: string[] = [];
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
@@ -297,7 +307,7 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
       const lexemeBySpan = new Map<string, string>();
       const unmatched: string[] = [];
       for (const span of annotated.value.spans ?? []) {
-        const hit = wordByKey.get(span.word);
+        const hit = wordByKey.get(keyOf(span.word));
         if (!hit) {
           // Not a key we offered. Never silent: a run where every key is wrong looks exactly like
           // a text with nothing worth explaining, and that cost a whole generation to work out.
@@ -331,6 +341,7 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
         (sentenceId, surface) => lexemeBySpan.get(`${sentenceId}\u0000${surface}`) ?? null,
       );
       result.dropped.push(...unmatched.map((k) => `annotator used unknown key "${k}"`));
+      dropped = result.dropped;
 
       // Did the text actually bring the learner's due words back? Every lemma the lemmatiser
       // found is a word the text contains, whether or not it ended up with a tappable span.
@@ -388,7 +399,7 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
           status: 'failed',
           error_code: invalid ? 'invalid_content' : 'provider',
           error: e instanceof Error ? e.message : String(e),
-          usage: { calls: usage },
+          usage: { calls: usage, dropped: dropped.slice(0, 50) },
         })
         .eq('id', textId);
       return;

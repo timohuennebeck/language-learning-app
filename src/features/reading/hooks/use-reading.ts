@@ -14,8 +14,17 @@ import { queries } from '@/shared/data/keys';
 
 /** Generation is done when the row says so; until then the preparing screen watches it. */
 const POLL_MS = 1500;
-/** After this long a row that is still `generating` is treated as lost (the function sweeps it). */
-const GIVE_UP_MS = 45_000;
+/**
+ * After this long a row still `generating` is treated as lost. It has to outlast the function's
+ * own 90 s sweep, or the app gives up on a text that is still being written — which is exactly
+ * what happened on the first real run: the server took 143 s and the screen sat at 45 s for ever,
+ * because giving up stopped the polling without sending the learner anywhere.
+ */
+export const GIVE_UP_MS = 150_000;
+
+/** A row the app should stop waiting for, whatever the server still thinks. */
+export const isStale = (row: { status: string; createdAt: string }) =>
+  row.status === 'generating' && Date.now() - new Date(row.createdAt).getTime() > GIVE_UP_MS;
 
 /** Starts a text (or re-runs a failed one) and hands back the row id to watch. */
 export function useGenerateText() {
@@ -40,8 +49,7 @@ export function useTextStatus(textId: string | undefined) {
     refetchInterval: (query) => {
       const row = query.state.data;
       if (!row || row.status !== 'generating') return false;
-      const age = Date.now() - new Date(row.createdAt).getTime();
-      return age > GIVE_UP_MS ? false : POLL_MS;
+      return isStale(row) ? false : POLL_MS;
     },
   });
 }

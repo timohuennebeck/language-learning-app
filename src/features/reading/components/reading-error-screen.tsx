@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { useGenerateText, useTextStatus } from '@/features/reading/hooks/use-reading';
+import { isStale, useGenerateText, useTextStatus } from '@/features/reading/hooks/use-reading';
 import { FailureScreen } from '@/shared/components/failure-screen';
 
 /**
@@ -17,12 +17,14 @@ export function ReadingErrorScreen() {
   const generate = useGenerateText();
 
   const limited = text?.errorCode === 'GENERATION_LIMIT';
+  // A row we stopped waiting for has no error of its own yet; the function sweeps it later.
+  const code = text?.errorCode ?? (text && isStale(text) ? 'timeout' : 'unknown');
   return (
     <FailureScreen
       title={t('reading.error.title')}
       headline={limited ? t('reading.error.limit') : t('reading.error.headline')}
       sub={limited ? t('reading.error.limitSub') : t('reading.error.sub')}
-      code={text?.errorCode ?? 'unknown'}
+      code={code}
       at={text ? new Date(text.createdAt) : null}
       retryLabel={t('reading.error.retry')}
       retrying={generate.isPending}

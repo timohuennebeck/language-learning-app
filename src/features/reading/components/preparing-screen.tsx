@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useTextStatus } from '@/features/reading/hooks/use-reading';
+import { isStale, useTextStatus } from '@/features/reading/hooks/use-reading';
 import { ProgressChecklist } from '@/shared/components/progress-checklist';
 import { Screen } from '@/shared/ui/screen';
 import { TopBar } from '@/shared/ui/top-bar';
@@ -40,11 +40,13 @@ export function ReadingPreparingScreen() {
     if (text.status === 'ready') {
       settled.current = true;
       router.replace({ pathname: '/(app)/reading', params: { textId: text.id } });
-    } else if (text.status === 'failed') {
+    } else if (text.status === 'failed' || isStale(text)) {
+      // A row that outran the wait goes to the error screen too. Silently stopping the poll left
+      // the learner on a checklist that would never finish, with no way out but the close button.
       settled.current = true;
       router.replace({ pathname: '/(app)/reading/error', params: { textId: text.id } });
     }
-  }, [text, router]);
+  }, [text, router, elapsed]);
 
   const stage = Math.min(text?.stage ?? 0, RING.length - 1);
   // Ease from this stage's mark towards the next one over the time a stage usually takes.
