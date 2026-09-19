@@ -111,9 +111,12 @@ export function Flag({
 
 /** Circular avatar with the 1.5px ring used in the app header and profile. */
 export function Avatar({ size = 34, uri }: { size?: number; uri?: string | null }) {
-  const [failed, setFailed] = useState(false);
+  // The URL that failed, not a flag: a single failure (a just-uploaded object the CDN has not
+  // caught up with) would otherwise pin the fallback until the app restarts, even after the
+  // next upload gave us a different URL to try.
+  const [brokenUri, setBrokenUri] = useState<string | null>(null);
   // The uploaded picture, else the bundled artwork; a broken URL falls back rather than blanking.
-  const source = uri && !failed ? { uri } : illustrations['avatar-maja'];
+  const source = uri && uri !== brokenUri ? { uri } : illustrations['avatar-maja'];
   return (
     <View
       style={{
@@ -127,7 +130,7 @@ export function Avatar({ size = 34, uri }: { size?: number; uri?: string | null 
         source={source}
         contentFit="cover"
         transition={150}
-        onError={() => setFailed(true)}
+        onError={() => setBrokenUri(uri ?? null)}
         style={{ width: size, height: size, borderRadius: size / 2 }}
       />
     </View>

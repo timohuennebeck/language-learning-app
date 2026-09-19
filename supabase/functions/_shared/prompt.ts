@@ -6,7 +6,7 @@
 
 import type { FunctionTool } from './openai.ts';
 
-export const PROMPT_VERSION = '2026-09-19.3';
+export const PROMPT_VERSION = '2026-09-19.4';
 
 export type Kind = 'placement' | 'free' | 'scenario';
 
@@ -74,8 +74,9 @@ export function buildInstructions(p: PromptInput): string {
         ...p.scenario.tasks.map(
           (t) => `- [${t.id}] ${taskLabel(t)}${t.hint ? ` (e.g. "${t.hint}")` : ''}`,
         ),
-        'Recording a task is the one thing you delegate. The moment the learner has done one, delegate immediately with exactly "task done: <id>", using the id in brackets and nothing else. One delegation per task, never twice for the same id, and never wait for the end of the call.',
+        'Recording a task is the ONLY thing you ever delegate. The moment the learner has done one, delegate immediately with exactly "task done: <id>", using the id in brackets and nothing else. One delegation per task, never twice for the same id, and never wait for the end of the call.',
         'Delegating is silent bookkeeping: keep speaking to the learner as if nothing happened, never read the id out and never tell them a task was ticked off.',
+        'Never delegate anything else. The greeting, every reply and every question are spoken by you; handing one of those to the backend leaves the learner in silence.',
       );
     }
   }
@@ -94,7 +95,11 @@ export function buildInstructions(p: PromptInput): string {
   return lines.join('\n');
 }
 
-/** Backend prompt for the Responses model the Live session delegates to. */
+/**
+ * Backend prompt for the Responses model the Live session delegates to. Only a talk with tasks
+ * gets a backend at all (see `createLiveSession`), so the task-less string is just a safe
+ * default for a session that should never delegate.
+ */
 export function buildBackendInstructions(tasks: ScenarioTask[]): string {
   if (!tasks.length)
     return 'You support a spoken language-practice conversation. Answer in one short sentence.';
@@ -122,7 +127,13 @@ export function taskTool(tasks: ScenarioTask[]): FunctionTool {
   };
 }
 
-/** The developer message that opens the session (initial history). */
+/**
+ * The developer message that opens the session (initial history). The app asks for the first
+ * response as soon as the session starts; this says what that response is. It is worded as
+ * something to say out loud, because "greet them and start the conversation" read like a job to
+ * hand to the backend and got delegated instead of spoken.
+ */
 export function openingMessage(firstName: string, learningLanguage: string): string {
-  return `${firstName || 'The learner'} has just joined the call. Greet them in ${languageName(learningLanguage)} and start the conversation.`;
+  const who = firstName || 'The learner';
+  return `${who} has just joined the call and is waiting for you to speak. Say a short greeting in ${languageName(learningLanguage)} out loud now, then ask your first question. Do not delegate this.`;
 }

@@ -11,12 +11,12 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CameraIcon,
   ClockIcon,
   Cog6ToothIcon,
   EnvelopeIcon,
   EyeIcon,
   ListBulletIcon,
+  PencilIcon,
   PlusIcon,
   XMarkIcon,
 } from 'react-native-heroicons/outline';
@@ -99,13 +99,13 @@ export function CogIcon({ size = 20, color = colors.glyph, strokeWidth = 1.8 }: 
   return <Cog6ToothIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
-/** Camera badge on the profile picture. */
-export function CameraGlyph({
+/** Pen badge on the profile picture. */
+export function PencilGlyph({
   size = 15,
   color = colors.accent[100],
   strokeWidth = 1.9,
 }: IconProps) {
-  return <CameraIcon size={size} color={color} strokeWidth={strokeWidth} />;
+  return <PencilIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 /** Muted microphone (call controls). */

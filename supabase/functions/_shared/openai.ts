@@ -51,6 +51,7 @@ export interface LiveSessionOptions {
   instructions: string;
   /** Backend prompt for the Responses model the Live session delegates tasks to. */
   backendInstructions: string;
+  /** Empty for a talk with nothing to record; the session then gets no backend at all. */
   tools: FunctionTool[];
   /** A text message placed in the history before the session starts (makes Pip open the talk). */
   opening: string;
@@ -92,21 +93,29 @@ export async function createLiveSession(o: LiveSessionOptions): Promise<LiveSess
           },
         ],
         client: { data_channel: { allowed_client_events: CLIENT_EVENTS } },
-        delegation: {
-          type: 'responses',
-          responses: {
-            model: REVIEW_MODEL,
-            instructions: o.backendInstructions,
-            tools: o.tools,
-            tool_choice: 'auto',
-            // `max_output_tokens` also covers reasoning tokens. At 200 a reasoning model spent
-            // the whole budget thinking and the turn ended `incomplete`, before it ever emitted
-            // the `mark_task_done` call, so no task was ever recorded. The visible reply is one
-            // word, so a wide budget costs almost nothing.
-            reasoning: { effort: 'minimal' },
-            max_output_tokens: 2000,
-          },
-        },
+        // A backend exists only to record task progress. A free talk has no tasks, and leaving
+        // the delegation configured there gave the voice model something to hand the opening
+        // greeting to: the backend answered with a bare reasoning item, the API reported
+        // "Responses handoff incomplete", and Pip said "Hmm." instead of greeting the learner.
+        ...(o.tools.length
+          ? {
+              delegation: {
+                type: 'responses',
+                responses: {
+                  model: REVIEW_MODEL,
+                  instructions: o.backendInstructions,
+                  tools: o.tools,
+                  tool_choice: 'auto',
+                  // `max_output_tokens` also covers reasoning tokens. At 200 a reasoning model
+                  // spent the whole budget thinking and the turn ended `incomplete` before it
+                  // ever emitted the `mark_task_done` call, so no task was recorded. The visible
+                  // reply is one word, so a wide budget costs almost nothing.
+                  reasoning: { effort: 'low' },
+                  max_output_tokens: 2000,
+                },
+              },
+            }
+          : {}),
         store: false,
       },
       transport: { type: 'webrtc', sdp: o.sdp },
