@@ -35,7 +35,7 @@ The app calls the function, which inserts the row with `status = 'generating'`, 
 once, and finishes in the background. The app watches the row (Supabase Realtime on `id`, 20 s
 timeout) behind "Pip baut deine Übung". `ready` opens the content; `failed` shows 01d with
 "Nochmal versuchen", which re-runs the same row. Content is one jsonb document validated by the
-existing Zod schemas on the client. Rows are written by the functions (service role); the user
+existing Zod schemas on the client. Rows are written by the functions (secret key); the user
 reads their own rows and may update only the progress columns (column-level grants, B.6).
 
 ```sql

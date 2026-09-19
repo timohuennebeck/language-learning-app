@@ -383,6 +383,12 @@
     "onboarded": true
   },
   {
+    "name": "01f-scenario",
+    "route": "/scenario/restaurant",
+    "ref": "Lektion_Start.png",
+    "onboarded": true
+  },
+  {
     "name": "01a-languages",
     "ref": "01a_Sprache_wechseln.png",
     "route": "/languages",

@@ -747,6 +747,22 @@
       "sub": "Erzähl Pip, was du willst. Pip hört zu und fragt nach.",
       "cta": "Sprechen"
     },
-    "scenarios": "Szenarien"
+    "scenarios": "Szenarien",
+    "themes": {
+      "forYou": "Für dich",
+      "life": "Alltag",
+      "travel": "Reisen",
+      "work": "Arbeit & Studium",
+      "social": "Freunde & Familie",
+      "culture": "Kultur & Medien",
+      "food": "Essen & Trinken"
+    },
+    "tileMeta": "{{subtitle}} · {{minutes}} Min",
+    "loadError": "Die Szenarien konnten nicht geladen werden. Prüfe deine Verbindung.",
+    "scenario": {
+      "kicker": "{{language}} · {{levels}} · {{minutes}} Min",
+      "tasks": "Deine Aufgaben im Gespräch",
+      "cta": "Gespräch starten · {{minutes}} Min"
+    }
   }
 }

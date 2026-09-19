@@ -7,15 +7,18 @@ import { AppState, Platform } from 'react-native';
 import type { Database } from '@/shared/lib/database.types';
 
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 if (!url || !key) {
   throw new Error(
-    'Supabase is not configured: set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in .env.local (see .env.example).',
+    'Supabase is not configured: set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in .env.local (see .env.example).',
   );
 }
 
-/** Typed client. The session persists in AsyncStorage (localStorage on web). */
+/**
+ * Typed client with the publishable key (`sb_publishable_…`, the successor of the legacy anon key;
+ * safe to ship, RLS applies). The session persists in AsyncStorage (localStorage on web).
+ */
 export const supabase = createClient<Database>(url, key, {
   auth: {
     storage: AsyncStorage,

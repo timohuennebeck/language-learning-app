@@ -165,7 +165,19 @@ Client: `features/speak/` gets `data/schemas.ts` (scenario, task), `data/reposit
 the current lesson start screen for scenarios. The `lessons` sample data and the home feed's
 `lessons` field go away with it.
 
-## 6 Migration, seed, order
+## 6 Status
+
+Applied to the hosted project on 2026-09-19 (migration `20260919104439_scenarios`): the table,
+its RLS policy, the `scenario_content_gaps` view, `conversations.scenario_id`, the `scenario`
+kind and the public `scenarios` bucket. Seeded with the four design scenarios in fr / en / es
+(12 rows, gaps view empty) from `scripts/gen-seed-scenarios.py` → `supabase/seed/scenarios.sql`.
+The app reads them: `features/speak/` (schemas, repository, query keys, hooks), the Sprechen
+tab renders the catalogue with theme chips and the level window, and `/scenario/[key]` is the
+preview with the brief and the tasks for the learner's level. Illustrations are not uploaded yet;
+tiles show a placeholder until `scenarios/<key>.webp` exists in the bucket. "Gespräch starten"
+still opens the design's live screen (the call functions come with the model decision).
+
+## 7 Migration, seed, order
 
 ```
 supabase/migrations/…_scenarios.sql     scenario_theme, scenarios (+ RLS), scenario_content_gaps view,

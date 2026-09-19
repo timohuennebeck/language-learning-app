@@ -89,6 +89,9 @@ npm run db:types          # regenerate src/shared/lib/database.types.ts
 
 Dev login after `db:reset`: `dev@yori.app` / `password`. The hosted project's URL and publishable
 key are listed (commented out) in `.env.example`; the app refuses to start without both variables.
+Keys follow Supabase's current model: the app ships the **publishable** key (`sb_publishable_…`),
+edge functions use the **secret** key (`sb_secret_…`) that Supabase injects as
+`SUPABASE_SECRET_KEYS`; the legacy `anon` / `service_role` JWT keys are not used anywhere.
 
 How the app uses it: on first launch it signs in anonymously and upserts its own `profiles` row,
 so every onboarding step writes real rows; the account step turns the anonymous user into an

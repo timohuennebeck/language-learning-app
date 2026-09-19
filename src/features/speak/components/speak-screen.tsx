@@ -3,32 +3,52 @@ import { useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { IllustrationSlot } from '@/features/lessons/components/illustration-slot';
-import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
+import { useSession } from '@/features/auth/hooks/use-session';
+import { ScenarioArt } from '@/features/speak/components/scenario-art';
+import {
+  fitsLevel,
+  localized,
+  ScenarioThemeSchema,
+  themeForGoal,
+  type ScenarioTheme,
+} from '@/features/speak/data/schemas';
+import { useScenarios } from '@/features/speak/hooks/use-scenarios';
 import { HomeHeader } from '@/shared/components/home-header';
 import { TalkPreview } from '@/shared/components/previews';
 import { cn } from '@/shared/lib/cn';
 import { Kicker } from '@/shared/ui/kicker';
 import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Spinner } from '@/shared/ui/spinner';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
 /** Conversations left this period; comes from RevenueCat + the conversations count later. */
 const CREDITS = { left: 18, total: 30 };
 
+type Chip = 'forYou' | ScenarioTheme;
+const CHIPS: Chip[] = ['forYou', ...ScenarioThemeSchema.options];
+
 /**
- * Sprechen tab · Freies Sprechen: a topic-less call, the theme chips and the scenario tiles
- * (docs/lernen-plan.md §1.1). Scenarios still come from the lessons sample data.
+ * Sprechen tab · Freies Sprechen: a topic-less call, the theme chips and the scenario tiles from
+ * `scenarios` for the active learning language (docs/sprechen-plan.md).
  */
 export function SpeakScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const feed = useHomeFeed();
-  const filters = t('home.filters', { returnObjects: true }) as string[];
-  const scenarios = feed.data?.lessons ?? [];
-  // Chips are visual until scenarios carry a theme.
-  const [filter, setFilter] = useState(0);
+  const { session } = useSession();
+  const catalogue = useScenarios(session.learningLanguage);
+  const [chip, setChip] = useState<Chip>('forYou');
+
+  const forYouTheme = themeForGoal(session.goal);
+  const all = catalogue.data ?? [];
+  const filtered = all.filter((s) =>
+    chip === 'forYou'
+      ? fitsLevel(s, session.level) && (!forYouTheme || s.theme === forYouTheme)
+      : s.theme === chip,
+  );
+  // "Für dich" with nothing in the window or theme: show everything rather than an empty grid.
+  const visible = chip === 'forYou' && filtered.length === 0 ? all : filtered;
 
   return (
     <Screen top={TAB_TOP} bottom={6} scroll>
@@ -82,51 +102,68 @@ export function SpeakScreen() {
 
         <Kicker className="mt-[22px] text-muted">{t('speak.scenarios')}</Kicker>
         <View className="mt-[10px] flex-row overflow-hidden" style={{ columnGap: 8 }}>
-          {filters.map((f, i) => (
+          {CHIPS.map((c) => (
             <Tap
-              key={f}
+              key={c}
               haptic="selection"
-              onPress={() => setFilter(i)}
-              accessibilityState={{ selected: i === filter }}
+              onPress={() => setChip(c)}
+              accessibilityState={{ selected: c === chip }}
               className={cn(
                 'rounded-pill px-[18px] py-[10px]',
-                i === filter ? 'bg-accent-800' : 'bg-surface2',
+                c === chip ? 'bg-accent-800' : 'bg-surface2',
               )}
             >
               <Text
-                className={cn('font-medium', i === filter ? 'text-accent-100' : 'text-accent-900')}
+                className={cn('font-medium', c === chip ? 'text-accent-100' : 'text-accent-900')}
                 style={{ fontSize: 15 }}
                 numberOfLines={1}
               >
-                {f}
+                {t(`speak.themes.${c}`)}
               </Text>
             </Tap>
           ))}
         </View>
-        <View className="mt-[14px] flex-row flex-wrap content-start" style={{ gap: 12 }}>
-          {scenarios.map((s) => (
-            <Tap
-              key={s.id}
-              haptic="light"
-              onPress={() => router.push({ pathname: '/(app)/lesson/[id]', params: { id: s.id } })}
-              className="rounded-[22px] bg-surface2 p-[14px]"
-              style={{ width: (width - 44 - 12) / 2, height: 176 }}
-            >
-              <View className="flex-1 items-center justify-center" style={{ minHeight: 0 }}>
-                <IllustrationSlot placeholder={s.placeholder} />
-              </View>
-              <Text
-                className="mt-[8px] font-medium text-accent-900"
-                style={{ fontSize: 18, lineHeight: 20.7 }}
+
+        {catalogue.isPending ? (
+          <View className="mt-[40px] items-center">
+            <Spinner />
+          </View>
+        ) : catalogue.isError ? (
+          <Text className="mt-[24px] text-center text-muted" style={{ fontSize: 15 }}>
+            {t('speak.loadError')}
+          </Text>
+        ) : (
+          <View className="mt-[14px] flex-row flex-wrap content-start" style={{ gap: 12 }}>
+            {visible.map((s) => (
+              <Tap
+                key={s.id}
+                haptic="light"
+                onPress={() =>
+                  router.push({ pathname: '/(app)/scenario/[key]', params: { key: s.key } })
+                }
+                className="rounded-[22px] bg-surface2 p-[14px]"
+                style={{ width: (width - 44 - 12) / 2, height: 176 }}
               >
-                {s.title}
-              </Text>
-              <Text className="mt-[2px] text-muted" style={{ fontSize: 13 }} numberOfLines={1}>
-                {s.meta}
-              </Text>
-            </Tap>
-          ))}
-        </View>
+                <View className="flex-1 items-center justify-center" style={{ minHeight: 0 }}>
+                  <ScenarioArt url={s.illustrationUrl} label={s.title} />
+                </View>
+                <Text
+                  className="mt-[8px] font-medium text-accent-900"
+                  style={{ fontSize: 18, lineHeight: 20.7 }}
+                  numberOfLines={1}
+                >
+                  {s.title}
+                </Text>
+                <Text className="mt-[2px] text-muted" style={{ fontSize: 13 }} numberOfLines={1}>
+                  {t('speak.tileMeta', {
+                    subtitle: localized(s.subtitle, session.appLanguage),
+                    minutes: s.minutes,
+                  })}
+                </Text>
+              </Tap>
+            ))}
+          </View>
+        )}
         <View className="flex-1" />
       </View>
     </Screen>

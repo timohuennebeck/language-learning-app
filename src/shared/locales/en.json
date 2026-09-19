@@ -738,6 +738,22 @@
       "sub": "Tell Pip whatever you like. Pip listens and asks back.",
       "cta": "Speak"
     },
-    "scenarios": "Scenarios"
+    "scenarios": "Scenarios",
+    "themes": {
+      "forYou": "For you",
+      "life": "Everyday",
+      "travel": "Travel",
+      "work": "Work & study",
+      "social": "Friends & family",
+      "culture": "Culture & media",
+      "food": "Food & drink"
+    },
+    "tileMeta": "{{subtitle}} · {{minutes}} min",
+    "loadError": "The scenarios could not be loaded. Check your connection.",
+    "scenario": {
+      "kicker": "{{language}} · {{levels}} · {{minutes}} min",
+      "tasks": "Your tasks in the talk",
+      "cta": "Start conversation · {{minutes}} min"
+    }
   }
 }

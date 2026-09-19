@@ -60,7 +60,7 @@ supabase/
 src/shared/lib/
   supabase.ts            client (AsyncStorage session, url polyfill)
   database.types.ts      generated: `supabase gen types typescript --local`
-.env.local               EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY (gitignored)
+.env.local               EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY (gitignored)
 ```
 
 Suggested npm scripts:
@@ -175,7 +175,7 @@ create table public.languages (
   sort_order       smallint not null default 0
 );
 
--- Remote configuration, one row per key. Only the service role writes.
+-- Remote configuration, one row per key. Only the secret key (edge functions) writes.
 create table public.app_config (
   key          text primary key,
   value        jsonb not null,
@@ -527,13 +527,13 @@ create policy "own profile: update" on public.profiles for update using (auth.ui
 -- no delete policy: auth deletion cascades
 ```
 
-| Table                                        | read                  | client write                        |
-| -------------------------------------------- | --------------------- | ----------------------------------- |
-| `languages`, `app_config`, `legal_documents` | everyone (incl. anon) | none (service role only)            |
-| `profiles`                                   | own                   | insert / update own                 |
-| `learner_languages`, `flashcards`, `devices` | own                   | insert / update / delete own        |
-| `legal_acceptances`, `flashcard_reviews`     | own                   | insert own                          |
-| `conversations`                              | own                   | none (edge functions, service role) |
+| Table                                        | read                  | client write                      |
+| -------------------------------------------- | --------------------- | --------------------------------- |
+| `languages`, `app_config`, `legal_documents` | everyone (incl. anon) | none (secret key only)            |
+| `profiles`                                   | own                   | insert / update own               |
+| `learner_languages`, `flashcards`, `devices` | own                   | insert / update / delete own      |
+| `legal_acceptances`, `flashcard_reviews`     | own                   | insert own                        |
+| `conversations`                              | own                   | none (edge functions, secret key) |
 
 Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the extra
 restrictions (placement only, one language, the device cap) are enforced in `start-conversation`
@@ -627,7 +627,7 @@ Suggested build order in the app:
 
 | Item                                                                                               | Comes back with                                                                                                                       |
 | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `daily_activity` + streaks                                                                         | **Lernen**: planned in `docs/lernen-plan.md` (derived streak, no cached columns, no function)                                      |
+| `daily_activity` + streaks                                                                         | **Lernen**: planned in `docs/lernen-plan.md` (derived streak, no cached columns, no function)                                         |
 | `level_progress` ("62 % bis B1") and `level_assessments`                                           | **Kurs** (progress is a course metric); re-assessments after N conversations                                                          |
 | `products`, `subscriptions`, `revenuecat_events`, `credit_ledger`                                  | **Packs** (non-expiring credits need a balance) or the first time the app needs subscription state offline / in SQL                   |
 | `referral_codes`, `referrals`, `redeem_referral_code`, `referral_reward_conversations`             | Referral feature                                                                                                                      |
@@ -635,7 +635,7 @@ Suggested build order in the app:
 | `conversation_turns`, `conversation_items`, `saved_words`                                          | Only if cross-conversation queries on the transcript are needed; `transcript` / `review` jsonb and `flashcards` cover today's screens |
 | `profiles.timezone`                                                                                | Streaks (day boundaries) or server-side reminders                                                                                     |
 | `profiles.fsrs_params`                                                                             | FSRS parameter optimisation per user (needs review history first)                                                                     |
-| `conversations.scenario_id` + `kind = 'scenario'` (Lernen), `lesson_id` + `kind = 'lesson'` (Kurs) | `docs/sprechen-plan.md`: scenario tiles are voice conversations with a briefing; Kurs adds its own foreign key later               |
+| `conversations.scenario_id` + `kind = 'scenario'` (Lernen), `lesson_id` + `kind = 'lesson'` (Kurs) | `docs/sprechen-plan.md`: scenario tiles are voice conversations with a briefing; Kurs adds its own foreign key later                  |
 | Server push via `devices` + a scheduled function                                                   | Reminders with content from the last conversation                                                                                     |
 
 ---

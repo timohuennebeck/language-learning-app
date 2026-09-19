@@ -47,6 +47,7 @@ export type Database = {
           provider: string;
           provider_session_id: string | null;
           review: Json | null;
+          scenario_id: string | null;
           started_at: string;
           status: Database['public']['Enums']['conversation_status'];
           topic: string | null;
@@ -71,6 +72,7 @@ export type Database = {
           provider?: string;
           provider_session_id?: string | null;
           review?: Json | null;
+          scenario_id?: string | null;
           started_at?: string;
           status?: Database['public']['Enums']['conversation_status'];
           topic?: string | null;
@@ -95,6 +97,7 @@ export type Database = {
           provider?: string;
           provider_session_id?: string | null;
           review?: Json | null;
+          scenario_id?: string | null;
           started_at?: string;
           status?: Database['public']['Enums']['conversation_status'];
           topic?: string | null;
@@ -116,6 +119,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'languages';
             referencedColumns: ['code'];
+          },
+          {
+            foreignKeyName: 'conversations_scenario_id_fkey';
+            columns: ['scenario_id'];
+            isOneToOne: false;
+            referencedRelation: 'scenarios';
+            referencedColumns: ['id'];
           },
           {
             foreignKeyName: 'conversations_user_id_fkey';
@@ -538,22 +548,92 @@ export type Database = {
           },
         ];
       };
+      scenarios: {
+        Row: {
+          active: boolean;
+          brief: Json;
+          id: string;
+          illustration_storage_path: string;
+          key: string;
+          language: string;
+          level_max: Database['public']['Enums']['cefr_level'];
+          level_min: Database['public']['Enums']['cefr_level'];
+          minutes: number;
+          pip_prompt: string;
+          sort_order: number;
+          subtitle: Json;
+          tasks: Json;
+          theme: Database['public']['Enums']['scenario_theme'];
+          title: string;
+        };
+        Insert: {
+          active?: boolean;
+          brief?: Json;
+          id?: string;
+          illustration_storage_path: string;
+          key: string;
+          language: string;
+          level_max?: Database['public']['Enums']['cefr_level'];
+          level_min?: Database['public']['Enums']['cefr_level'];
+          minutes?: number;
+          pip_prompt: string;
+          sort_order?: number;
+          subtitle?: Json;
+          tasks?: Json;
+          theme: Database['public']['Enums']['scenario_theme'];
+          title: string;
+        };
+        Update: {
+          active?: boolean;
+          brief?: Json;
+          id?: string;
+          illustration_storage_path?: string;
+          key?: string;
+          language?: string;
+          level_max?: Database['public']['Enums']['cefr_level'];
+          level_min?: Database['public']['Enums']['cefr_level'];
+          minutes?: number;
+          pip_prompt?: string;
+          sort_order?: number;
+          subtitle?: Json;
+          tasks?: Json;
+          theme?: Database['public']['Enums']['scenario_theme'];
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'scenarios_language_fkey';
+            columns: ['language'];
+            isOneToOne: false;
+            referencedRelation: 'languages';
+            referencedColumns: ['code'];
+          },
+        ];
+      };
     };
     Views: {
-      [_ in never]: never;
+      scenario_content_gaps: {
+        Row: {
+          gap: string | null;
+          key: string | null;
+          language: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       [_ in never]: never;
     };
     Enums: {
       cefr_level: 'A1' | 'A2' | 'B1' | 'B2';
-      conversation_kind: 'placement' | 'free';
+      conversation_kind: 'placement' | 'free' | 'scenario';
       conversation_status: 'active' | 'ended' | 'failed';
       learning_goal: 'travel' | 'media' | 'family' | 'work' | 'friends' | 'fun';
       legal_doc_kind: 'terms' | 'privacy';
       level_source: 'self' | 'placement';
       platform: 'ios' | 'android' | 'web';
       reminder_repeat: 'daily' | 'weekdays' | 'weekend';
+      scenario_theme: 'life' | 'travel' | 'work' | 'social' | 'culture' | 'food';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -676,13 +756,14 @@ export const Constants = {
   public: {
     Enums: {
       cefr_level: ['A1', 'A2', 'B1', 'B2'],
-      conversation_kind: ['placement', 'free'],
+      conversation_kind: ['placement', 'free', 'scenario'],
       conversation_status: ['active', 'ended', 'failed'],
       learning_goal: ['travel', 'media', 'family', 'work', 'friends', 'fun'],
       legal_doc_kind: ['terms', 'privacy'],
       level_source: ['self', 'placement'],
       platform: ['ios', 'android', 'web'],
       reminder_repeat: ['daily', 'weekdays', 'weekend'],
+      scenario_theme: ['life', 'travel', 'work', 'social', 'culture', 'food'],
     },
   },
 } as const;
