@@ -20,7 +20,7 @@ export function LiveDoneScreen() {
   const goHome = useGoHome();
   return (
     <Screen bottom={-4} className="px-[22px]">
-      <View className="h-[40px] flex-row items-center justify-end">
+      <View className="h-[40px] justify-center">
         <NavCircle icon="close" size={40} onPress={goHome} />
       </View>
       <ScrollView

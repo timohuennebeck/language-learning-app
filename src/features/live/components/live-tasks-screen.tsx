@@ -19,7 +19,7 @@ export function LiveTasksScreen() {
   return (
     <Screen bottom={6} className="px-[22px]">
       <View className="h-[40px] flex-row items-center justify-between">
-        <NavCircle icon="back" size={40} />
+        <NavCircle icon="close" size={40} />
         <CallTimer label={t('live.tasks.timer')} />
       </View>
       <Headline size={30} titleMarginTop={26} title={liveScenario.title} sub={liveScenario.intro} />
