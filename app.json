@@ -49,6 +49,12 @@
         }
       ],
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Yori uses your photos so you can pick a profile picture."
+        }
+      ],
+      [
         "@config-plugins/react-native-webrtc",
         {
           "cameraPermission": "Yori does not use the camera.",

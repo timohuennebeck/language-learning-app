@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 
 import { endConversation, startConversation } from '@/features/live/data/repository';
 import type { EndConversationResult, LiveKind } from '@/features/live/data/types';
+import { enterCallAudio, leaveCallAudio } from '@/features/live/lib/call-audio';
 import { getDeviceId } from '@/features/live/lib/device-id';
 import {
   CONNECT_TIMEOUT_MS,
@@ -30,7 +31,7 @@ export interface LiveCallState {
   maxSeconds: number;
   muted: boolean;
   subtitles: boolean;
-  /** Pip's current line (transcript of the audio being played). */
+  /** The last words Pip has spoken (transcript of the audio being played). */
   caption: string;
   errorCode: string | null;
   result: EndConversationResult | null;
@@ -88,6 +89,7 @@ function cleanupConnection() {
   connection = null;
   sessionStarted = null;
   sessionClosed = null;
+  leaveCallAudio();
 }
 
 function onEvent(e: LiveServerEvent) {
@@ -101,7 +103,7 @@ function onEvent(e: LiveServerEvent) {
     case 'session.output_transcript.delta':
       if (e.delta) {
         transcript.add('assistant', e.delta, e.start_ms ?? 0, e.end_ms ?? 0);
-        set({ caption: transcript.currentAssistantLine() });
+        set({ caption: transcript.currentCaption() });
       }
       break;
     case 'session.usage.updated':
@@ -116,6 +118,9 @@ function onEvent(e: LiveServerEvent) {
       console.warn('live error', e.error);
       break;
   }
+  // Development builds print the whole stream: the task tool runs two models deep, so this is
+  // the only way to see whether a delegation happened at all.
+  if (__DEV__) console.log('live event', e.type, JSON.stringify(e).slice(0, 400));
 }
 
 /** Nested Responses events from the delegated backend: the `mark_task_done` calls and token usage. */
@@ -123,21 +128,20 @@ function onResponseEvent(e: LiveServerEvent) {
   const nested = e.event;
   if (!nested) return;
   if (nested.type === 'response.output_item.done' && nested.item?.type === 'function_call') {
-    const { name, call_id: callId, arguments: args } = nested.item;
-    if (name !== 'mark_task_done' || !callId) return;
+    const { name, arguments: args } = nested.item;
+    if (name !== 'mark_task_done') return;
     let taskId: string | undefined;
     try {
       taskId = (JSON.parse(args ?? '{}') as { task_id?: string }).task_id;
     } catch {
       /* ignore malformed arguments */
     }
+    // The tool runs inside the delegated Responses turn, which the API completes on its own.
+    // Answering it on the frontend channel used to inject a `function_call_output` under a
+    // call_id the frontend conversation never issued, and the `response.create` that followed
+    // made Pip start an unprompted turn on top of the one being spoken.
     if (taskId)
       set({ tasks: state.tasks.map((t) => (t.id === taskId ? { ...t, done: true } : t)) });
-    connection?.send({
-      type: 'response.item.create',
-      item: { type: 'function_call_output', call_id: callId, output: '{"ok":true}' },
-    });
-    connection?.send({ type: 'response.create' });
   }
   if (nested.type === 'response.completed' && nested.response?.usage) {
     for (const [k, v] of Object.entries(nested.response.usage)) {
@@ -176,6 +180,8 @@ export async function startCall(input: StartCallInput): Promise<void> {
   delegationUsage = {};
   ending = null;
   set({ ...INITIAL, status: 'starting', kind: input.kind });
+  // Before the microphone is opened: the route has to be set on the session WebRTC then activates.
+  enterCallAudio();
 
   let conversationId: string | null = null;
   let conn: LiveConnection | null = null;
@@ -221,6 +227,13 @@ export async function startCall(input: StartCallInput): Promise<void> {
     connection = conn;
     await withTimeout(started, 10_000, 'Live session did not start');
     if (gen !== generation) throw new Error('cancelled');
+
+    // react-native-webrtc configures the iOS session again when it starts capturing, which drops
+    // the speaker route set above; re-assert it now that the call is up.
+    enterCallAudio();
+    // The opening developer message only sits in the history; without this the API waits for the
+    // learner to speak first, so Pip would never greet anyone.
+    conn.send({ type: 'response.create' });
 
     startedAt = Date.now();
     timer = setInterval(() => {
@@ -273,6 +286,7 @@ export function endCall(reason: 'user' | 'max_duration' | 'error'): Promise<EndC
     await Promise.race([closed, new Promise<void>((r) => setTimeout(r, CLOSE_GRACE_MS))]);
     conn.close();
     if (connection === conn) connection = null;
+    leaveCallAudio();
   };
 
   const p = hangUp()

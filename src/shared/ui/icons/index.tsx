@@ -11,6 +11,7 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  CameraIcon,
   ClockIcon,
   Cog6ToothIcon,
   EnvelopeIcon,
@@ -96,6 +97,15 @@ export function Lock({ size = 12, color = colors.dim3 }: IconProps) {
 /** Settings cog inside a nav circle. */
 export function CogIcon({ size = 20, color = colors.glyph, strokeWidth = 1.8 }: IconProps) {
   return <Cog6ToothIcon size={size} color={color} strokeWidth={strokeWidth} />;
+}
+
+/** Camera badge on the profile picture. */
+export function CameraGlyph({
+  size = 15,
+  color = colors.accent[100],
+  strokeWidth = 1.9,
+}: IconProps) {
+  return <CameraIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 /** Muted microphone (call controls). */

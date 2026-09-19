@@ -3,12 +3,12 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
+import { AvatarPicker } from '@/features/profile/components/avatar-picker';
 import { LevelCard } from '@/features/profile/components/level-card';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/shared/components/streak-card';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
-import { Avatar } from '@/shared/ui/illustration';
 import { CogIcon } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
@@ -64,7 +64,7 @@ export function ProfileScreen() {
     >
       <View className="flex-1">
         <View className="mt-[20px] flex-row items-center" style={{ columnGap: 14 }}>
-          <Avatar size={62} />
+          <AvatarPicker size={62} />
           <View>
             <View className="flex-row items-center" style={{ columnGap: 7 }}>
               <Text

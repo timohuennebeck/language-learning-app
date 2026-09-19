@@ -44,6 +44,8 @@ export interface Session {
   isAnonymous: boolean;
   onboardingComplete: boolean;
   name: string;
+  /** Object path of the profile picture in the `avatars` bucket; null while none was chosen. */
+  avatarPath: string | null;
   appLanguage: AppLanguage;
   learningLanguage: LearningLanguage;
   level: Level;
@@ -64,6 +66,7 @@ export const DEFAULT_SESSION: Session = {
   isAnonymous: true,
   onboardingComplete: false,
   name: '',
+  avatarPath: null,
   appLanguage: 'de',
   learningLanguage: 'fr',
   level: 'A2',

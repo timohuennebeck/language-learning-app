@@ -122,6 +122,8 @@ export function LiveCallScreen({
     }
     return call.subtitles ? call.caption : '';
   };
+  // The caption is two words, so it never wraps; the connecting and error copy still may.
+  const captionLines = call.status === 'live' ? 1 : 3;
 
   return (
     <Screen
@@ -170,7 +172,7 @@ export function LiveCallScreen({
         <Text
           className="text-center font-medium text-accent-900"
           style={{ fontSize: 26, lineHeight: 32.5, letterSpacing: -0.52 }}
-          numberOfLines={3}
+          numberOfLines={captionLines}
         >
           {statusLine()}
         </Text>

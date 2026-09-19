@@ -705,6 +705,9 @@
   },
   "profile": {
     "title": "Profil",
+    "avatar": {
+      "change": "Profilbild ändern"
+    },
     "streak": "Serie",
     "streakDays": "{{n}} Tage",
     "todayProgress": "Heute schon {{done}} von {{goal}} Min.",

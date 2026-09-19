@@ -2,6 +2,8 @@ import type { TranscriptTurn } from '@/features/live/data/types';
 
 /** A pause in one speaker's transcript longer than this starts a new turn. */
 const TURN_GAP_MS = 2000;
+/** Words of Pip's line kept in the caption, so it always fits one line. */
+const CAPTION_WORDS = 2;
 
 /**
  * Groups the Live API's timed transcript deltas (`session.input_transcript.delta`,
@@ -25,9 +27,15 @@ export class TranscriptCollector {
     return current ? [...this.turns, { role: this.open!.role, text: current }] : [...this.turns];
   }
 
-  /** Pip's current line, for the subtitle. */
-  currentAssistantLine(): string {
-    return this.open?.role === 'assistant' ? this.open.text.trim() : '';
+  /**
+   * The tail of Pip's current line, for the caption under the call. Only the last `words` words
+   * are shown: a full sentence wraps to three lines and jumps around while it is being spoken,
+   * so the caption keeps pace with the audio instead of re-flowing.
+   */
+  currentCaption(words = CAPTION_WORDS): string {
+    if (this.open?.role !== 'assistant') return '';
+    const spoken = this.open.text.split(/\s+/).filter(Boolean);
+    return spoken.slice(-words).join(' ');
   }
 
   private flush() {

@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { useSession } from '@/features/auth/hooks/use-session';
+import { avatarUrl } from '@/features/profile/data/avatar';
 import { cn } from '@/shared/lib/cn';
 import { DropdownPill } from '@/shared/ui/dropdown-pill';
 import { Avatar } from '@/shared/ui/illustration';
@@ -20,6 +22,7 @@ interface Props {
 export function HomeHeader({ className, right, avatar = true }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
+  const { session } = useSession();
   return (
     <View className={cn('h-[40px] flex-row items-center justify-between', className)}>
       {avatar ? (
@@ -28,7 +31,7 @@ export function HomeHeader({ className, right, avatar = true }: Props) {
           onPress={() => router.push('/(app)/(tabs)/profile')}
           accessibilityLabel={t('profile.title')}
         >
-          <Avatar size={34} />
+          <Avatar size={34} uri={avatarUrl(session.avatarPath)} />
         </Tap>
       ) : (
         <View />

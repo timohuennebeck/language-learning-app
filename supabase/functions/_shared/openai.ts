@@ -99,8 +99,12 @@ export async function createLiveSession(o: LiveSessionOptions): Promise<LiveSess
             instructions: o.backendInstructions,
             tools: o.tools,
             tool_choice: 'auto',
-            reasoning: { effort: 'low' },
-            max_output_tokens: 200,
+            // `max_output_tokens` also covers reasoning tokens. At 200 a reasoning model spent
+            // the whole budget thinking and the turn ended `incomplete`, before it ever emitted
+            // the `mark_task_done` call, so no task was ever recorded. The visible reply is one
+            // word, so a wide budget costs almost nothing.
+            reasoning: { effort: 'minimal' },
+            max_output_tokens: 2000,
           },
         },
         store: false,

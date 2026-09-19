@@ -217,6 +217,7 @@ create table public.profiles (
   first_name               text not null default '' check (char_length(first_name) <= 40),
   app_language             text not null default 'en' references public.languages(code),
   active_language          text references public.languages(code),   -- currently learning
+  avatar_storage_path      text,                                     -- '<user_id>/<name>.jpg' in the `avatars` bucket
   goal_minutes             smallint not null default 15 check (goal_minutes in (5,10,15,30)),
   reminder_time            time,                                       -- null = reminders off
   reminder_repeat          public.reminder_repeat not null default 'daily',
@@ -257,6 +258,12 @@ Column notes:
   their own app language; that is a client rule, not a constraint.
 - Email is not duplicated into `profiles`; the profile and logout screens read it from
   `supabase.auth.getUser()`.
+- `avatar_storage_path` points into the public `avatars` bucket, one folder per user. The bucket
+  is public so `expo-image` can cache the picture straight from the CDN, but every policy on
+  `storage.objects` (including `select`) is owner-only: a bucket-wide read policy would let
+  anyone `list()` the folders and walk every user's picture. Each upload writes a new file name,
+  so a replaced picture never serves a stale cache; the old object is deleted after the new path
+  is saved, so a failed upload leaves the previous picture in place.
 
 Mapping from the current `Session` schema: `name` → `first_name`, `appLanguage`,
 `dailyGoalMinutes` (→ `goal_minutes`), `reminder` → `profiles`; `learningLanguage` → `profiles.active_language`;

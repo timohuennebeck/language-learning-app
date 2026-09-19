@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { useWindowDimensions, View } from 'react-native';
+import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -108,7 +108,16 @@ export function SpeakScreen() {
         </Tap>
 
         <Kicker className="mt-[22px] text-muted">{t('speak.scenarios')}</Kicker>
-        <View className="mt-[10px] flex-row overflow-hidden" style={{ columnGap: 8 }}>
+        {/* Seven themes never fit the screen: the row scrolls and bleeds into both page margins. */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="-mx-[22px] mt-[10px]"
+          // A horizontal ScrollView otherwise takes the column's spare height and stretches
+          // every chip down the screen; `alignItems` keeps the row at its natural height.
+          style={{ flexGrow: 0 }}
+          contentContainerStyle={{ paddingHorizontal: 22, columnGap: 8, alignItems: 'center' }}
+        >
           {CHIPS.map((c) => (
             <Tap
               key={c}
@@ -129,7 +138,7 @@ export function SpeakScreen() {
               </Text>
             </Tap>
           ))}
-        </View>
+        </ScrollView>
 
         {catalogue.isPending ? (
           <View className="mt-[40px] items-center">

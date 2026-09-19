@@ -451,6 +451,7 @@ export type Database = {
         Row: {
           active_language: string | null;
           app_language: string;
+          avatar_storage_path: string | null;
           created_at: string;
           goal_minutes: number;
           first_name: string;
@@ -463,6 +464,7 @@ export type Database = {
         Insert: {
           active_language?: string | null;
           app_language?: string;
+          avatar_storage_path?: string | null;
           created_at?: string;
           goal_minutes?: number;
           first_name?: string;
@@ -475,6 +477,7 @@ export type Database = {
         Update: {
           active_language?: string | null;
           app_language?: string;
+          avatar_storage_path?: string | null;
           created_at?: string;
           goal_minutes?: number;
           first_name?: string;

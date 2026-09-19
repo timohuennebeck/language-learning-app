@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
+import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
 import { HomeHeader } from '@/shared/components/home-header';
 import {
@@ -12,12 +13,13 @@ import {
   ReadPreview,
   TalkPreview,
 } from '@/shared/components/previews';
+import { StreakCard } from '@/shared/components/streak-card';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
 /**
- * 01 · Lernen (home): today's numbers and the carousel of what Pip generated.
+ * 01 · Lernen (home): today's numbers, the carousel of what Pip generated and the streak.
  * Scenario tiles live on the Sprechen tab (docs/sprechen-plan.md).
  */
 export function HomeScreen() {
@@ -25,6 +27,7 @@ export function HomeScreen() {
   const router = useRouter();
   const { session } = useSession();
   const feed = useHomeFeed();
+  const progress = useProgress().data!;
   const minutes = feed.data?.minutesToday ?? 6;
   const goal = feed.data?.goalMinutes ?? session.dailyGoalMinutes;
   const due = feed.data?.dueCards ?? 12;
@@ -100,6 +103,14 @@ export function HomeScreen() {
               onPress: () => router.push('/(app)/flashcards'),
             },
           ]}
+        />
+
+        <StreakCard
+          className="mt-[18px]"
+          streakDays={progress.streakDays}
+          minutesToday={minutes}
+          goalMinutes={goal}
+          week={progress.week}
         />
         <View className="flex-1" />
       </View>

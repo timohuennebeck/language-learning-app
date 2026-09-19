@@ -6,7 +6,7 @@
 
 import type { FunctionTool } from './openai.ts';
 
-export const PROMPT_VERSION = '2026-09-19.2';
+export const PROMPT_VERSION = '2026-09-19.3';
 
 export type Kind = 'placement' | 'free' | 'scenario';
 
@@ -74,7 +74,8 @@ export function buildInstructions(p: PromptInput): string {
         ...p.scenario.tasks.map(
           (t) => `- [${t.id}] ${taskLabel(t)}${t.hint ? ` (e.g. "${t.hint}")` : ''}`,
         ),
-        'The moment the learner has done one of them, delegate to the backend with the message "task done: <id>" so it gets recorded, and keep talking without mentioning it.',
+        'Recording a task is the one thing you delegate. The moment the learner has done one, delegate immediately with exactly "task done: <id>", using the id in brackets and nothing else. One delegation per task, never twice for the same id, and never wait for the end of the call.',
+        'Delegating is silent bookkeeping: keep speaking to the learner as if nothing happened, never read the id out and never tell them a task was ticked off.',
       );
     }
   }
@@ -98,9 +99,10 @@ export function buildBackendInstructions(tasks: ScenarioTask[]): string {
   if (!tasks.length)
     return 'You support a spoken language-practice conversation. Answer in one short sentence.';
   return [
-    'You record progress in a spoken language-practice conversation. The voice model tells you when the learner completed a task.',
+    'You record progress in a spoken language-practice conversation. The voice model sends you a message of the form "task done: <id>" when the learner has completed one of the tasks below.',
     `Tasks: ${tasks.map((t) => `${t.id} = ${taskLabel(t)}`).join('; ')}.`,
-    'When told a task is done, call mark_task_done with its id (each id at most once) and reply with a single word: "recorded". Never write anything the learner should hear.',
+    'Call mark_task_done with that id straight away. Do not deliberate and do not ask for confirmation: the voice model has already decided. If the id is not an exact match, pick the task it describes.',
+    'After the call, reply with the single word "recorded". Never write anything the learner should hear.',
   ].join('\n');
 }
 

@@ -1,4 +1,5 @@
 import { Image, type ImageProps } from 'expo-image';
+import { useState } from 'react';
 import { View } from 'react-native';
 
 import { insetRing, ring } from '@/shared/lib/styles';
@@ -109,7 +110,10 @@ export function Flag({
 }
 
 /** Circular avatar with the 1.5px ring used in the app header and profile. */
-export function Avatar({ size = 34 }: { size?: number }) {
+export function Avatar({ size = 34, uri }: { size?: number; uri?: string | null }) {
+  const [failed, setFailed] = useState(false);
+  // The uploaded picture, else the bundled artwork; a broken URL falls back rather than blanking.
+  const source = uri && !failed ? { uri } : illustrations['avatar-maja'];
   return (
     <View
       style={{
@@ -120,8 +124,10 @@ export function Avatar({ size = 34 }: { size?: number }) {
       }}
     >
       <Image
-        source={illustrations['avatar-maja']}
+        source={source}
         contentFit="cover"
+        transition={150}
+        onError={() => setFailed(true)}
         style={{ width: size, height: size, borderRadius: size / 2 }}
       />
     </View>

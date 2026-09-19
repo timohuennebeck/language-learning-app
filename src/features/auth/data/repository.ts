@@ -80,6 +80,7 @@ function toSession(user: User, profile: ProfileRow, learner: LearnerRow | null):
     isAnonymous: !!user.is_anonymous,
     onboardingComplete: profile.onboarding_completed_at != null,
     name: profile.first_name,
+    avatarPath: profile.avatar_storage_path,
     appLanguage: isAppLanguage(profile.app_language) ? profile.app_language : 'de',
     learningLanguage: isLearningLanguage(profile.active_language)
       ? profile.active_language
@@ -130,6 +131,7 @@ export async function saveSession(next: Session, patch: Partial<Session>): Promi
 
   const profile: TablesUpdate<'profiles'> = {};
   if ('name' in patch) profile.first_name = next.name;
+  if ('avatarPath' in patch) profile.avatar_storage_path = next.avatarPath;
   if ('appLanguage' in patch) profile.app_language = next.appLanguage;
   if ('learningLanguage' in patch) profile.active_language = next.learningLanguage;
   if ('dailyGoalMinutes' in patch) profile.goal_minutes = next.dailyGoalMinutes;
