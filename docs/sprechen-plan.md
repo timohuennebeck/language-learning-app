@@ -78,69 +78,53 @@ with an `en` fallback. The `tasks` shape gets a Zod schema in
 
 Read-only for clients (`select` for `anon, authenticated`), written by the seed.
 
-## 3 Content pipeline: one source, three languages, six locales
+## 3 Content management: the table is the source of truth
 
-The repo holds the catalogue; the database is only ever filled from it.
+For the MVP the catalogue lives in the database and nowhere else.
 
-```
-content/scenarios/
-  cafe.json                      one file per key, all learning-language variants inside
-  hotel-checkin.json
-  …
-content/illustrations/
-  cafe.webp                      one image per key, ~600 px, no text baked in
-scripts/
-  check-content.js               fails when a key lacks a learnable language or a jsonb lacks a locale
-  gen-seed-scenarios.js          writes supabase/seed/scenarios.sql from content/scenarios
-```
+- **Editing**: rows are added and changed in Supabase Studio. The jsonb columns (`subtitle`,
+  `brief`, `tasks`) are edited as JSON there; at 24 scenarios per language that is manageable.
+- **Local copy**: `supabase db dump --data-only --schema public -f supabase/seed/scenarios.sql`
+  after every catalogue change; `seed.sql` includes that file, so `db reset` has the same rows as
+  the hosted project.
+- **Illustrations**: uploaded by hand to the public Storage bucket `scenarios`, one file per key
+  (`scenarios/cafe.webp`, ~600 px, no text baked in); the row stores the path.
+- **Completeness check**: a view instead of a script. It lists every key that lacks a row for a
+  language with `learnable = true`, and every row whose `subtitle`, `brief` or task `text` lacks
+  one of the six app locales. Look at it before a release; later it can run in CI against the
+  hosted project.
 
-`cafe.json`:
-
-```json
-{
-  "key": "cafe",
-  "theme": "everyday",
-  "level": ["A1", "B1"],
-  "minutes": 5,
-  "subtitle": {
-    "de": "Bestellen und bezahlen",
-    "en": "…",
-    "es": "…",
-    "fr": "…",
-    "it": "…",
-    "pt": "…"
-  },
-  "brief": { "de": "Du sitzt in einem Café in Paris …", "en": "…" },
-  "variants": {
-    "fr": {
-      "title": "Au café",
-      "pip_prompt": "Tu es serveur dans un café parisien …",
-      "tasks": [
-        {
-          "id": "order",
-          "level": "A1",
-          "text": { "de": "Bestelle einen Kaffee", "en": "…" },
-          "hint": "un café, s’il vous plaît"
-        }
-      ]
-    },
-    "en": { "title": "At the café", "…": "…" },
-    "es": { "title": "En la cafetería", "…": "…" }
-  }
-}
+```sql
+create view public.scenario_content_gaps as
+with locales as (select code from public.languages where is_app_language),
+     keys as (select distinct key from public.scenarios)
+select k.key, l.code as language, 'missing variant' as gap
+from keys k cross join (select code from public.languages where learnable) l
+left join public.scenarios s on s.key = k.key and s.language = l.code
+where s.id is null
+union all
+select s.key, s.language, 'subtitle lacks ' || loc.code
+from public.scenarios s cross join locales loc
+where not (s.subtitle ? loc.code)
+union all
+select s.key, s.language, 'brief lacks ' || loc.code
+from public.scenarios s cross join locales loc
+where not (s.brief ? loc.code)
+union all
+select s.key, s.language, 'task ' || (t ->> 'id') || ' lacks ' || loc.code
+from public.scenarios s, jsonb_array_elements(s.tasks) t cross join locales loc
+where not ((t -> 'text') ? loc.code);
 ```
 
-`check-content.js` runs in CI and before `db:reset`: every key has a variant for every language
-with `learnable = true` in the seed; every `subtitle`, `brief` and task `text` has all six
-locales; every `illustration_storage_path` file exists; task ids are unique per key;
-levels lie inside the window. Missing content is a build error, not something noticed in the app.
-First drafts of the translations can be model-generated from the German master and reviewed by a
-native speaker per language; the check proves presence, not quality.
+A scenario is authored once per key across the three learning languages: the situation, theme,
+level window, subtitle and brief are the same in every row; the title, Pip's prompt and the task
+hints are written per learning language. First drafts of the translations can be model-generated
+from the German master and reviewed by a native speaker; the view proves presence, not quality.
 
-**Images** go to a public Storage bucket `scenarios` (one file per key, cached by expo-image).
-Storage rather than bundled assets because scenarios are added through the database and a new one
-must not wait for an app release for its picture. Uploaded by `gen-seed-scenarios.js` via the
-service role locally and in CI.
+**Upgrade path** (when a second author or a translator joins): export the rows once into one JSON
+file per key under `content/scenarios/`, add a generator that unfolds a file into its three rows
+and writes the seed, and run the same completeness rules as a script in CI before anything
+reaches a database. The table does not change.
 
 ## 4 Conversations: the scenario link
 
@@ -171,6 +155,11 @@ a task checklist, which the Rückblick shows:
 | Scenario preview (01b restyled) | one `scenarios` row: `brief`, `tasks` filtered by level, `minutes`                                                                                                                | `start-conversation` (`scenario_id`)   |
 | Rückblick                       | `conversations.review.tasks`                                                                                                                                                      |                                        |
 
+Load: the catalogue is a few kilobytes (24 rows per language) and changes rarely, so the app
+fetches it once per launch per language and keeps it in TanStack Query with a long `staleTime`
+(a day) and persisted to AsyncStorage, which also lets the tab render offline. One indexed
+select per user per day is nothing for Postgres; the read-only tables never see per-user writes.
+
 Client: `features/speak/` gets `data/schemas.ts` (scenario, task), `data/repository.ts`
 (`listScenarios(language)`, `getScenario(key)`), `data/keys.ts`, and the preview screen replaces
 the current lesson start screen for scenarios. The `lessons` sample data and the home feed's
@@ -179,18 +168,18 @@ the current lesson start screen for scenarios. The `lessons` sample data and the
 ## 6 Migration, seed, order
 
 ```
-supabase/migrations/…_scenarios.sql     scenario_theme, scenarios (+ RLS), conversations.scenario_id,
-                                        conversation_kind 'scenario'
-supabase/seed.sql                       includes supabase/seed/scenarios.sql (generated); the four
-                                        design scenarios first, the full 24 as content is written
+supabase/migrations/…_scenarios.sql     scenario_theme, scenarios (+ RLS), scenario_content_gaps view,
+                                        conversations.scenario_id, conversation_kind 'scenario'
+supabase/seed/scenarios.sql             dumped from the hosted table after each catalogue change;
+                                        included by seed.sql
 ```
 
-1. Schema + the content folder with the four design scenarios in fr / en / es, the check script,
-   the seed generator, the Storage bucket.
-2. Sprechen tab on real rows; scenario preview; `start-conversation` with `scenario_id`.
+1. Schema; the four design scenarios entered in Studio in fr / en / es with their illustrations
+   in the `scenarios` bucket; first dump into the seed.
+2. Sprechen tab on real rows (cached in the app, see §5); scenario preview;
+   `start-conversation` with `scenario_id`.
 3. Task checklist in the Rückblick once `end-conversation` exists.
-
----
+4. The remaining 20 scenarios per language as the content is written; the gaps view stays empty.
 
 ---
 
