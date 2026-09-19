@@ -4,12 +4,12 @@ import type { Tables } from '@/shared/lib/database.types';
 import { supabase } from '@/shared/lib/supabase';
 
 const COLUMNS =
-  'id, kind, language, title, theme, level_min, level_max, minutes, illustration_storage_path, subtitle, brief, tasks, sort_order';
+  'id, slug, language, title, theme, level_min, level_max, minutes, illustration_storage_path, subtitle, brief, tasks, sort_order';
 
 type Row = Pick<
   Tables<'scenarios'>,
   | 'id'
-  | 'kind'
+  | 'slug'
   | 'language'
   | 'title'
   | 'theme'
@@ -27,7 +27,7 @@ function toScenario(row: Row): Scenario {
   const { data } = supabase.storage.from('scenarios').getPublicUrl(row.illustration_storage_path);
   return ScenarioSchema.parse({
     id: row.id,
-    kind: row.kind,
+    slug: row.slug,
     language: row.language,
     title: row.title,
     theme: row.theme,
@@ -54,11 +54,11 @@ export async function listScenarios(language: LearningLanguage): Promise<Scenari
   return data.map(toScenario);
 }
 
-export async function getScenario(kind: string, language: LearningLanguage): Promise<Scenario> {
+export async function getScenario(slug: string, language: LearningLanguage): Promise<Scenario> {
   const { data, error } = await supabase
     .from('scenarios')
     .select(COLUMNS)
-    .eq('kind', kind)
+    .eq('slug', slug)
     .eq('language', language)
     .single();
   if (error) throw new Error(error.message);

@@ -28,7 +28,7 @@ export type ScenarioTask = z.infer<typeof ScenarioTaskSchema>;
 export const ScenarioSchema = z.object({
   id: z.string(),
   /** Language-neutral situation id ('cafe'); the same across the three learning languages. */
-  kind: z.string(),
+  slug: z.string(),
   language: LearningLanguageSchema,
   /** In the learning language ("Au café"). */
   title: z.string(),

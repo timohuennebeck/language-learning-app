@@ -8,8 +8,8 @@ export const speakKeys = createQueryKeys('speak', {
     queryKey: [language],
     queryFn: () => listScenarios(language),
   }),
-  scenario: (kind: string, language: LearningLanguage) => ({
-    queryKey: [language, kind],
-    queryFn: () => getScenario(kind, language),
+  scenario: (slug: string, language: LearningLanguage) => ({
+    queryKey: [language, slug],
+    queryFn: () => getScenario(slug, language),
   }),
 });

@@ -10,6 +10,6 @@ export function useScenarios(language: LearningLanguage) {
   return useQuery({ ...queries.speak.scenarios(language), staleTime: CATALOGUE_STALE_MS });
 }
 
-export function useScenario(kind: string, language: LearningLanguage) {
-  return useQuery({ ...queries.speak.scenario(kind, language), staleTime: CATALOGUE_STALE_MS });
+export function useScenario(slug: string, language: LearningLanguage) {
+  return useQuery({ ...queries.speak.scenario(slug, language), staleTime: CATALOGUE_STALE_MS });
 }

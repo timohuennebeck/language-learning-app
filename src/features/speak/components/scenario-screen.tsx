@@ -26,9 +26,9 @@ export function ScenarioScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const back = useBack('/(app)/(tabs)/speak');
-  const { kind } = useLocalSearchParams<{ kind: string }>();
+  const { slug } = useLocalSearchParams<{ slug: string }>();
   const { session } = useSession();
-  const scenario = useScenario(kind ?? '', session.learningLanguage);
+  const scenario = useScenario(slug ?? '', session.learningLanguage);
   const locale = session.appLanguage;
 
   if (scenario.isPending) {
@@ -69,7 +69,7 @@ export function ScenarioScreen() {
             left={<MicSmall />}
             className="[column-gap:2px]"
             // `scenario` is forwarded so start-conversation can add the briefing once it exists.
-            onPress={() => router.push({ pathname: '/(app)/live', params: { scenario: s.kind } })}
+            onPress={() => router.push({ pathname: '/(app)/live', params: { scenario: s.slug } })}
           />
         </View>
       }
