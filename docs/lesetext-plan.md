@@ -15,7 +15,7 @@ The three things the feature has to do:
    week looks different because the learner is different.
 
 Point 3 decides the data model: the tint cannot be baked into the generated document, because the
-text is written once and the deck changes daily. So the document has to *reference* words, and
+text is written once and the deck changes daily. So the document has to _reference_ words, and
 the deck has to reference the same words. That reference is a **lexeme**.
 
 ---
@@ -136,8 +136,8 @@ export const tierOf = (box: number | undefined) =>
 word screen comes out of the same row, no new columns:
 
 ```ts
-const right = card.reviews - card.lapses;          // saveDeckRun bumps both together
-const pct = card.reviews ? Math.round((right / card.reviews) * 100) : null;   // null → "Neu"
+const right = card.reviews - card.lapses; // saveDeckRun bumps both together
+const pct = card.reviews ? Math.round((right / card.reviews) * 100) : null; // null → "Neu"
 ```
 
 ---
@@ -159,28 +159,29 @@ translation, and spans that point at lexemes by id.
           "native": "Gestern bin ich in ein kleines Café am Kanal gegangen.",
           "spans": [
             {
-              "at": 6, "len": 13,                       // "je suis allée"
-              "lexeme": "9f1c…",                        // → lexemes.id (aller · verb · 1)
-              "mark": true,                             // one of the chosen highlights
-              "here": "ich bin gegangen",               // what this form means in this sentence
-              "nativeMarks": ["bin ich", "gegangen"]    // the parts of `native` that render it
+              "at": 6,
+              "len": 13, // "je suis allée"
+              "lexeme": "9f1c…", // → lexemes.id (aller · verb · 1)
+              "mark": true, // one of the chosen highlights
+              "here": "ich bin gegangen", // what this form means in this sentence
+              "nativeMarks": ["bin ich", "gegangen"], // the parts of `native` that render it
             },
-            { "at": 34, "len": 4, "lexeme": "2b77…", "here": "Café", "nativeMarks": ["Café"] }
-          ]
-        }
-      ]
-    }
-  ]
+            { "at": 34, "len": 4, "lexeme": "2b77…", "here": "Café", "nativeMarks": ["Café"] },
+          ],
+        },
+      ],
+    },
+  ],
 }
 ```
 
 - **`source` is a real string.** The sentence exists as text — for TTS later, for search, for
-  export, for reading it in the database. Spans are data *about* the text, not a partition of it.
+  export, for reading it in the database. Spans are data _about_ the text, not a partition of it.
 - **`at` / `len` are UTF-16 code units**, computed by the server from the phrase the model quoted
   (`indexOf`, nth occurrence for repeats) and consumed by the client's `String.prototype.slice`.
   Both are JavaScript, so they agree; SQL never touches them. `source` is NFC-normalised before
   offsets are computed and stored as-is afterwards; the client must not re-normalise.
-- **`nativeMarks` stay as substrings**, deliberately unlike spans. Spans are identity — *which*
+- **`nativeMarks` stay as substrings**, deliberately unlike spans. Spans are identity — _which_
   word is tappable — and must be unambiguous when a word appears twice. Marks are highlight hints:
   if one fails to match, the renderer skips it and the translation shows unhighlighted. Substrings
   are what `splitMarks()` already takes.
@@ -307,12 +308,12 @@ gaining write access to the row.
 Three calls, because the work is three different jobs, and a database lookup sits between the
 second and third so the third only does what is new:
 
-| Call            | Model | Job                                                                       | ~out tokens |
-| --------------- | ----- | ------------------------------------------------------------------------- | ----------- |
-| **Writer**      | sol   | the prose at the level, reusing the due words; one `native` per sentence  | 800         |
-| **Lemmatiser**  | luna  | per sentence: content words as `{ surface, lemma, pos }`                   | 400         |
-| _server_        | —     | offsets; look up `lexemes` by `(language, lemma, pos)` with their glosses  |             |
-| **Annotator**   | luna  | per span: `here`, `nativeMarks`, and a full gloss **only when needed**     | 600 + 45×new |
+| Call           | Model | Job                                                                       | ~out tokens  |
+| -------------- | ----- | ------------------------------------------------------------------------- | ------------ |
+| **Writer**     | sol   | the prose at the level, reusing the due words; one `native` per sentence  | 800          |
+| **Lemmatiser** | luna  | per sentence: content words as `{ surface, lemma, pos }`                  | 400          |
+| _server_       | —     | offsets; look up `lexemes` by `(language, lemma, pos)` with their glosses |              |
+| **Annotator**  | luna  | per span: `here`, `nativeMarks`, and a full gloss **only when needed**    | 600 + 45×new |
 
 The writer's job is judgement — register, level, whether the French is idiomatic. The other two
 are mechanical and **deterministically checkable**: every surface must be found in the sentence,
@@ -354,7 +355,7 @@ Inputs the writer reads (the app sends `{ language, topic? }` — never a prompt
 - the titles of the last 5 texts, so it stops writing about cafés
 - the topic the user picked on the home card, if any
 
-Level discipline is a rule with an escape hatch: *stay at CEFR {level}; at most 8 words above it.*
+Level discipline is a rule with an escape hatch: _stay at CEFR {level}; at most 8 words above it._
 
 ### Job pattern
 
@@ -371,12 +372,12 @@ same `ProgressChecklist`, with its own copy under `reading.preparing.*` ("Pip ba
 The exercise version fakes its progress with a 4 s timer; this one has real stages to show, because
 `stage` on the row is written between the calls:
 
-| `stage` | checklist                                          | ring |
-| ------- | -------------------------------------------------- | ---- |
-| 0       | ○ Deine fälligen Wörter ausgewählt                 | 0.10 |
-| 1       | ✓ … · ◌ Text wird geschrieben                      | 0.35 |
-| 2       | ✓ · ✓ · ◌ Wörter werden erklärt                    | 0.75 |
-| 3       | ✓ · ✓ · ✓ · ◌ Fertig                               | 1.00 |
+| `stage` | checklist                          | ring |
+| ------- | ---------------------------------- | ---- |
+| 0       | ○ Deine fälligen Wörter ausgewählt | 0.10 |
+| 1       | ✓ … · ◌ Text wird geschrieben      | 0.35 |
+| 2       | ✓ · ✓ · ◌ Wörter werden erklärt    | 0.75 |
+| 3       | ✓ · ✓ · ✓ · ◌ Fertig               | 1.00 |
 
 The ring eases toward the next stage's value while a stage is running, so it never sits still. The
 footer counts down from a 20 s estimate. On `ready` the screen `replace`s to `/(app)/reading?textId=`;
@@ -430,18 +431,18 @@ with the validator's complaint appended to the input; a second failure sets
 
 ## 5 Client changes
 
-| Piece            | Change                                                                                       |
-| ---------------- | -------------------------------------------------------------------------------------------- |
-| Home card        | "Lesetext erstellen" → "Weiterlesen · Abschnitt 2 von 3" when an unfinished ready text exists |
-| Route            | `/(app)/reading?textId=`, plus `reading/preparing` and `reading/error`                       |
-| Preparing        | `ProgressChecklist` with `reading.preparing.*` copy, driven by `stage` on the polled row      |
-| Error            | `ExerciseErrorScreen` takes a retry route and the row's `error_code`; reading copy under `reading.error.*` |
-| `reading-screen` | `sentences[].source` + `spans` → `InlineFlow` pieces; tint from `tierOf(box)`; "Weiter" calls `mark_section_read` |
-| `word-screen`    | `?textId=&sentence=&span=`; shows `here`, then lexeme · gloss, the sentence with marks, the note; "Speichern" inserts a flashcard with `lexeme_id` |
-| Rückblick        | "Wörter speichern" inserts cards with `review.words[].lexemeId`                             |
-| `data/content.ts`| the hardcoded segments become one fixture in the new shape, used by `dev/`                   |
-| `respondJson`    | takes a `model` argument (it hardcodes `REVIEW_MODEL`) and returns `usage` alongside the object |
-| Offline          | the three queries of §2 are cached together; the deck query failing renders untinted         |
+| Piece             | Change                                                                                                                                             |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home card         | "Lesetext erstellen" → "Weiterlesen · Abschnitt 2 von 3" when an unfinished ready text exists                                                      |
+| Route             | `/(app)/reading?textId=`, plus `reading/preparing` and `reading/error`                                                                             |
+| Preparing         | `ProgressChecklist` with `reading.preparing.*` copy, driven by `stage` on the polled row                                                           |
+| Error             | `ExerciseErrorScreen` takes a retry route and the row's `error_code`; reading copy under `reading.error.*`                                         |
+| `reading-screen`  | `sentences[].source` + `spans` → `InlineFlow` pieces; tint from `tierOf(box)`; "Weiter" calls `mark_section_read`                                  |
+| `word-screen`     | `?textId=&sentence=&span=`; shows `here`, then lexeme · gloss, the sentence with marks, the note; "Speichern" inserts a flashcard with `lexeme_id` |
+| Rückblick         | "Wörter speichern" inserts cards with `review.words[].lexemeId`                                                                                    |
+| `data/content.ts` | the hardcoded segments become one fixture in the new shape, used by `dev/`                                                                         |
+| `respondJson`     | takes a `model` argument (it hardcodes `REVIEW_MODEL`) and returns `usage` alongside the object                                                    |
+| Offline           | the three queries of §2 are cached together; the deck query failing renders untinted                                                               |
 
 ---
 
@@ -539,14 +540,14 @@ Practical notes:
 
 ## 8 What is settled, what is reversible
 
-| decision                                   | reversible?                                                          |
-| ------------------------------------------ | -------------------------------------------------------------------- |
-| `flashcards.lexeme_id`, unique on it       | **No** — it changes the identity of rows that will exist. Get it right now. |
-| `lexemes` split from `lexeme_glosses`      | Painful — merging later means denormalising real rows. Get it right now. |
-| spans (offsets) vs a token array           | Yes — a rewrite of stored jsonb.                                     |
-| jsonb document vs sentence/span tables     | Yes, one way: the GIN index on `lexeme_ids` answers the query people usually want a table for; a `reading_sentences` table can be filled from the jsonb in one migration if ever needed. |
-| three calls vs one                         | Yes — the row records which models ran.                              |
-| polling vs Realtime                        | Yes.                                                                 |
+| decision                               | reversible?                                                                                                                                                                              |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flashcards.lexeme_id`, unique on it   | **No** — it changes the identity of rows that will exist. Get it right now.                                                                                                              |
+| `lexemes` split from `lexeme_glosses`  | Painful — merging later means denormalising real rows. Get it right now.                                                                                                                 |
+| spans (offsets) vs a token array       | Yes — a rewrite of stored jsonb.                                                                                                                                                         |
+| jsonb document vs sentence/span tables | Yes, one way: the GIN index on `lexeme_ids` answers the query people usually want a table for; a `reading_sentences` table can be filled from the jsonb in one migration if ever needed. |
+| three calls vs one                     | Yes — the row records which models ran.                                                                                                                                                  |
+| polling vs Realtime                    | Yes.                                                                                                                                                                                     |
 
 Why not sentence and span tables from the start: a text is ~1 row + 12 sentences + 60 spans; at
 the cap that is ~4,400 rows per user per month for data that is always read whole and never
@@ -556,17 +557,17 @@ queried into. `database-plan.md` §3.6 made this call for `transcript` and it ho
 
 ## 9 Differences from the parked plan (`lernen-plan.md` §4)
 
-| Parked                                    | Here                                                        | Why                                                     |
-| ----------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------- |
-| `Segment` carries `tier`                  | tier derived from `flashcards.box` at render                | the text must age with the learner, not with the row    |
-| segments match cards by `front`           | both point at `lexemes.id`                                  | `je suis allée` never equals `aller`; a key cannot mismatch |
-| glosses inside each text                  | shared `lexemes` + `lexeme_glosses`                         | one explanation per word, fixable once, joinable        |
-| pieces per section, German repeated per segment | `native` once per sentence, spans over `source`       | stop storing the same string five times                 |
-| only marked segments are tappable         | every content word is a span                                | no per-tap latency, cost or network                     |
-| `swapPairs` generated                     | derived from `span.here` at render                          | a render mode, not content                              |
-| client updates `current_section`         | `mark_section_read` RPC                                     | server checks the section; no client writes to the row  |
-| Realtime on the row                       | polling, 1.5 s                                              | less machinery for a fifteen-second screen              |
-| one model                                 | writer + two helper calls                                   | judgement and extraction have different prices          |
+| Parked                                          | Here                                            | Why                                                         |
+| ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------------------- |
+| `Segment` carries `tier`                        | tier derived from `flashcards.box` at render    | the text must age with the learner, not with the row        |
+| segments match cards by `front`                 | both point at `lexemes.id`                      | `je suis allée` never equals `aller`; a key cannot mismatch |
+| glosses inside each text                        | shared `lexemes` + `lexeme_glosses`             | one explanation per word, fixable once, joinable            |
+| pieces per section, German repeated per segment | `native` once per sentence, spans over `source` | stop storing the same string five times                     |
+| only marked segments are tappable               | every content word is a span                    | no per-tap latency, cost or network                         |
+| `swapPairs` generated                           | derived from `span.here` at render              | a render mode, not content                                  |
+| client updates `current_section`                | `mark_section_read` RPC                         | server checks the section; no client writes to the row      |
+| Realtime on the row                             | polling, 1.5 s                                  | less machinery for a fifteen-second screen                  |
+| one model                                       | writer + two helper calls                       | judgement and extraction have different prices              |
 
 ---
 

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { colors } from '@/shared/theme/tokens';
 import { useSession } from '@/features/auth/hooks/use-session';
+import { useOpenReading } from '@/features/reading/hooks/use-reading';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
 import { CardsPreview, ExercisePreview, ReadPreview } from '@/shared/components/previews';
 import { GradientHeader } from '@/shared/components/gradient-header';
@@ -16,6 +17,7 @@ import { Text } from '@/shared/ui/text';
 
 /** 08 · Tägliches Limit erreicht (nach der Session). */
 export function DailyLimitScreen() {
+  const reading = useOpenReading();
   const { t } = useTranslation();
   const router = useRouter();
   const goHome = useGoHome();
@@ -79,7 +81,7 @@ export function DailyLimitScreen() {
             kicker: t('dailyLimit.read.kicker'),
             title: t('dailyLimit.read.title'),
             cta: t('dailyLimit.read.cta'),
-            onPress: () => router.push('/(app)/reading'),
+            onPress: () => reading.start(),
           },
         ]}
       />

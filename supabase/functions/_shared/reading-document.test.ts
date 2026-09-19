@@ -60,19 +60,61 @@ const SPANS = new Map<string, AnnotatorSpan[]>([
         mark: true,
         lexeme: 'L-aller',
       },
-      { sentence: 's1', surface: 'café', here: 'Café', nativeMarks: ['Café'], mark: false, lexeme: 'L-cafe' },
+      {
+        sentence: 's1',
+        surface: 'café',
+        here: 'Café',
+        nativeMarks: ['Café'],
+        mark: false,
+        lexeme: 'L-cafe',
+      },
       // Never written: the annotator invented it.
-      { sentence: 's1', surface: 'le vélo', here: 'das Fahrrad', nativeMarks: [], mark: false, lexeme: 'L-velo' },
+      {
+        sentence: 's1',
+        surface: 'le vélo',
+        here: 'das Fahrrad',
+        nativeMarks: [],
+        mark: false,
+        lexeme: 'L-velo',
+      },
       // In the sentence, but no meaning could be resolved for it.
-      { sentence: 's1', surface: 'petit', here: 'klein', nativeMarks: ['kleines'], mark: false, lexeme: null },
+      {
+        sentence: 's1',
+        surface: 'petit',
+        here: 'klein',
+        nativeMarks: ['kleines'],
+        mark: false,
+        lexeme: null,
+      },
     ],
   ],
   [
     's2',
     [
-      { sentence: 's2', surface: 'café', here: 'Kaffee', nativeMarks: ['Kaffee'], mark: false, lexeme: 'L-cafe' },
-      { sentence: 's2', surface: 'café', here: 'Kaffee', nativeMarks: ['Kaffee'], mark: false, lexeme: 'L-cafe' },
-      { sentence: 's2', surface: 'chaud', here: 'heiß', nativeMarks: ['heiß'], mark: true, lexeme: 'L-chaud' },
+      {
+        sentence: 's2',
+        surface: 'café',
+        here: 'Kaffee',
+        nativeMarks: ['Kaffee'],
+        mark: false,
+        lexeme: 'L-cafe',
+      },
+      {
+        sentence: 's2',
+        surface: 'café',
+        here: 'Kaffee',
+        nativeMarks: ['Kaffee'],
+        mark: false,
+        lexeme: 'L-cafe',
+      },
+      {
+        sentence: 's2',
+        surface: 'chaud',
+        here: 'heiß',
+        nativeMarks: ['heiß'],
+        mark: true,
+        lexeme: 'L-chaud',
+      },
     ],
   ],
 ]);
@@ -116,13 +158,22 @@ test('the same word twice in one sentence gets two spans, not one twice', () => 
     s2.spans.map((sp) => s2.source.slice(sp.at, sp.at + sp.len)),
     ['café', 'chaud', 'café'],
   );
-  assert.deepEqual(s2.spans.map((sp) => sp.at), [3, 14, 24]);
+  assert.deepEqual(
+    s2.spans.map((sp) => sp.at),
+    [3, 14, 24],
+  );
 });
 
 test('spans come out in reading order and only the marked ones carry the flag', () => {
   const s1 = built().document.sections[0].sentences[0];
-  assert.deepEqual(s1.spans.map((s) => s.at), [6, 34]);
-  assert.deepEqual(s1.spans.map((s) => s.mark), [true, undefined]);
+  assert.deepEqual(
+    s1.spans.map((s) => s.at),
+    [6, 34],
+  );
+  assert.deepEqual(
+    s1.spans.map((s) => s.mark),
+    [true, undefined],
+  );
 });
 
 test('the title is trimmed and every lexeme is listed once', () => {
@@ -140,25 +191,47 @@ const rejects = (name: string, mutate: (r: ReturnType<typeof built>) => void, ma
     const r = built();
     r.document = structuredClone(r.document);
     mutate(r);
-    assert.throws(() => assertUsable(r, EXPECTED), (e: Error) => e instanceof InvalidText && match.test(e.message));
+    assert.throws(
+      () => assertUsable(r, EXPECTED),
+      (e: Error) => e instanceof InvalidText && match.test(e.message),
+    );
   });
 
-rejects('one section is not a text', (r) => void (r.document.sections = [r.document.sections[0]]), /sections/);
-rejects('more sections than asked for', (r) => {
-  r.document.sections = [...r.document.sections, ...r.document.sections];
-}, /sections/);
-rejects('a sentence without a translation', (r) => {
-  r.document.sections[0].sentences[0].native = '   ';
-}, /no translation/);
+rejects(
+  'one section is not a text',
+  (r) => void (r.document.sections = [r.document.sections[0]]),
+  /sections/,
+);
+rejects(
+  'more sections than asked for',
+  (r) => {
+    r.document.sections = [...r.document.sections, ...r.document.sections];
+  },
+  /sections/,
+);
+rejects(
+  'a sentence without a translation',
+  (r) => {
+    r.document.sections[0].sentences[0].native = '   ';
+  },
+  /no translation/,
+);
 rejects('an empty title', (r) => void (r.document.title = ''), /title/);
-rejects('nothing tappable', (r) => {
-  for (const section of r.document.sections) for (const s of section.sentences) s.spans = [];
-}, /could be explained/);
+rejects(
+  'nothing tappable',
+  (r) => {
+    for (const section of r.document.sections) for (const s of section.sentences) s.spans = [];
+  },
+  /could be explained/,
+);
 
 test('rejected: the wrong length', () => {
   assert.throws(() => assertUsable(built(), { ...EXPECTED, words: 100 }), /words/);
 });
 
 test("rejected: the learner's due words are missing", () => {
-  assert.throws(() => assertUsable(built(), { ...EXPECTED, dueLemmas: 20, dueHit: 1 }), /due words/);
+  assert.throws(
+    () => assertUsable(built(), { ...EXPECTED, dueLemmas: 20, dueHit: 1 }),
+    /due words/,
+  );
 });

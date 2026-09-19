@@ -2,6 +2,8 @@ export interface Flashcard {
   id: string;
   userId: string;
   language: string;
+  /** The word this card is about (`lexemes.id`); how a reading text finds this card. */
+  lexemeId: string;
   front: string;
   back: string;
   backLanguage: string;

@@ -5,7 +5,8 @@ import { supabase } from '@/shared/lib/supabase';
 
 // `example` is no longer on the card, but every row the deck writes back carries it: the run is
 // saved with an upsert, and a column left out of an upsert is written as null.
-const COLUMNS = 'id, user_id, language, front, back, back_language, example, box, reviews, lapses';
+const COLUMNS =
+  'id, user_id, language, lexeme_id, front, back, back_language, example, box, reviews, lapses';
 
 /** Cards handed to one run. The rest waits for the next one. */
 export const DECK_SIZE = 20;
@@ -15,6 +16,7 @@ type Row = Pick<
   | 'id'
   | 'user_id'
   | 'language'
+  | 'lexeme_id'
   | 'front'
   | 'back'
   | 'back_language'
@@ -29,6 +31,7 @@ function toCard(row: Row): Flashcard {
     id: row.id,
     userId: row.user_id,
     language: row.language,
+    lexemeId: row.lexeme_id,
     front: row.front,
     back: row.back,
     backLanguage: row.back_language,
@@ -83,6 +86,7 @@ export async function saveDeckRun(cards: Flashcard[], knownIds: Set<string>): Pr
       id: card.id,
       user_id: card.userId,
       language: card.language,
+      lexeme_id: card.lexemeId,
       front: card.front,
       back: card.back,
       back_language: card.backLanguage,

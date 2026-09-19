@@ -178,10 +178,15 @@ async function gatherContext(
     dueLemmas: (due ?? [])
       .map((r: { lexemes?: { lemma?: string } }) => r.lexemes?.lemma)
       .filter((l: string | undefined): l is string => !!l),
-    recentWords: (review?.words ?? []).map((w) => w.front ?? '').filter(Boolean).slice(0, 10),
+    recentWords: (review?.words ?? [])
+      .map((w) => w.front ?? '')
+      .filter(Boolean)
+      .slice(0, 10),
     lastConversationTopic: conversation?.topic ?? null,
     lastConversationId: conversation?.id ?? null,
-    recentTitles: (recent ?? []).map((r: { title: string | null }) => r.title ?? '').filter(Boolean),
+    recentTitles: (recent ?? [])
+      .map((r: { title: string | null }) => r.title ?? '')
+      .filter(Boolean),
   };
 }
 
@@ -299,8 +304,10 @@ async function generate(db: Db, textId: string, ctx: Context, draft: WriterText 
         if (id) lexemeBySpan.set(`${span.sentence}\u0000${span.surface}`, id);
       }
 
-      const result = buildDocument(text, spansBySentence, (sentenceId, surface) =>
-        lexemeBySpan.get(`${sentenceId}\u0000${surface}`) ?? null,
+      const result = buildDocument(
+        text,
+        spansBySentence,
+        (sentenceId, surface) => lexemeBySpan.get(`${sentenceId}\u0000${surface}`) ?? null,
       );
 
       // Did the text actually bring the learner's due words back? Every lemma the lemmatiser

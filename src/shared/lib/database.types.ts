@@ -146,6 +146,7 @@ export type Database = {
           language: string;
           lapses: number;
           last_reviewed_at: string | null;
+          lexeme_id: string;
           reviews: number;
           source_conversation_id: string | null;
           user_id: string;
@@ -161,6 +162,7 @@ export type Database = {
           id?: string;
           language: string;
           lapses?: number;
+          lexeme_id: string;
           last_reviewed_at?: string | null;
           reviews?: number;
           source_conversation_id?: string | null;
@@ -178,6 +180,7 @@ export type Database = {
           language?: string;
           lapses?: number;
           last_reviewed_at?: string | null;
+          lexeme_id?: string;
           reviews?: number;
           source_conversation_id?: string | null;
           user_id?: string;
@@ -198,6 +201,13 @@ export type Database = {
             referencedColumns: ['code'];
           },
           {
+            foreignKeyName: 'flashcards_lexeme_id_fkey';
+            columns: ['lexeme_id'];
+            isOneToOne: false;
+            referencedRelation: 'lexemes';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'flashcards_source_conversation_id_fkey';
             columns: ['source_conversation_id'];
             isOneToOne: false;
@@ -210,6 +220,95 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      lexeme_glosses: {
+        Row: {
+          created_at: string;
+          lexeme_id: string;
+          native_language: string;
+          note: string | null;
+          trans: string;
+          verified: boolean;
+        };
+        Insert: {
+          created_at?: string;
+          lexeme_id: string;
+          native_language: string;
+          note?: string | null;
+          trans: string;
+          verified?: boolean;
+        };
+        Update: {
+          created_at?: string;
+          lexeme_id?: string;
+          native_language?: string;
+          note?: string | null;
+          trans?: string;
+          verified?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'lexeme_glosses_lexeme_id_fkey';
+            columns: ['lexeme_id'];
+            isOneToOne: false;
+            referencedRelation: 'lexemes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'lexeme_glosses_native_language_fkey';
+            columns: ['native_language'];
+            isOneToOne: false;
+            referencedRelation: 'languages';
+            referencedColumns: ['code'];
+          },
+        ];
+      };
+      lexemes: {
+        Row: {
+          created_at: string;
+          example: string | null;
+          gender: string | null;
+          id: string;
+          language: string;
+          lemma: string;
+          level: Database['public']['Enums']['cefr_level'] | null;
+          pos: Database['public']['Enums']['lexeme_pos'];
+          sense: number;
+          tag: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          example?: string | null;
+          gender?: string | null;
+          id?: string;
+          language: string;
+          lemma: string;
+          level?: Database['public']['Enums']['cefr_level'] | null;
+          pos: Database['public']['Enums']['lexeme_pos'];
+          sense?: number;
+          tag?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          example?: string | null;
+          gender?: string | null;
+          id?: string;
+          language?: string;
+          lemma?: string;
+          level?: Database['public']['Enums']['cefr_level'] | null;
+          pos?: Database['public']['Enums']['lexeme_pos'];
+          sense?: number;
+          tag?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'lexemes_language_fkey';
+            columns: ['language'];
+            isOneToOne: false;
+            referencedRelation: 'languages';
+            referencedColumns: ['code'];
           },
         ];
       };
@@ -435,6 +534,125 @@ export type Database = {
           },
         ];
       };
+      reading_texts: {
+        Row: {
+          annotator_model: string | null;
+          attempts: number;
+          completed_at: string | null;
+          content: Json | null;
+          created_at: string;
+          current_section: number;
+          draft: Json | null;
+          error: string | null;
+          error_code: string | null;
+          id: string;
+          language: string;
+          level: Database['public']['Enums']['cefr_level'];
+          lexeme_ids: string[];
+          minutes: number | null;
+          native_language: string;
+          prompt_version: string | null;
+          ready_at: string | null;
+          section_count: number | null;
+          source_conversation_id: string | null;
+          stage: number;
+          status: Database['public']['Enums']['generation_status'];
+          title: string | null;
+          topic: string | null;
+          usage: Json | null;
+          user_id: string;
+          word_count: number | null;
+          writer_model: string | null;
+        };
+        Insert: {
+          annotator_model?: string | null;
+          attempts?: number;
+          completed_at?: string | null;
+          content?: Json | null;
+          created_at?: string;
+          current_section?: number;
+          draft?: Json | null;
+          error?: string | null;
+          error_code?: string | null;
+          id?: string;
+          language: string;
+          level: Database['public']['Enums']['cefr_level'];
+          lexeme_ids?: string[];
+          minutes?: number | null;
+          native_language: string;
+          prompt_version?: string | null;
+          ready_at?: string | null;
+          section_count?: number | null;
+          source_conversation_id?: string | null;
+          stage?: number;
+          status?: Database['public']['Enums']['generation_status'];
+          title?: string | null;
+          topic?: string | null;
+          usage?: Json | null;
+          user_id: string;
+          word_count?: number | null;
+          writer_model?: string | null;
+        };
+        Update: {
+          annotator_model?: string | null;
+          attempts?: number;
+          completed_at?: string | null;
+          content?: Json | null;
+          created_at?: string;
+          current_section?: number;
+          draft?: Json | null;
+          error?: string | null;
+          error_code?: string | null;
+          id?: string;
+          language?: string;
+          level?: Database['public']['Enums']['cefr_level'];
+          lexeme_ids?: string[];
+          minutes?: number | null;
+          native_language?: string;
+          prompt_version?: string | null;
+          ready_at?: string | null;
+          section_count?: number | null;
+          source_conversation_id?: string | null;
+          stage?: number;
+          status?: Database['public']['Enums']['generation_status'];
+          title?: string | null;
+          topic?: string | null;
+          usage?: Json | null;
+          user_id?: string;
+          word_count?: number | null;
+          writer_model?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'reading_texts_language_fkey';
+            columns: ['language'];
+            isOneToOne: false;
+            referencedRelation: 'languages';
+            referencedColumns: ['code'];
+          },
+          {
+            foreignKeyName: 'reading_texts_native_language_fkey';
+            columns: ['native_language'];
+            isOneToOne: false;
+            referencedRelation: 'languages';
+            referencedColumns: ['code'];
+          },
+          {
+            foreignKeyName: 'reading_texts_source_conversation_id_fkey';
+            columns: ['source_conversation_id'];
+            isOneToOne: false;
+            referencedRelation: 'conversations';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reading_texts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       scenarios: {
         Row: {
           active: boolean;
@@ -512,15 +730,20 @@ export type Database = {
       };
     };
     Functions: {
-      [_ in never]: never;
+      mark_section_read: {
+        Args: { section: number; text_id: string };
+        Returns: undefined;
+      };
     };
     Enums: {
       cefr_level: 'A1' | 'A2' | 'B1' | 'B2';
       conversation_kind: 'placement' | 'free' | 'scenario';
       conversation_status: 'active' | 'ended' | 'failed';
+      generation_status: 'generating' | 'ready' | 'failed';
       learning_goal: 'travel' | 'media' | 'family' | 'work' | 'friends' | 'fun';
       legal_doc_kind: 'terms' | 'privacy';
       level_source: 'self' | 'placement';
+      lexeme_pos: 'noun' | 'verb' | 'adj' | 'adv' | 'phrase' | 'other';
       platform: 'ios' | 'android' | 'web';
       reminder_repeat: 'daily' | 'weekdays' | 'weekend';
       scenario_theme: 'life' | 'travel' | 'work' | 'social' | 'culture' | 'food';

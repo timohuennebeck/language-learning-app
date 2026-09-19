@@ -405,7 +405,10 @@
       "read": {
         "kicker": "1 TOPIC · 4 MIN",
         "title": "Create reading text",
-        "cta": "Create text"
+        "cta": "Create text",
+        "kickerOpen": "SECTION {{n}} OF {{total}}",
+        "titleOpen": "Keep reading",
+        "ctaOpen": "Keep reading"
       },
       "exercise": {
         "wrong": "Hier, je prends un café",
@@ -576,24 +579,43 @@
   },
   "reading": {
     "title": "Reading",
-    "kicker": "From your conversation · Café in Paris",
-    "headline": "Mardi matin",
-    "hint": "Tap a highlighted part.",
+    "kicker": "READING TEXT",
+    "hint": "Tap a word to understand it.",
     "section": "Section {{n}} of {{total}}",
     "continue": "Keep reading",
-    "swapMode": "Translate in your head",
+    "finish": "Finish text",
+    "swapMode": "Swap words",
     "swapNote": "{{done}} of {{total}} revealed",
-    "german": "deutsch",
-    "french": "français",
-    "tapToReveal": "tap to reveal"
+    "german": "English",
+    "french": "French",
+    "tapToReveal": "Tap to reveal",
+    "empty": "This text is empty.",
+    "preparing": {
+      "title": "Reading text",
+      "headline": "Pip is writing your text.",
+      "steps": ["Picked your due words", "Writing the text", "Explaining the words", "Done"],
+      "secondsLeft": "about {{n}} seconds left"
+    },
+    "error": {
+      "title": "Reading text",
+      "headline": "That didn’t work.",
+      "sub": "Pip couldn’t finish your text. A second try usually does it.",
+      "retry": "Try again",
+      "report": "Report a problem",
+      "limit": "You’ve used up today’s texts.",
+      "limitSub": "Pip will write you a new one tomorrow. You can reread your old texts any time."
+    }
   },
   "word": {
     "sure": "{{pct}} sure",
-    "note": "{{right}} of {{total}} correct",
+    "note": "{{right}} of {{total}} right",
+    "new": "New word",
     "inSentence": "In the sentence",
+    "dictionary": "Dictionary",
     "save": "Add flashcard",
     "saved": "In your flashcards",
-    "continue": "Keep reading"
+    "continue": "Keep reading",
+    "box": "Box {{n}} of {{total}}"
   },
   "review": {
     "title": "Recap",

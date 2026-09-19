@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useOpenReading } from '@/features/reading/hooks/use-reading';
 import { ChipsPreview, DotMatrix, ReadingCardPreview } from '@/shared/components/previews';
 import { cn } from '@/shared/lib/cn';
 import { NavCircle } from '@/shared/ui/nav-circle';
@@ -76,6 +77,7 @@ function LessonCard({ dark, preview, kicker, badge, title, sub, cta, onPress }: 
 
 /** 01b · Lektion · Titelbild + Kacheln. */
 export function LessonStartScreen() {
+  const reading = useOpenReading();
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -111,7 +113,7 @@ export function LessonStartScreen() {
           title={t('lesson.read.title')}
           sub={t('lesson.read.sub')}
           cta={t('lesson.read.cta')}
-          onPress={() => router.push('/(app)/reading')}
+          onPress={() => reading.start()}
         />
         <LessonCard
           preview={<ChipsPreview />}

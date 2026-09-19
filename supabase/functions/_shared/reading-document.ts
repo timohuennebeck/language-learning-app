@@ -113,7 +113,7 @@ export function buildDocument(
         // Find an occurrence that does not collide with a span already placed: the same word can
         // appear twice in one sentence and each occurrence is its own span.
         let at = -1;
-        for (let from = 0; ; ) {
+        for (let from = 0; ;) {
           const found = findSurface(source, surface, from);
           if (found < 0) break;
           if (!used.some((u) => found < u.end && found + surface.length > u.at)) {
@@ -191,7 +191,9 @@ export function assertUsable(
   const low = Math.round(expected.words * 0.7);
   const high = Math.round(expected.words * 1.3);
   if (wordCount < low || wordCount > high) {
-    throw new InvalidText(`you wrote ${wordCount} words; aim for ${expected.words} (${low}–${high})`);
+    throw new InvalidText(
+      `you wrote ${wordCount} words; aim for ${expected.words} (${low}–${high})`,
+    );
   }
 
   // A text with almost nothing tappable is not the feature, whatever the prose is like.

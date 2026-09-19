@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useDueCount } from '@/features/flashcards/hooks/use-deck';
 import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
+import { useOpenReading } from '@/features/reading/hooks/use-reading';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
 import { HomeHeader } from '@/shared/components/home-header';
@@ -35,6 +36,10 @@ export function HomeScreen() {
   // `undefined` while it loads: neither "12 fällig" nor "keine fällig" is true yet.
   const dueCards = useDueCount().data;
   const due = dueCards ?? 0;
+  // An unfinished text turns "Lesetext erstellen" into "Weiterlesen": generating a second one
+  // while the first is half-read spends the daily allowance on nothing.
+  const reading = useOpenReading();
+  const openText = reading.openText;
 
   return (
     <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
@@ -82,10 +87,17 @@ export function HomeScreen() {
             {
               key: 'read',
               preview: <ReadPreview />,
-              kicker: t('home.hero.read.kicker'),
-              title: t('home.hero.read.title'),
-              cta: t('home.hero.read.cta'),
-              onPress: () => router.push('/(app)/reading'),
+              kicker: openText
+                ? t('home.hero.read.kickerOpen', {
+                    n: openText.currentSection,
+                    total: openText.sectionCount,
+                  })
+                : t('home.hero.read.kicker'),
+              title: openText
+                ? (openText.title ?? t('home.hero.read.titleOpen'))
+                : t('home.hero.read.title'),
+              cta: openText ? t('home.hero.read.ctaOpen') : t('home.hero.read.cta'),
+              onPress: () => reading.start(),
             },
             {
               key: 'exercise',

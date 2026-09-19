@@ -63,7 +63,8 @@ export function writerInstructions(p: WriterInput): string {
 export function writerInput(p: WriterInput): string {
   const lines: string[] = [];
   if (p.topic) lines.push(`Topic the learner chose: ${p.topic}`);
-  else if (p.lastConversationTopic) lines.push(`They last talked about: ${p.lastConversationTopic}`);
+  else if (p.lastConversationTopic)
+    lines.push(`They last talked about: ${p.lastConversationTopic}`);
   if (p.goal) lines.push(`They are learning for: ${p.goal}`);
   if (p.dueWords.length) {
     lines.push(

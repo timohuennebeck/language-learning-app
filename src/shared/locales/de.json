@@ -420,7 +420,10 @@
       "read": {
         "kicker": "1 THEMA · 4 MIN",
         "title": "Lesetext erstellen",
-        "cta": "Text erstellen"
+        "cta": "Text erstellen",
+        "kickerOpen": "ABSCHNITT {{n}} VON {{total}}",
+        "titleOpen": "Weiterlesen",
+        "ctaOpen": "Weiterlesen"
       },
       "exercise": {
         "wrong": "Hier, je prends un café",
@@ -596,24 +599,48 @@
   },
   "reading": {
     "title": "Lesen",
-    "kicker": "Aus deinem Gespräch · Café in Paris",
-    "headline": "Mardi matin",
-    "hint": "Tippe eine markierte Stelle an.",
+    "kicker": "LESETEXT",
+    "hint": "Tippe ein Wort an, um es zu verstehen.",
     "section": "Abschnitt {{n}} von {{total}}",
     "continue": "Weiterlesen",
-    "swapMode": "Im Kopf übersetzen",
+    "finish": "Text beenden",
+    "swapMode": "Tauschwörter",
     "swapNote": "{{done}} von {{total}} aufgedeckt",
-    "german": "deutsch",
-    "french": "français",
-    "tapToReveal": "antippen zum Aufdecken"
+    "german": "Deutsch",
+    "french": "Französisch",
+    "tapToReveal": "Antippen zum Aufdecken",
+    "empty": "Dieser Text ist leer.",
+    "preparing": {
+      "title": "Lesetext",
+      "headline": "Pip schreibt deinen Text.",
+      "steps": [
+        "Deine fälligen Wörter ausgewählt",
+        "Text wird geschrieben",
+        "Wörter werden erklärt",
+        "Fertig"
+      ],
+      "secondsLeft": "noch etwa {{n}} Sekunden"
+    },
+    "error": {
+      "title": "Lesetext",
+      "headline": "Das hat nicht geklappt.",
+      "sub": "Pip konnte deinen Text nicht fertig schreiben. Meist reicht ein zweiter Versuch.",
+      "retry": "Nochmal versuchen",
+      "report": "Fehler melden",
+      "limit": "Für heute sind deine Texte aufgebraucht.",
+      "limitSub": "Morgen schreibt Pip dir wieder einen neuen. Deine alten Texte kannst du jederzeit nochmal lesen."
+    }
   },
   "word": {
     "sure": "{{pct}} sicher",
     "note": "{{right}} von {{total}} richtig",
+    "new": "Neues Wort",
     "inSentence": "Im Satz",
+    "dictionary": "Wörterbuch",
     "save": "Karteikarte hinzufügen",
     "saved": "In deinen Karteikarten",
-    "continue": "Weiterlesen"
+    "continue": "Weiterlesen",
+    "box": "Fach {{n}} von {{total}}"
   },
   "review": {
     "title": "Rückblick",

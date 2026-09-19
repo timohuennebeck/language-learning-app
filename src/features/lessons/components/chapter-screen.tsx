@@ -7,6 +7,7 @@ import { ChapterChips } from '@/features/lessons/components/stations/chapter-chi
 import { StationCard } from '@/features/lessons/components/stations/station-card';
 import { StationRow } from '@/features/lessons/components/stations/station-row';
 import { useChapter } from '@/features/lessons/hooks/use-lessons';
+import { useOpenReading } from '@/features/reading/hooks/use-reading';
 import type { StationKind } from '@/features/lessons/data/types';
 import { HomeHeader } from '@/shared/components/home-header';
 import { cn } from '@/shared/lib/cn';
@@ -45,6 +46,7 @@ function StepDot({ state, n }: { state: 'done' | 'current' | 'pending'; n: numbe
 
 /** 3b–3f · Kapitel with one station expanded (index via `?station=`). */
 export function ChapterScreen() {
+  const reading = useOpenReading();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ id: string; station?: string }>();
@@ -56,7 +58,7 @@ export function ChapterScreen() {
     Math.min(stations.length - 1, Number.isFinite(requested) ? (requested as number) : 0),
   );
   const targets: Record<StationKind, () => void> = {
-    read: () => router.push('/(app)/reading'),
+    read: () => reading.start(),
     cards: () => router.push('/(app)/flashcards'),
     grammar: () => router.push('/(app)/grammar'),
     practice: () => router.push('/(app)/exercise/preparing'),
