@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
-import { DESIGN_PROGRESS } from '@/features/profile/data/repository';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
 import { HomeHeader } from '@/shared/components/home-header';
@@ -30,7 +29,7 @@ export function HomeScreen() {
   const router = useRouter();
   const { session } = useSession();
   const feed = useHomeFeed();
-  const progress = useProgress().data ?? DESIGN_PROGRESS;
+  const progress = useProgress().data!;
   const minutes = feed.data?.minutesToday ?? 6;
   const goal = feed.data?.goalMinutes ?? session.dailyGoalMinutes;
   const due = feed.data?.dueCards ?? 12;

@@ -1,4 +1,5 @@
 import type { Level } from '@/features/auth/data/types';
+import type { ScenarioTask } from '@/features/speak/data/types';
 
 export type LiveKind = 'placement' | 'free' | 'scenario';
 
@@ -7,24 +8,18 @@ export interface TranscriptTurn {
   text: string;
 }
 
-/** A scenario task as the edge function returns it (text per app locale, hint in the learning language). */
-export interface LiveTask {
-  id: string;
-  text: Record<string, string>;
-  hint?: string;
-}
-
 export interface StartConversationResult {
   conversationId: string;
-  /** Ephemeral OpenAI client secret; valid for a few minutes, only for opening the call. */
-  clientSecret: string;
-  expiresAt: number;
+  /** OpenAI Live session id (`conversations.provider_session_id`). */
+  sessionId: string;
+  /** SDP answer for the app's peer connection. */
+  sdp: string;
   model: string;
   maxSeconds: number;
   title: string | null;
   /** Scenario brief per app locale (empty for free talk). */
   brief: Record<string, string>;
-  tasks: LiveTask[];
+  tasks: ScenarioTask[];
 }
 
 export interface ReviewTask {
@@ -64,5 +59,5 @@ export interface ConversationSummary {
   durationSeconds: number;
   review: ConversationReview | null;
   /** The scenario's task texts (the review only carries ids). */
-  tasks: LiveTask[];
+  tasks: ScenarioTask[];
 }

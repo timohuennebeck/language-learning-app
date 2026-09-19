@@ -50,7 +50,7 @@ export function LevelSelfStep() {
               selected={on}
               onPress={() => {
                 setSelected(o.id);
-                update({ level: o.level });
+                update({ level: o.level, levelSource: 'self' });
                 router.push('/(onboarding)/target-level');
               }}
             />

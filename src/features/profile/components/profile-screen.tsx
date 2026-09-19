@@ -6,7 +6,6 @@ import { useSession } from '@/features/auth/hooks/use-session';
 import { LevelCard } from '@/features/profile/components/level-card';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/shared/components/streak-card';
-import { DESIGN_PROGRESS } from '@/features/profile/data/repository';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
 import { Avatar } from '@/shared/ui/illustration';
@@ -40,7 +39,7 @@ export function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useSession();
-  const p = useProgress().data ?? DESIGN_PROGRESS;
+  const p = useProgress().data!;
 
   return (
     <Screen

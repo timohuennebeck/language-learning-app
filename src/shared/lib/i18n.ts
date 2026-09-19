@@ -15,6 +15,14 @@ const resources = {
   en: { translation: en },
 } as const;
 
+/** Strings keyed by app locale (`de`, `en`, …), as stored in the database's jsonb columns. */
+export type Localized = Record<string, string>;
+
+/** Picks the app-language string, falling back to English, then to whatever exists. */
+export function localized(map: Localized, locale: string): string {
+  return map[locale] ?? map.en ?? Object.values(map)[0] ?? '';
+}
+
 export function isAppLanguage(code: string | null | undefined): code is AppLanguage {
   return (SUPPORTED_APP_LANGUAGES as readonly string[]).includes(code ?? '');
 }

@@ -7,11 +7,10 @@
 // Returns: { status: 'ended' | 'failed', review, level }
 
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { withSupabase } from 'npm:@supabase/server';
 
-import { handle, HttpError, json } from '../_shared/http.ts';
+import { HttpError, json, serveWithUser } from '../_shared/http.ts';
 import { respondJson } from '../_shared/openai.ts';
-import { languageName, type ScenarioTask } from '../_shared/prompt.ts';
+import { languageName, taskLabel, type ScenarioTask } from '../_shared/prompt.ts';
 
 interface Turn {
   role: 'user' | 'assistant';
@@ -81,7 +80,7 @@ function reviewInstructions(
   placement: boolean,
   tasks: ScenarioTask[],
 ) {
-  const lines = [
+  return [
     `You review a short spoken ${learning} practice conversation between a learner and Pip (the assistant). Judge only the learner's turns.`,
     `Write "summary" in ${native}: two friendly sentences about what went well and one thing to work on.`,
     tasks.length
@@ -91,111 +90,98 @@ function reviewInstructions(
     placement
       ? `"level": the learner's CEFR speaking level, one of A1, A2, B1, B2, and "evidence": 2–3 short observations in ${native} that justify it.`
       : '"level" must be null and "evidence" an empty array.',
-  ];
-  return lines.join('\n');
+  ].join('\n');
 }
 
-Deno.serve(
-  withSupabase({ auth: 'user' }, (req, ctx) =>
-    handle(req, async () => {
-      const userId = ctx.userClaims?.id;
-      if (!userId) throw new HttpError(401, 'unauthenticated');
-      const db = ctx.supabaseAdmin;
+serveWithUser<Body>(async ({ userId, db, body }) => {
+  if (!body.conversationId) throw new HttpError(400, 'bad_request', 'conversationId missing');
+  const endReason = body.endReason ?? 'user';
+  const duration = Math.max(0, Math.round(body.durationSeconds ?? 0));
+  const transcript = (body.transcript ?? []).filter(
+    (t) => t && typeof t.text === 'string' && t.text.trim(),
+  );
+  const tasksDone = new Set(body.tasksDone ?? []);
 
-      const body = (await req.json().catch(() => ({}))) as Body;
-      if (!body.conversationId) throw new HttpError(400, 'bad_request', 'conversationId missing');
-      const endReason = body.endReason ?? 'user';
-      const duration = Math.max(0, Math.round(body.durationSeconds ?? 0));
-      const transcript = (body.transcript ?? []).filter(
-        (t) => t && typeof t.text === 'string' && t.text.trim(),
-      );
-      const tasksDone = new Set(body.tasksDone ?? []);
+  const { data: conv } = await db
+    .from('conversations')
+    .select('id, kind, language, native_language, status, scenario_id, scenarios(tasks)')
+    .eq('id', body.conversationId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (!conv) throw new HttpError(404, 'conversation_missing');
+  if (conv.status !== 'active') throw new HttpError(409, 'conversation_closed');
 
-      const { data: conv } = await db
-        .from('conversations')
-        .select('id, kind, language, native_language, status, scenario_id, scenarios(tasks)')
-        .eq('id', body.conversationId)
-        .eq('user_id', userId)
-        .maybeSingle();
-      if (!conv) throw new HttpError(404, 'conversation_missing');
-      if (conv.status !== 'active') throw new HttpError(409, 'conversation_closed');
+  const endedAt = new Date().toISOString();
+  const closing = {
+    end_reason: endReason,
+    ended_at: endedAt,
+    duration_seconds: duration,
+    transcript,
+    usage: body.usage ?? null,
+  };
+  const failed =
+    endReason === 'error' || duration < MIN_SECONDS || !transcript.some((t) => t.role === 'user');
+  // The call itself is recorded before the review runs, so a review failure never loses it.
+  const { error: closeError } = await db
+    .from('conversations')
+    .update({ ...closing, status: failed ? 'failed' : 'ended' })
+    .eq('id', conv.id);
+  if (closeError) throw new HttpError(500, 'update_failed', closeError.message);
+  if (failed) return json({ status: 'failed', review: null, level: null });
 
-      const endedAt = new Date().toISOString();
-      const failed =
-        endReason === 'error' ||
-        duration < MIN_SECONDS ||
-        !transcript.some((t) => t.role === 'user');
-      if (failed) {
-        await db
-          .from('conversations')
-          .update({
-            status: 'failed',
-            end_reason: endReason,
-            ended_at: endedAt,
-            duration_seconds: duration,
-            transcript,
-            usage: body.usage ?? null,
-          })
-          .eq('id', conv.id);
-        return json({ status: 'failed', review: null, level: null });
-      }
+  const scenarioTasks = ((conv.scenarios as { tasks?: ScenarioTask[] } | null)?.tasks ??
+    []) as ScenarioTask[];
+  const placement = conv.kind === 'placement';
+  const learning = languageName(conv.language);
+  const native = languageName(conv.native_language);
+  const input = [
+    scenarioTasks.length
+      ? `Tasks:\n${scenarioTasks.map((t) => `- ${t.id}: ${taskLabel(t)}`).join('\n')}\nThe app already marked these as done during the call: ${[...tasksDone].join(', ') || 'none'}.`
+      : 'Tasks: none.',
+    '',
+    'Transcript:',
+    ...transcript.map((t) => `${t.role === 'user' ? 'Learner' : 'Pip'}: ${t.text}`),
+  ].join('\n');
 
-      const scenarioTasks = ((conv.scenarios as { tasks?: ScenarioTask[] } | null)?.tasks ??
-        []) as ScenarioTask[];
-      const placement = conv.kind === 'placement';
-      const learning = languageName(conv.language);
-      const native = languageName(conv.native_language);
-      const input = [
-        scenarioTasks.length
-          ? `Tasks:\n${scenarioTasks.map((t) => `- ${t.id}: ${t.text.en ?? Object.values(t.text)[0]}`).join('\n')}\nThe app already marked these as done during the call: ${[...tasksDone].join(', ') || 'none'}.`
-          : 'Tasks: none.',
-        '',
-        'Transcript:',
-        ...transcript.map((t) => `${t.role === 'user' ? 'Learner' : 'Pip'}: ${t.text}`),
-      ].join('\n');
+  let review: Review;
+  try {
+    review = await respondJson<Review>(
+      reviewInstructions(learning, native, placement, scenarioTasks),
+      input,
+      'conversation_review',
+      REVIEW_SCHEMA,
+    );
+  } catch (e) {
+    console.error('review failed', e);
+    return json({ status: 'ended', review: null, level: null });
+  }
+  // The model's verdict wins, but a task Pip ticked during the call stays ticked.
+  review.tasks = scenarioTasks.map((t) => {
+    const r = review.tasks.find((x) => x.id === t.id);
+    return { id: t.id, done: Boolean(r?.done) || tasksDone.has(t.id), said: r?.said ?? null };
+  });
+  const level = placement ? review.level : null;
 
-      const review = await respondJson<Review>(
-        reviewInstructions(learning, native, placement, scenarioTasks),
-        input,
-        'conversation_review',
-        REVIEW_SCHEMA,
-      );
-      // The model's verdict wins, but a task Pip ticked during the call stays ticked.
-      review.tasks = scenarioTasks.map((t) => {
-        const r = review.tasks.find((x) => x.id === t.id);
-        return { id: t.id, done: Boolean(r?.done) || tasksDone.has(t.id), said: r?.said ?? null };
-      });
-      const level = placement ? review.level : null;
+  const { error: reviewError } = await db
+    .from('conversations')
+    .update({ review })
+    .eq('id', conv.id);
+  if (reviewError) throw new HttpError(500, 'update_failed', reviewError.message);
 
-      const { error: updateError } = await db
-        .from('conversations')
-        .update({
-          status: 'ended',
-          end_reason: endReason,
-          ended_at: endedAt,
-          duration_seconds: duration,
-          transcript,
-          review,
-          usage: body.usage ?? null,
-        })
-        .eq('id', conv.id);
-      if (updateError) throw new HttpError(500, 'update_failed', updateError.message);
+  if (placement && level) {
+    const { error } = await db.from('learner_languages').upsert(
+      {
+        user_id: userId,
+        language: conv.language,
+        level,
+        level_source: 'placement',
+        level_assessed_at: endedAt,
+        placement_conversation_id: conv.id,
+      },
+      { onConflict: 'user_id,language' },
+    );
+    if (error) throw new HttpError(500, 'update_failed', error.message);
+  }
 
-      if (placement && level) {
-        const { error } = await db
-          .from('learner_languages')
-          .update({
-            level,
-            level_source: 'placement',
-            level_assessed_at: endedAt,
-            placement_conversation_id: conv.id,
-          })
-          .eq('user_id', userId)
-          .eq('language', conv.language);
-        if (error) throw new HttpError(500, 'update_failed', error.message);
-      }
-
-      return json({ status: 'ended', review, level });
-    }),
-  ),
-);
+  return json({ status: 'ended', review, level });
+});

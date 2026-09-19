@@ -10,7 +10,7 @@ export function AssessmentCallStep() {
       kind="placement"
       hideBack
       tasksHref="/(onboarding)/assessment-tasks"
-      onEnd={() => router.push('/(onboarding)/assessment-evaluating')}
+      onEnd={() => router.replace('/(onboarding)/assessment-evaluating')}
     />
   );
 }

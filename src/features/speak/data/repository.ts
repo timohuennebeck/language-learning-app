@@ -1,5 +1,6 @@
 import type { LearningLanguage } from '@/features/auth/data/types';
-import type { Localized, Scenario, ScenarioTask } from '@/features/speak/data/types';
+import type { Scenario, ScenarioTask } from '@/features/speak/data/types';
+import type { Localized } from '@/shared/lib/i18n';
 import type { Tables } from '@/shared/lib/database.types';
 import { supabase } from '@/shared/lib/supabase';
 

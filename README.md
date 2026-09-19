@@ -109,21 +109,24 @@ npm run functions:serve                      # local, reads supabase/.env.local
 npx supabase functions deploy delete-account # hosted
 ```
 
-### Live conversations (OpenAI Realtime)
+### Live conversations (OpenAI Live API, GPT-Live-1)
 
-The call is WebRTC straight from the device to OpenAI; the API key stays in the edge functions
-(`features/live/`, `supabase/functions/start-conversation` and `end-conversation`, flow in
-`docs/database-plan.md` §3.6). `start-conversation` checks the placement limits, inserts the
-`conversations` row and mints an ephemeral client secret with Pip's instructions, the scenario's
-tasks and a `mark_task_done` tool; the app connects with `react-native-webrtc`, ticks tasks as Pip
-reports them and ends at `max_seconds`; `end-conversation` stores transcript and usage, has a text
-model write the review (tasks with what was said, summary, words) and, for the placement call,
-the CEFR level into `learner_languages`.
+The call is WebRTC between the device and OpenAI's Live API; the API key stays in the edge
+functions (`features/live/`, `supabase/functions/start-conversation` and `end-conversation`, flow
+in `docs/database-plan.md` §3.6). The app opens the microphone, creates its SDP offer and sends
+it to `start-conversation`, which checks the placement limits, inserts the `conversations` row and
+creates the Live session (`POST /live/sessions`, model `gpt-live-1`) with Pip's frontend
+instructions, a Responses delegation that owns the `mark_task_done` tool, and the answer SDP goes
+back to the app. Transcripts arrive as timed deltas on the `oai-events` data channel and are
+grouped into turns on the device; the call ends at `max_seconds` or on hang-up (`session.close`).
+`end-conversation` stores transcript and usage first, then has a text model write the review
+(tasks with what was said, summary, words) and, for the placement call, the CEFR level into
+`learner_languages`.
 
 ```
 npx supabase secrets set OPENAI_API_KEY=sk-…            # required
-npx supabase secrets set OPENAI_REALTIME_MODEL=gpt-realtime-2.1   # optional (default)
-npx supabase secrets set OPENAI_REALTIME_VOICE=marin OPENAI_REVIEW_MODEL=gpt-5-mini  # optional
+npx supabase secrets set OPENAI_LIVE_MODEL=gpt-live-1     # optional (default)
+npx supabase secrets set OPENAI_LIVE_VOICE=marin OPENAI_REVIEW_MODEL=gpt-5-mini  # optional
 npx supabase functions deploy start-conversation end-conversation
 ```
 

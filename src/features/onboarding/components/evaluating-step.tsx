@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -19,6 +19,7 @@ export function EvaluatingStep() {
   const { update } = useSession();
   const call = useLiveCallState();
   const [minElapsed, setMinElapsed] = useState(false);
+  const navigated = useRef(false);
 
   useEffect(() => {
     const id = setTimeout(() => setMinElapsed(true), call.status === 'idle' ? FALLBACK_MS : MIN_MS);
@@ -27,7 +28,8 @@ export function EvaluatingStep() {
 
   const done = call.status === 'idle' || call.status === 'ended' || call.status === 'error';
   useEffect(() => {
-    if (!minElapsed || !done) return;
+    if (!minElapsed || !done || navigated.current) return;
+    navigated.current = true;
     const level = call.result?.level;
     if (level) update({ level, levelSource: 'placement' });
     resetCall();

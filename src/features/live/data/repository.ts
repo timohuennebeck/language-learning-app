@@ -6,10 +6,10 @@ import type {
   ConversationSummary,
   EndConversationResult,
   LiveKind,
-  LiveTask,
   StartConversationResult,
   TranscriptTurn,
 } from '@/features/live/data/types';
+import type { ScenarioTask } from '@/features/speak/data/types';
 import { supabase } from '@/shared/lib/supabase';
 
 /** Stable error codes the edge functions return (`{ error: code }`); the UI maps them to copy. */
@@ -40,6 +40,8 @@ async function invoke<T>(name: string, body: Record<string, unknown>): Promise<T
 
 export interface StartConversationInput {
   kind: LiveKind;
+  /** The app's WebRTC SDP offer; the function answers with the session's SDP. */
+  sdp: string;
   scenarioSlug?: string;
   deviceId: string | null;
 }
@@ -75,6 +77,6 @@ export async function getConversation(id: string): Promise<ConversationSummary> 
     level: data.level as Level | null,
     durationSeconds: data.duration_seconds ?? 0,
     review: data.review as unknown as ConversationReview | null,
-    tasks: ((data.scenarios as { tasks: unknown } | null)?.tasks ?? []) as LiveTask[],
+    tasks: ((data.scenarios as { tasks: unknown } | null)?.tasks ?? []) as ScenarioTask[],
   };
 }

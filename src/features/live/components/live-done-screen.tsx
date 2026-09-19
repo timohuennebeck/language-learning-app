@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useConversation } from '@/features/live/hooks/use-conversation';
-import { localized } from '@/features/speak/data/types';
 import { useGoHome } from '@/shared/hooks/use-back';
+import { localized } from '@/shared/lib/i18n';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';

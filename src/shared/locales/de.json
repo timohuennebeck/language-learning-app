@@ -2,7 +2,6 @@
   "common": {
     "next": "Weiter",
     "check": "Prüfen",
-    "skip": "Überspringen",
     "notNow": "Nicht jetzt",
     "save": "Sichern",
     "later": "Später",
@@ -436,7 +435,6 @@
         "cta": "Üben"
       }
     },
-    "filters": ["Für dich", "Alltag", "Reisen", "Freunde"],
     "recent": {
       "title": "Zuletzt",
       "read": "Lesen · Mardi matin",
@@ -718,7 +716,6 @@
   },
   "profile": {
     "title": "Profil",
-    "email": "maja@mail.de",
     "streak": "Serie",
     "streakDays": "{{n}} Tage",
     "todayProgress": "Heute schon {{done}} von {{goal}} Min.",

@@ -1,17 +1,20 @@
 // Thin OpenAI client for the edge functions (fetch only, no SDK).
 //
-// Secrets: OPENAI_API_KEY (required), OPENAI_REALTIME_MODEL and OPENAI_REVIEW_MODEL (optional).
-// The realtime model id is configurable so the live model can be switched without a redeploy:
-//   supabase secrets set OPENAI_REALTIME_MODEL=gpt-realtime-2.1
+// Secrets: OPENAI_API_KEY (required); OPENAI_LIVE_MODEL, OPENAI_LIVE_VOICE, OPENAI_REVIEW_MODEL
+// (optional). The call runs on the Live API (GPT-Live-1): the app sends its WebRTC offer, the
+// server creates the session with the API key and returns the answer, so no key or client secret
+// ever reaches the device.
+//   supabase secrets set OPENAI_API_KEY=sk-… OPENAI_LIVE_MODEL=gpt-live-1
 
 import { HttpError } from './http.ts';
 
 const BASE = 'https://api.openai.com/v1';
 
-export const REALTIME_MODEL = Deno.env.get('OPENAI_REALTIME_MODEL') ?? 'gpt-realtime-2.1';
+export const LIVE_MODEL = Deno.env.get('OPENAI_LIVE_MODEL') ?? 'gpt-live-1';
+/** Text model for the review after the call and for the tasks the Live model delegates. */
 export const REVIEW_MODEL = Deno.env.get('OPENAI_REVIEW_MODEL') ?? 'gpt-5-mini';
-/** Realtime voice; see the voice list in the Realtime guide. */
-export const VOICE = Deno.env.get('OPENAI_REALTIME_VOICE') ?? 'marin';
+/** Live voice (built-in voice name; `marin` is the API default). */
+export const VOICE = Deno.env.get('OPENAI_LIVE_VOICE') ?? 'marin';
 
 function apiKey(): string {
   const key = Deno.env.get('OPENAI_API_KEY');
@@ -38,45 +41,74 @@ export interface FunctionTool {
   name: string;
   description: string;
   parameters: Record<string, unknown>;
+  strict: boolean;
 }
 
-export interface ClientSecretOptions {
+export interface LiveSessionOptions {
+  /** The app's WebRTC SDP offer. */
+  sdp: string;
+  /** Frontend instructions: voice, conversation, when to delegate (Live prompting guide). */
   instructions: string;
-  /** ISO-639-1 code of the language the learner speaks (input transcription hint). */
-  language: string;
+  /** Backend prompt for the Responses model the Live session delegates tasks to. */
+  backendInstructions: string;
   tools: FunctionTool[];
-  /** Seconds the secret stays valid for starting the call (not the call length). */
-  expiresInSeconds: number;
+  /** A text message placed in the history before the session starts (makes Pip open the talk). */
+  opening: string;
 }
 
-export interface ClientSecret {
-  value: string;
-  expiresAt: number;
+export interface LiveSession {
+  sessionId: string;
+  /** SDP answer for the app's peer connection. */
+  sdp: string;
   model: string;
 }
 
-/** Mints an ephemeral client secret; the app opens the WebRTC call with it (the API key never leaves the server). */
-export async function createClientSecret(o: ClientSecretOptions): Promise<ClientSecret> {
-  const res = await post<{ value: string; expires_at: number }>('/realtime/client_secrets', {
-    expires_after: { anchor: 'created_at', seconds: o.expiresInSeconds },
-    session: {
-      type: 'realtime',
-      model: REALTIME_MODEL,
-      instructions: o.instructions,
-      output_modalities: ['audio'],
-      tools: o.tools,
-      tool_choice: 'auto',
-      max_output_tokens: 400,
-      audio: {
-        input: {
-          transcription: { model: 'gpt-4o-mini-transcribe', language: o.language },
-          turn_detection: { type: 'semantic_vad', eagerness: 'medium', create_response: true },
+/**
+ * Client events the untrusted frontend data channel may send. Everything that could reshape the
+ * conversation (instructions, commentary, session updates) stays server-side.
+ */
+const CLIENT_EVENTS = [
+  'session.input_audio.mute',
+  'session.input_audio.unmute',
+  'response.item.create',
+  'response.create',
+  'session.close',
+];
+
+/** Creates a Live WebRTC session (`POST /live/sessions`) and returns the SDP answer. */
+export async function createLiveSession(o: LiveSessionOptions): Promise<LiveSession> {
+  const res = await post<{ session: { id: string }; transport: { sdp: string } }>(
+    '/live/sessions',
+    {
+      session: {
+        model: LIVE_MODEL,
+        instructions: o.instructions,
+        audio: { output: { voice: VOICE } },
+        input: [
+          {
+            type: 'message',
+            role: 'developer',
+            content: [{ type: 'input_text', text: o.opening }],
+          },
+        ],
+        client: { data_channel: { allowed_client_events: CLIENT_EVENTS } },
+        delegation: {
+          type: 'responses',
+          responses: {
+            model: REVIEW_MODEL,
+            instructions: o.backendInstructions,
+            tools: o.tools,
+            tool_choice: 'auto',
+            reasoning: { effort: 'low' },
+            max_output_tokens: 200,
+          },
         },
-        output: { voice: VOICE },
+        store: false,
       },
+      transport: { type: 'webrtc', sdp: o.sdp },
     },
-  });
-  return { value: res.value, expiresAt: res.expires_at, model: REALTIME_MODEL };
+  );
+  return { sessionId: res.session.id, sdp: res.transport.sdp, model: LIVE_MODEL };
 }
 
 /** One structured-output call on the Responses API; returns the parsed JSON object. */

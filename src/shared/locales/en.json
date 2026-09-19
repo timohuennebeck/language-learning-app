@@ -2,7 +2,6 @@
   "common": {
     "next": "Continue",
     "check": "Check",
-    "skip": "Skip",
     "notNow": "Not now",
     "save": "Save",
     "later": "Later",
@@ -421,7 +420,6 @@
         "cta": "Practice"
       }
     },
-    "filters": ["For you", "Daily life", "Travel", "Friends"],
     "recent": {
       "title": "Recent",
       "read": "Reading · Mardi matin",
@@ -698,7 +696,6 @@
   },
   "profile": {
     "title": "Profile",
-    "email": "maja@mail.de",
     "streak": "Streak",
     "streakDays": "{{n}} days",
     "todayProgress": "Already {{done}} of {{goal}} min today.",

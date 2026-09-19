@@ -5,9 +5,7 @@ import {
   type Level,
 } from '@/features/auth/data/types';
 import { Constants, type Enums } from '@/shared/lib/database.types';
-
-/** Strings keyed by app locale (`de`, `en`, …). */
-export type Localized = Record<string, string>;
+import type { Localized } from '@/shared/lib/i18n';
 
 export const SCENARIO_THEMES = Constants.public.Enums.scenario_theme;
 export type ScenarioTheme = Enums<'scenario_theme'>;
@@ -38,11 +36,6 @@ export interface Scenario {
   brief: Localized;
   tasks: ScenarioTask[];
   sortOrder: number;
-}
-
-/** Picks the app-language string, falling back to English, then to whatever exists. */
-export function localized(map: Localized, locale: string): string {
-  return map[locale] ?? map.en ?? Object.values(map)[0] ?? '';
 }
 
 const rank = (level: Level) => LEVELS.indexOf(level);

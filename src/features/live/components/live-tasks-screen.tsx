@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { CallTimer } from '@/features/live/components/call-timer';
-import { formatClock } from '@/features/live/components/live-call-screen';
 import { useLiveCallState } from '@/features/live/lib/live-call-store';
-import { localized } from '@/features/speak/data/types';
 import { Headline } from '@/shared/components/headline';
+import { formatClock } from '@/shared/lib/time';
+import { localized } from '@/shared/lib/i18n';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { RadioMark } from '@/shared/ui/marks';

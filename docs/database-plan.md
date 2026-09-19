@@ -324,8 +324,8 @@ balance that outlives the period, and that is when a ledger table comes in (§8)
 
 ### 3.6 Live conversations (GPT-Live-1) and flashcards
 
-The app talks to the realtime model directly (WebRTC) using a short-lived token minted by an edge
-function; the database sees the lifecycle, the transcript and the review. This keeps the provider
+The app talks to the Live model directly (WebRTC); the edge function creates the session from
+the app's SDP offer with the API key; the database sees the lifecycle, the transcript and the review. This keeps the provider
 key off the device and puts the quota check server-side.
 
 ```sql
@@ -339,7 +339,7 @@ create table public.conversations (
   topic                text,                                -- 'Café in Paris' (Rückblick header)
   level                public.cefr_level,                   -- learner level when the call started
   provider             text not null default 'openai',
-  model                text,                                -- realtime model id (OPENAI_REALTIME_MODEL)
+  model                text,                                -- Live model id (OPENAI_LIVE_MODEL, 'gpt-live-1')
   provider_session_id  text,
   prompt_version       text,                                -- which system prompt produced this call
   device_id            text,                                -- stable install id, for the placement cap
@@ -455,8 +455,8 @@ Call flow:
    (`native_language = profiles.app_language`, `level` from `learner_languages`, `max_seconds`
    from `placement_max_seconds` or `conversation_max_seconds`), builds the system prompt from level, goal,
    topic, learning language and native language (Pip speaks the learning language, explains and
-   accepts mixed answers in the native one), mints the ephemeral realtime token, and returns
-   `{ conversation_id, client_secret, max_seconds }`. Any failure is an HTTP error the app shows.
+   accepts mixed answers in the native one), creates the Live session from the app's SDP offer,
+   and returns `{ conversationId, sessionId, sdp, maxSeconds, … }`. Any failure is an HTTP error the app shows.
    Before all that it closes the user's stale rows: any conversation still `active` and older than
    `max_seconds` + 5 min becomes `status='ended'`, `end_reason='abandoned'`, `duration_seconds =
 max_seconds` (the app crashed or lost the connection; the call is assumed used). Rows the app
@@ -674,9 +674,10 @@ beaucoup`, …), the placement questions and the widget sentence. The `learning_
 3. Sign in with Apple is required on iOS alongside Google. OK to add it to the account screen?
 4. 13 "Plus aktiv" says "15 Minuten Gespräch am Tag", the paywall sells 10/30 conversations per
    month. Which one is the product rule? §3.5 implements the monthly count.
-5. Realtime model: the functions default to `gpt-realtime-2.1` (the newest id the OpenAI SDK lists;
-   there is no `gpt-live-1` realtime model id, only `gpt-live-transcribe`). Set the secret
-   `OPENAI_REALTIME_MODEL` to switch; the id is stored per call in `conversations.model`.
+5. Live model: the functions default to `gpt-live-1` on the Live API (`POST /live/sessions`,
+   WebRTC, Responses delegation for tools); `OPENAI_LIVE_MODEL` switches it and the id is stored
+   per call in `conversations.model`. Usage is audio seconds (`session.usage.updated`) plus the
+   delegated Responses tokens, both kept in `conversations.usage`.
    Pricing per model is on https://developers.openai.com/api/docs/pricing (audio tokens in/out,
    cached input); `conversations.usage` keeps the per-call token counts so the cost per user is
    `sum(usage)` × the price list

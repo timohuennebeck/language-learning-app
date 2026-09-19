@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { ScenarioArt } from '@/features/speak/components/scenario-art';
-import { localized, tasksForLevel } from '@/features/speak/data/types';
+import { tasksForLevel } from '@/features/speak/data/types';
 import { useScenario } from '@/features/speak/hooks/use-scenarios';
 import { Headline } from '@/shared/components/headline';
 import { useBack } from '@/shared/hooks/use-back';
+import { localized } from '@/shared/lib/i18n';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';

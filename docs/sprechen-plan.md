@@ -182,8 +182,8 @@ The app reads them: `features/speak/` (schemas, repository, query keys, hooks), 
 tab renders the catalogue with theme chips and the level window, and `/scenario/[slug]` is the
 preview with the brief and the tasks for the learner's level. Illustrations are not uploaded yet;
 tiles show a placeholder until `scenarios/<slug>.webp` exists in the bucket. "Gespräch starten"
-opens the real call: `start-conversation` mints the OpenAI Realtime client secret (with the
-scenario's `pip_prompt`, tasks and a `mark_task_done` tool), the app connects over WebRTC
+opens the real call: `start-conversation` creates the OpenAI Live session from the app's WebRTC
+offer (with the scenario's `pip_prompt`, tasks and a `mark_task_done` tool on the delegated backend), the app connects over WebRTC
 (`features/live/`), and `end-conversation` writes transcript, usage and the review (tasks done
 with what was said). The placement row is the "Im Café" roleplay from the onboarding design:
 `assessment-call-intro` reads its brief and tasks, the placement call uses its prompt, and the

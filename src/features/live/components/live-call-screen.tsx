@@ -6,7 +6,7 @@ import Svg, { Defs, Ellipse, RadialGradient, Rect, Stop } from 'react-native-svg
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { CallTimer } from '@/features/live/components/call-timer';
-import type { EndConversationResult, LiveKind } from '@/features/live/data/types';
+import type { LiveKind } from '@/features/live/data/types';
 import {
   endCall,
   resetCall,
@@ -17,6 +17,7 @@ import {
 } from '@/features/live/lib/live-call-store';
 import { CallControls } from '@/shared/components/call-controls';
 import { Waveform } from '@/shared/components/waveform';
+import { formatClock } from '@/shared/lib/time';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
@@ -65,28 +66,14 @@ function CallBackdrop() {
   );
 }
 
-export function formatClock(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-/** Error codes the edge function returns that have their own copy; everything else is generic. */
-const KNOWN_ERRORS = new Set([
-  'placement_used',
-  'account_required',
-  'placement_limit',
-  'microphone',
-]);
-
 interface Props {
   /** Placement uses the placement scenario; the route decides between free talk and a scenario. */
   kind?: LiveKind;
   /**
-   * Called when the user ends the call, with the pending review. The default waits for it and
-   * opens the done page; onboarding navigates straight to the evaluation screen instead.
+   * Called when the user ends the call. The default waits for the review and opens the done
+   * page; onboarding replaces the screen with the evaluation, which reads the store.
    */
-  onEnd?: (result: Promise<EndConversationResult>) => void;
+  onEnd?: () => void;
   /** Placement call: no way back, but the header keeps its layout. */
   hideBack?: boolean;
   /** Where the checklist circle goes; onboarding passes its own route (the app group is locked until then). */
@@ -119,24 +106,19 @@ export function LiveCallScreen({
   }, []);
 
   const finish = () => {
-    const result = endCall('user');
-    if (onEnd) onEnd(result);
-    else {
-      void result.then(() =>
-        router.replace({ pathname: '/(app)/live/done', params: { id: call.conversationId ?? '' } }),
-      );
-    }
+    const conversationId = call.conversationId ?? '';
+    const done = endCall('user');
+    if (onEnd) return onEnd();
+    void done.then(() =>
+      router.replace({ pathname: '/(app)/live/done', params: { id: conversationId } }),
+    );
   };
 
   const statusLine = () => {
     if (call.status === 'starting') return t('live.connecting');
     if (call.status === 'ending' || call.status === 'ended') return t('live.ending');
     if (call.status === 'error') {
-      return t(
-        KNOWN_ERRORS.has(call.errorCode ?? '')
-          ? `live.errors.${call.errorCode}`
-          : 'live.errors.generic',
-      );
+      return t([`live.errors.${call.errorCode ?? 'generic'}`, 'live.errors.generic']);
     }
     return call.subtitles ? call.caption : '';
   };
@@ -219,7 +201,7 @@ export function LiveCallScreen({
           subtitlesBg={call.subtitles ? colors.neutral[200] : colors.surface}
           onMute={() => setMuted(!call.muted)}
           onSubtitles={() => setSubtitles(!call.subtitles)}
-          onEnd={call.status === 'live' || call.status === 'starting' ? finish : undefined}
+          onEnd={call.status === 'live' ? finish : undefined}
         />
       )}
     </Screen>

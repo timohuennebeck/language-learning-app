@@ -12,7 +12,6 @@ import Animated, {
 import { colors } from '@/shared/theme/tokens';
 
 const HEIGHTS_MAIN = [8, 14, 22, 30, 38, 26, 34, 18, 40, 24, 12, 30, 16, 22, 10, 14, 6];
-const HEIGHTS_MINI = [6, 12, 8, 14, 7];
 
 /** One bar pulsing between 25% and 100% of its height; bars get slightly different tempos. */
 function Bar({ h, w, index }: { h: number; w: number; index: number }) {
@@ -42,17 +41,6 @@ export function Waveform() {
     <View className="flex-row items-center" style={{ columnGap: 3 }}>
       {HEIGHTS_MAIN.map((h, i) => (
         <Bar key={i} h={h} w={3} index={i} />
-      ))}
-    </View>
-  );
-}
-
-/** 5-bar mini waveform used as a "speaking" kicker glyph. */
-export function MiniWaveform() {
-  return (
-    <View className="flex-row items-center" style={{ columnGap: 2, height: 14 }}>
-      {HEIGHTS_MINI.map((h, i) => (
-        <Bar key={i} h={h} w={2} index={i} />
       ))}
     </View>
   );

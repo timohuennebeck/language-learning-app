@@ -7,7 +7,6 @@ import { useSession } from '@/features/auth/hooks/use-session';
 import { ScenarioArt } from '@/features/speak/components/scenario-art';
 import {
   fitsLevel,
-  localized,
   SCENARIO_THEMES,
   themeForGoal,
   type ScenarioTheme,
@@ -17,6 +16,7 @@ import { HomeHeader } from '@/shared/components/home-header';
 import { TalkPreview } from '@/shared/components/previews';
 import { cn } from '@/shared/lib/cn';
 import { Kicker } from '@/shared/ui/kicker';
+import { localized } from '@/shared/lib/i18n';
 import { Screen } from '@/shared/ui/screen';
 import { Spinner } from '@/shared/ui/spinner';
 import { Tap } from '@/shared/ui/tap';
