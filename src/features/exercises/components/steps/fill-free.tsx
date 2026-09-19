@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AnswerChip } from '@/features/exercises/components/answer-chip';

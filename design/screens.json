@@ -449,6 +449,13 @@
     "onboarded": 1
   },
   {
+    "name": "3h-review-next",
+    "ref": "3h_R_ckblick_Umschrieben.png",
+    "route": "/review/next",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
     "name": "04-flashcards",
     "ref": "Karteikarten.png",
     "route": "/flashcards",
