@@ -109,9 +109,12 @@ export function HomeScreen() {
                   : dueCards === 0
                     ? t('home.hero.cards.kickerNone')
                     : t('home.hero.cards.kicker', { count: dueCards }),
-              title: t('home.hero.cards.title'),
-              cta: t('home.hero.cards.cta'),
-              onPress: () => router.push('/(app)/flashcards'),
+              // Nothing due: the card would otherwise offer to practise an empty deck. Point it
+              // at where new cards come from instead.
+              title: t(dueCards === 0 ? 'home.hero.cards.titleNone' : 'home.hero.cards.title'),
+              cta: t(dueCards === 0 ? 'home.hero.cards.ctaNone' : 'home.hero.cards.cta'),
+              onPress: () =>
+                router.push(dueCards === 0 ? '/(app)/(tabs)/speak' : '/(app)/flashcards'),
             },
           ]}
         />

@@ -7,8 +7,9 @@ export interface Progress {
   week: number[];
   /** 0..1 */
   levelProgress: number;
-  /** Flashcards studied at least once, ever and in the last 30 days. */
+  /** Flashcards that have reached the top Leitner boxes (see LEARNED_BOX). */
   cardsLearned: number;
+  /** Flashcards answered in the last 30 days. */
   cardsLast30: number;
   /** Every flashcard the user owns; the denominator of the tile's ring. */
   cardsTotal: number;

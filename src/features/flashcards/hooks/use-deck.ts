@@ -24,8 +24,11 @@ export function useDueCount() {
 }
 
 /**
- * Writes a finished run back. The deck is only marked stale (`refetchType: 'none'`): the results
- * screen still needs the cards it just went through to name them.
+ * Writes a finished run back, then brings the two readers in line. The deck itself is only marked
+ * stale (`refetchType: 'none'`), because the results screen still needs the cards it just went
+ * through to name them; it reloads the next time it is opened. The count has no such reader, so
+ * it refetches at once — otherwise the home pill keeps claiming cards that are no longer due,
+ * since the home tab stays mounted underneath and a merely stale query never refetches by itself.
  */
 export function useSaveRun() {
   const client = useQueryClient();
@@ -34,7 +37,11 @@ export function useSaveRun() {
     mutationFn: ({ cards, knownIds }: { cards: Flashcard[]; knownIds: Set<string> }) =>
       saveDeckRun(cards, knownIds),
     onSuccess: () => {
-      void client.invalidateQueries({ queryKey: queries.flashcards._def, refetchType: 'none' });
+      void client.invalidateQueries({
+        queryKey: queries.flashcards.due._def,
+        refetchType: 'none',
+      });
+      void client.invalidateQueries({ queryKey: queries.flashcards.dueCount._def });
       if (session.userId) {
         void client.invalidateQueries({
           queryKey: queries.profile.progress(session.userId).queryKey,

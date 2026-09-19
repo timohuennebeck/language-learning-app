@@ -1,4 +1,5 @@
 import { isLearningLanguage } from '@/features/auth/data/types';
+import { LEARNED_BOX } from '@/features/flashcards/lib/boxes';
 import type { LearnerLanguageSummary, Progress } from '@/features/profile/data/types';
 import { supabase } from '@/shared/lib/supabase';
 
@@ -28,10 +29,11 @@ export const DESIGN_PROGRESS: Progress = {
 const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
 
 /**
- * The two profile tiles are real counts. "Karteikarten gelernt" counts cards that have been
- * through at least one review (`reviews > 0`), against the whole deck; "Gespräche geführt" counts
- * finished calls, against the monthly quota. Both read zero until the feature writes rows, which
- * is the point: a ring that moves without a number behind it is a lie.
+ * The two profile tiles are real counts. "Karteikarten gelernt" counts cards that have reached
+ * the top boxes (`box >= LEARNED_BOX`), against the whole deck: answering a card once says you
+ * saw it, surviving a 16-day gap says you know it. "Gespräche geführt" counts finished calls,
+ * against the monthly quota. Both read zero until the feature writes rows, which is the point: a
+ * ring that moves without a number behind it is a lie.
  */
 export async function getProgress(userId: string): Promise<Progress> {
   const since = daysAgo(WINDOW_DAYS);
@@ -45,7 +47,7 @@ export async function getProgress(userId: string): Promise<Progress> {
 
   const [cardsTotal, cardsLearned, cardsLast30, talksTotal, talksLast30] = await Promise.all([
     cards().eq('user_id', userId),
-    cards().eq('user_id', userId).gt('reviews', 0),
+    cards().eq('user_id', userId).gte('box', LEARNED_BOX),
     // `last_reviewed_at` makes this one row per card, so the count is cards and not reviews.
     cards().eq('user_id', userId).gte('last_reviewed_at', since),
     talks(),

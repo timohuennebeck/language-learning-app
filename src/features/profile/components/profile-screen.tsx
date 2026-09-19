@@ -92,7 +92,7 @@ export function ProfileScreen() {
           className="mt-[14px]"
           tiles={[
             {
-              // How much of the deck has been through a review; empty while nothing is learned.
+              // How much of the deck sits in the top boxes; empty while nothing is learned yet.
               n: p.cardsLearned,
               pct: p.cardsTotal ? p.cardsLearned / p.cardsTotal : 0,
               label: t('profile.cardsLearned'),

@@ -435,7 +435,9 @@
         "kickerNone": "KEINE KARTEN FÄLLIG",
         "kickerIdle": "KARTEIKARTEN",
         "title": "Karteikarten wiederholen",
-        "cta": "Üben"
+        "titleNone": "Alles wiederholt",
+        "cta": "Üben",
+        "ctaNone": "Neue Wörter sammeln"
       }
     }
   },

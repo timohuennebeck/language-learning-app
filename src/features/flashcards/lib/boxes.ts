@@ -12,6 +12,12 @@ export const BOX_COUNT = 6;
  */
 export const BOX_DAYS = [0, 2, 4, 8, 16, 32] as const;
 
+/**
+ * From this box on a card counts as learned: it has come back after 8 days and been recalled, so
+ * it has survived the intervals that tell knowing from having just seen it.
+ */
+export const LEARNED_BOX = 5;
+
 /** Right swipe: one box up, box 6 stays box 6. */
 export const promote = (box: number) => Math.min(box + 1, BOX_COUNT);
 

@@ -420,7 +420,9 @@
         "kickerNone": "NO CARDS DUE",
         "kickerIdle": "FLASHCARDS",
         "title": "Review flashcards",
-        "cta": "Practice"
+        "titleNone": "All caught up",
+        "cta": "Practice",
+        "ctaNone": "Collect new words"
       }
     }
   },
