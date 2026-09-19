@@ -442,6 +442,13 @@
     "onboarded": 1
   },
   {
+    "name": "02c-i-6-live-tasks",
+    "ref": "02c-i-6_Aufgaben.png",
+    "route": "/live/tasks",
+    "h": 874,
+    "onboarded": 1
+  },
+  {
     "name": "3h-review",
     "ref": "3h_R_ckblick_Umschrieben.png",
     "route": "/review",

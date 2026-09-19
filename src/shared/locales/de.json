@@ -547,7 +547,11 @@
     "prompt": "Sur place ou à emporter ?",
     "mute": "Stumm",
     "end": "Beenden",
-    "subtitles": "Untertitel"
+    "subtitles": "Untertitel",
+    "tasks": {
+      "timer": "02:14",
+      "cta": "Weiter sprechen"
+    }
   },
   "exercise": {
     "fill": "Lücke füllen",

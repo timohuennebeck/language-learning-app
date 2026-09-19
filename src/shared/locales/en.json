@@ -527,7 +527,11 @@
     "prompt": "Sur place ou à emporter ?",
     "mute": "Mute",
     "end": "End",
-    "subtitles": "Captions"
+    "subtitles": "Captions",
+    "tasks": {
+      "timer": "02:14",
+      "cta": "Keep talking"
+    }
   },
   "exercise": {
     "fill": "Fill the gap",

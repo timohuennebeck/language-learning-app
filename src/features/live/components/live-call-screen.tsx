@@ -3,6 +3,7 @@ import { useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Defs, Ellipse, RadialGradient, Rect, Stop } from 'react-native-svg';
 
+import { CallTimer } from '@/features/live/components/call-timer';
 import { CallControls } from '@/shared/components/call-controls';
 import { Waveform } from '@/shared/components/waveform';
 import { colors } from '@/shared/theme/tokens';
@@ -77,16 +78,13 @@ export function LiveCallScreen({ onEnd, hideBack = false }: Props) {
         ) : (
           <NavCircle icon={<ChevronDown size={18} strokeWidth={2.2} />} size={40} />
         )}
-        <View
-          className="flex-row items-center rounded-pill bg-surface px-[14px] py-[8px]"
-          style={{ columnGap: 8 }}
-        >
-          <View className="h-[7px] w-[7px] rounded-full bg-accent-600" />
-          <Text className="text-accent-900" style={{ fontSize: 14, fontVariant: ['tabular-nums'] }}>
-            {t('live.timer')}
-          </Text>
-        </View>
-        <NavCircle icon={<InfoCircle size={18} />} size={40} autoBack={false} />
+        <CallTimer label={t('live.timer')} />
+        <NavCircle
+          icon={<InfoCircle size={18} />}
+          size={40}
+          accessibilityLabel={t('live.tasks.cta')}
+          onPress={() => router.push('/(app)/live/tasks')}
+        />
       </View>
       <View className="flex-1 items-center justify-center" style={{ minHeight: 0 }}>
         <View className="items-center justify-center" style={{ width: 300, height: 300 }}>
