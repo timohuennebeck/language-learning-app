@@ -205,6 +205,7 @@ can wait):
 | -------------------------- | --------- | ------------------------------------------------ |
 | `min_app_version`          | `"1.0.0"` | force-update gate                                |
 | `conversation_max_seconds` | `360`     | live call timer, `start-conversation` cut-off    |
+| `placement_max_seconds`    | `120`     | placement call ("Gespräch starten · 2 Min")      |
 
 Plans, prices and the trial are **not** in the database: RevenueCat offerings own them (§3.5).
 
@@ -342,7 +343,8 @@ create table public.conversations (
   model                text,                                -- e.g. 'gpt-live-1'
   provider_session_id  text,
   prompt_version       text,                                -- which system prompt produced this call
-  max_seconds          int not null default 360,
+  device_id            text,                                -- stable install id, for the placement cap
+  max_seconds          int not null default 360,            -- 120 for placement (app_config)
   started_at           timestamptz not null default now(),
   ended_at             timestamptz,
   duration_seconds     int,
@@ -353,6 +355,7 @@ create table public.conversations (
   created_at           timestamptz not null default now()
 );
 create index on public.conversations (user_id, started_at desc);
+create index on public.conversations (device_id, started_at desc) where kind = 'placement';
 
 -- The learner's vocabulary, scheduled with FSRS (see "Scheduling" below).
 create table public.flashcards (
@@ -442,10 +445,11 @@ spoon" are both valid rows, and a user who switches app language keeps the old c
 Call flow:
 
 1. **`start-conversation`** (edge function, JWT required): body `{ language, kind, topic? }`
-   (→ Kurs adds `lesson_id`). For `kind = 'placement'` it allows one per user and language (anonymous users
-   included) and skips the quota; otherwise it runs the RevenueCat check from §3.5. It inserts the
-   `conversations` row (`native_language = profiles.app_language`, `level` from
-   `learner_languages`, `max_seconds` from config), builds the system prompt from level, goal,
+   (→ Kurs adds `lesson_id`), header `x-device-id` (see "Placement limits" below). For
+   `kind = 'placement'` it applies the placement limits and skips the quota; otherwise it runs
+   the RevenueCat check from §3.5. It inserts the `conversations` row
+   (`native_language = profiles.app_language`, `level` from `learner_languages`, `max_seconds`
+   from `placement_max_seconds` or `conversation_max_seconds`), builds the system prompt from level, goal,
    topic, learning language and native language (Pip speaks the learning language, explains and
    accepts mixed answers in the native one), mints the ephemeral realtime token, and returns
    `{ conversation_id, client_secret, max_seconds }`. Any failure is an HTTP error the app shows.
@@ -461,6 +465,25 @@ Call flow:
    `level_source`, `level_assessed_at`, `placement_conversation_id`. Returns the `review` so the
    app can show the Rückblick immediately. A call that ended in under 30 s is marked `failed` and
    does not count against the quota.
+**Placement limits.** The placement call is the only conversation that costs nothing, so it is
+the only thing worth abusing. `start-conversation` refuses a `placement` when any of these holds:
+
+1. `learner_languages` already has `placement_conversation_id` set for this user and language:
+   one placement per language, ever. Switching languages back and forth never grants another one.
+   With three learnable languages an account gets three placements in total.
+2. The user is anonymous and already has any `learner_languages` row with a placement: the
+   first language's placement is free during onboarding; **a second language requires a
+   permanent account** (by then onboarding is done anyway). This closes the reinstall loop, where
+   every fresh anonymous user would otherwise get three free calls.
+3. `conversations` has 3 or more placements with the same `device_id` in the last 30 days. The
+   app sends a stable install id (`expo-application`: iOS vendor id / Android id) as
+   `x-device-id`; it is stored on the row. Not tamper-proof, but it makes reinstalling pointless
+   for a casual abuser. App Attest / Play Integrity can replace it later if needed.
+
+Placement calls are capped at `placement_max_seconds` (120 s), which also matches the "2 Min"
+copy; a placement can never run six minutes. The self-assessment path (06a) costs nothing and has
+no limit.
+
 4. The Rückblick screen shows `review.words` and `review.paraphrases`; "N Wörter speichern"
    inserts the picked ones into `flashcards` (`back_language = native_language`). Already-saved
    words ("Gespeichert") are found by `(user_id, language, front)`.
@@ -508,8 +531,9 @@ create policy "own profile: update" on public.profiles for update using (auth.ui
 | `legal_acceptances`, `flashcard_reviews`     | own                    | insert own                        |
 | `conversations`                              | own                    | none (edge functions, service role) |
 
-Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the only
-extra restriction is enforced in `start-conversation` (placement only, once per language).
+Anonymous users (`(auth.jwt() ->> 'is_anonymous')::boolean`) get the same policies; the extra
+restrictions (placement only, one language, the device cap) are enforced in `start-conversation`
+(§3.6, "Placement limits").
 
 ---
 
@@ -564,7 +588,7 @@ supabase/migrations/
   0002_reference.sql               languages, app_config, legal_documents (+ RLS)
   0003_profiles.sql                profiles, learner_languages (FK to conversations added in 0005)
   0004_consent_devices.sql         legal_acceptances, devices
-  0005_conversations.sql           conversations, flashcards, flashcard_reviews,
+  0005_conversations.sql           conversations (incl. device_id), flashcards, flashcard_reviews,
                                    learner_languages.placement_conversation_id
 supabase/seed.sql                  languages (six app languages; fr/en/es learnable),
                                    app_config (two keys), terms + privacy in all six locales
@@ -618,6 +642,14 @@ Not database work, but the schema above assumes them:
   the same six semantic options; only the labels change per language.
 - Everything shown *about* the learning language (level names, blurbs, CTAs) is keyed by
   `app_language`; everything *in* the learning language (examples, prompts) by `active_language`.
+- **Adding a language after onboarding** (09c "Lernsprache", 01a "Neue Sprache"): today the
+  screens only flip `learningLanguage` and go back, and the single global `level` would be shown
+  for the new language. With per-language rows the app runs a short sub-flow of the three
+  language-specific steps, reusing the onboarding components: goal (03b) → level (06 placement
+  or 06a self) → target level (09g), then inserts the `learner_languages` row and sets
+  `profiles.active_language`. Name, reminder, daily goal, app language and account are per user
+  and are not asked again. Switching *back* to a language that already has a row is a single
+  update of `active_language`.
 
 ---
 
