@@ -82,20 +82,22 @@ on conflict (user_id, document_id) do nothing;
 
 -- The dev user's Leitner file: twelve cards due today, spread over the six boxes, plus three
 -- that are already resting in a higher box (so "12 Karten fällig" on the home screen is real).
-insert into public.flashcards (user_id, language, front, back, back_language, example, box, due, reviews, lapses) values
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'à emporter',      'zum Mitnehmen',       'de', 'un café à emporter',           1, current_date,      5, 2),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'l’addition',      'die Rechnung',        'de', 'L’addition, s’il vous plaît.', 1, current_date,      3, 1),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'se débrouiller',  'sich zurechtfinden',  'de', 'Je me débrouille en français.',1, current_date,      4, 2),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'pourtant',        'dennoch',             'de', 'Il pleut, pourtant je sors.',  1, current_date,      2, 1),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'le quartier',     'das Viertel',         'de', 'J’habite dans ce quartier.',   2, current_date,      6, 1),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'le rendez-vous',  'der Termin',          'de', 'J’ai un rendez-vous à midi.',  2, current_date,      3, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'le trajet',       'der Weg',             'de', 'Le trajet dure vingt minutes.',2, current_date,      3, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'déjà',            'schon',               'de', 'Tu es déjà là ?',              3, current_date,      5, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'le lait',         'die Milch',           'de', 'un café avec du lait',         3, current_date,      4, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'chaud',           'heiß',                'de', 'un café chaud',                4, current_date,      7, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'le café',         'der Kaffee',          'de', 'un café, s’il vous plaît',     4, current_date,      8, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 's’il vous plaît', 'bitte',               'de', 'Un latte, s’il vous plaît.',   5, current_date,      9, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'emménager',       'einziehen',           'de', 'On emménage samedi.',          4, current_date + 5,  4, 1),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'le carrefour',    'die Kreuzung',        'de', 'Tournez au carrefour.',        5, current_date + 12, 6, 0),
-  ('00000000-0000-0000-0000-000000000001', 'fr', 'soudain',         'plötzlich',           'de', 'Soudain, il s’est arrêté.',    6, current_date + 25, 9, 0)
+-- `last_reviewed_at` is the day each card's own schedule implies (due minus that box's interval),
+-- so the profile's "gelernt" and "in 30 Tagen" counts cannot disagree over seeded history.
+insert into public.flashcards (user_id, language, front, back, back_language, example, box, due, reviews, lapses, last_reviewed_at) values
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'à emporter',      'zum Mitnehmen',       'de', 'un café à emporter',             1, current_date,      5, 2, now() - interval '0 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'l’addition',      'die Rechnung',        'de', 'L’addition, s’il vous plaît.',   1, current_date,      3, 1, now() - interval '0 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'se débrouiller',  'sich zurechtfinden',  'de', 'Je me débrouille en français.',  1, current_date,      4, 2, now() - interval '0 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'pourtant',        'dennoch',             'de', 'Il pleut, pourtant je sors.',    1, current_date,      2, 1, now() - interval '0 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'le quartier',     'das Viertel',         'de', 'J’habite dans ce quartier.',     2, current_date,      6, 1, now() - interval '2 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'le rendez-vous',  'der Termin',          'de', 'J’ai un rendez-vous à midi.',    2, current_date,      3, 0, now() - interval '2 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'le trajet',       'der Weg',             'de', 'Le trajet dure vingt minutes.',  2, current_date,      3, 0, now() - interval '2 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'déjà',            'schon',               'de', 'Tu es déjà là ?',                3, current_date,      5, 0, now() - interval '4 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'le lait',         'die Milch',           'de', 'un café avec du lait',           3, current_date,      4, 0, now() - interval '4 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'chaud',           'heiß',                'de', 'un café chaud',                  4, current_date,      7, 0, now() - interval '8 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'le café',         'der Kaffee',          'de', 'un café, s’il vous plaît',       4, current_date,      8, 0, now() - interval '8 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 's’il vous plaît', 'bitte',               'de', 'Un latte, s’il vous plaît.',     5, current_date,      9, 0, now() - interval '16 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'emménager',       'einziehen',           'de', 'On emménage samedi.',            4, current_date + 5,  4, 1, now() - interval '3 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'le carrefour',    'die Kreuzung',        'de', 'Tournez au carrefour.',          5, current_date + 12, 6, 0, now() - interval '4 days'),
+  ('00000000-0000-0000-0000-000000000001', 'fr', 'soudain',         'plötzlich',           'de', 'Soudain, il s’est arrêté.',      6, current_date + 25, 9, 0, now() - interval '7 days')
 on conflict (user_id, language, front) do nothing;

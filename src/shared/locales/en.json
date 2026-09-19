@@ -415,7 +415,10 @@
         "cta": "Start exercise"
       },
       "cards": {
-        "kicker": "12 CARDS DUE",
+        "kicker_one": "{{count}} CARD DUE",
+        "kicker_other": "{{count}} CARDS DUE",
+        "kickerNone": "NO CARDS DUE",
+        "kickerIdle": "FLASHCARDS",
         "title": "Review flashcards",
         "cta": "Practice"
       }

@@ -31,8 +31,10 @@ export function HomeScreen() {
   const progress = useProgress().data!;
   const minutes = feed.data?.minutesToday ?? 6;
   const goal = feed.data?.goalMinutes ?? session.dailyGoalMinutes;
-  // Real count, so the pill and the deck behind it can never disagree.
-  const due = useDueCount().data ?? 0;
+  // Real count, so the pill, the hero card and the deck behind them can never disagree.
+  // `undefined` while it loads: neither "12 fällig" nor "keine fällig" is true yet.
+  const dueCards = useDueCount().data;
+  const due = dueCards ?? 0;
 
   return (
     <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
@@ -101,7 +103,12 @@ export function HomeScreen() {
             {
               key: 'cards',
               preview: <CardsPreview />,
-              kicker: t('home.hero.cards.kicker'),
+              kicker:
+                dueCards === undefined
+                  ? t('home.hero.cards.kickerIdle')
+                  : dueCards === 0
+                    ? t('home.hero.cards.kickerNone')
+                    : t('home.hero.cards.kicker', { count: dueCards }),
               title: t('home.hero.cards.title'),
               cta: t('home.hero.cards.cta'),
               onPress: () => router.push('/(app)/flashcards'),

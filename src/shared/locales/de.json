@@ -430,7 +430,10 @@
         "cta": "Übung starten"
       },
       "cards": {
-        "kicker": "12 KARTEN FÄLLIG",
+        "kicker_one": "{{count}} KARTE FÄLLIG",
+        "kicker_other": "{{count}} KARTEN FÄLLIG",
+        "kickerNone": "KEINE KARTEN FÄLLIG",
+        "kickerIdle": "KARTEIKARTEN",
         "title": "Karteikarten wiederholen",
         "cta": "Üben"
       }

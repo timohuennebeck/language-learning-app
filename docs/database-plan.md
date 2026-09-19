@@ -374,7 +374,7 @@ create table public.flashcards (
   source_conversation_id  uuid references public.conversations(id) on delete set null,
   -- Leitner state: which box the card is in and the day it comes back
   box                     smallint not null default 1 check (box between 1 and 6),
-  due                     date not null default current_date,   -- new cards are due today
+  due                     date not null default current_date,   -- new and just-missed cards: today
   reviews                 int not null default 0,               -- times answered at all
   lapses                  int not null default 0,               -- times it fell back into box 1
   last_reviewed_at        timestamptz,
@@ -386,11 +386,15 @@ create index on public.flashcards (user_id, language, due);   -- "12 Karten fäl
 
 **Scheduling.** The deck is a Leitner file with six boxes: a card starts in box 1, a right swipe
 moves it one box up (box 6 stays box 6), a wrong swipe drops it back into box 1, and the box says
-when it comes back — each box waits twice as long as the one before it.
+when it comes back.
 
-| Box  |   1 |   2 |   3 |   4 |   5 |   6 |
-| ---- | --: | --: | --: | --: | --: | --: |
-| Days |   1 |   2 |   4 |   8 |  16 |  32 |
+| Box  |        1 |   2 |   3 |   4 |   5 |   6 |
+| ---- | -------: | --: | --: | --: | --: | --: |
+| Days | same day |   2 |   4 |   8 |  16 |  32 |
+
+Box 1 is "again today" rather than "tomorrow": a card you have just got wrong is still due, which
+is what the results screen's "{n} Karteikarten wiederholen" re-serves. Anything that leaves box 1
+is on the doubling ladder.
 
 - **Review**: one `upsert` with the whole run at the end of the deck — `box`,
   `due = today + BOX_DAYS[box]`, `reviews + 1`, `lapses + 1` on a wrong answer,
