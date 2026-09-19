@@ -1,6 +1,7 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 
 const sources = {
+  click: require('@assets/sounds/click.wav'),
   correct: require('@assets/sounds/correct.wav'),
   incorrect: require('@assets/sounds/incorrect.wav'),
 } as const;
@@ -11,7 +12,7 @@ const players: Partial<Record<SoundKind, AudioPlayer>> = {};
 let configured = false;
 
 /**
- * Fire-and-forget UI sound (exercise result chimes). Players are created on first use and
+ * Fire-and-forget UI sound (selection click, exercise result chimes). Players are created on first use and
  * reused; playback respects the silent switch and mixes with other audio. Best-effort, like
  * `haptic()`: any failure is swallowed.
  */

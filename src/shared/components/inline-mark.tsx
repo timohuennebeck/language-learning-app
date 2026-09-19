@@ -17,8 +17,9 @@ type Props = {
   px?: number;
   py?: number;
   textClassName?: string;
-  /** When set the mark is a `Tap` (selection haptic). */
+  /** When set the mark is a `Tap` (selection haptic, click sound unless `sound="none"`). */
   onPress?: () => void;
+  sound?: 'click' | 'none';
   accessibilityState?: PressableProps['accessibilityState'];
 };
 
@@ -38,6 +39,7 @@ export function InlineMark({
   py = 0,
   textClassName,
   onPress,
+  sound,
   accessibilityState,
 }: Props) {
   const style = {
@@ -54,7 +56,13 @@ export function InlineMark({
   );
   if (!onPress) return <View style={style}>{text}</View>;
   return (
-    <Tap haptic="selection" onPress={onPress} accessibilityState={accessibilityState} style={style}>
+    <Tap
+      haptic="selection"
+      sound={sound}
+      onPress={onPress}
+      accessibilityState={accessibilityState}
+      style={style}
+    >
       {text}
     </Tap>
   );

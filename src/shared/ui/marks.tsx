@@ -118,6 +118,7 @@ export function Dots({
         <Tap
           key={i}
           haptic="selection"
+          sound="none"
           onPress={() => onPress?.(i)}
           hitSlop={6}
           accessibilityLabel={`${i + 1} / ${count}`}

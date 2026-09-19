@@ -91,6 +91,7 @@ export function ReadingScreen() {
                       color={BODY.color}
                       bg={TIER_BG[segments[p.seg].tier]}
                       ring={selected === p.seg ? insetRing(2, colors.accent[700]) : undefined}
+                      sound="none"
                       px={3}
                       py={1}
                       onPress={() => {
