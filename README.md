@@ -69,9 +69,6 @@ Conventions: every tappable element is a `Tap` (haptics + button role); uppercas
 
 ## Run
 
-Node 24.3 or newer (or 22.13+; `.nvmrc` pins 24, so `nvm use` picks it up). Older Node prints an
-`EBADENGINE` warning for every React Native and Metro package.
-
 ```
 npm install
 npm run ios        # or: npm run android / npm run web
