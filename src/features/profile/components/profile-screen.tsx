@@ -7,15 +7,13 @@ import { AvatarPicker } from '@/features/profile/components/avatar-picker';
 import { LevelCard } from '@/features/profile/components/level-card';
 import { StatTiles } from '@/features/profile/components/stat-tiles';
 import { StreakCard } from '@/shared/components/streak-card';
+import { MONTHLY_TALK_QUOTA } from '@/features/profile/data/repository';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HomeHeader } from '@/shared/components/home-header';
 import { CogIcon } from '@/shared/ui/icons';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
-
-/** Talks tile ring: the design shows 60% for 19 talks; there is no goal for talks yet. */
-const TALKS_RING = 0.6;
 
 function VerifiedMark() {
   return (
@@ -93,16 +91,18 @@ export function ProfileScreen() {
           className="mt-[14px]"
           tiles={[
             {
-              n: p.wordsSaved,
-              pct: p.wordsGoal ? p.wordsSaved / p.wordsGoal : 0,
-              label: t('profile.wordsSaved'),
-              sub: t('profile.wordsSub'),
+              // How much of the deck has been through a review; empty while nothing is learned.
+              n: p.cardsLearned,
+              pct: p.cardsTotal ? p.cardsLearned / p.cardsTotal : 0,
+              label: t('profile.cardsLearned'),
+              sub: t('profile.last30', { n: p.cardsLast30 }),
             },
             {
+              // How much of this month's conversations have been used.
               n: p.talks,
-              pct: TALKS_RING,
+              pct: Math.min(1, p.talksLast30 / MONTHLY_TALK_QUOTA),
               label: t('profile.talks'),
-              sub: t('profile.talksSub'),
+              sub: t('profile.last30', { n: p.talksLast30 }),
             },
           ]}
         />

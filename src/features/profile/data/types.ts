@@ -7,9 +7,14 @@ export interface Progress {
   week: number[];
   /** 0..1 */
   levelProgress: number;
-  wordsSaved: number;
-  wordsGoal: number;
+  /** Flashcards studied at least once, ever and in the last 30 days. */
+  cardsLearned: number;
+  cardsLast30: number;
+  /** Every flashcard the user owns; the denominator of the tile's ring. */
+  cardsTotal: number;
+  /** Conversations finished, ever and in the last 30 days. */
   talks: number;
+  talksLast30: number;
 }
 
 /** One row of `learner_languages` with the word count for the "Sprache wechseln" cards. */
