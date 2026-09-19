@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useSession } from '@/features/auth/hooks/use-session';
 import type { LearningLanguage } from '@/features/auth/data/schemas';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { Flag } from '@/shared/ui/illustration';
 import { CheckCircle } from '@/shared/ui/marks';
-import { PlusIconSm } from '@/shared/ui/icons';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
@@ -31,7 +31,7 @@ export function LanguagesScreen() {
   const router = useRouter();
   const { session, update } = useSession();
   return (
-    <Screen top={0} bottom={6} className="px-[22px]" style={{ rowGap: 16 }}>
+    <Screen bottom={6} className="px-[22px]" style={{ rowGap: 16 }}>
       <TopBar left="back" title={t('languages.title')} />
       <View style={{ rowGap: 4 }}>
         <Text
@@ -54,7 +54,7 @@ export function LanguagesScreen() {
             className={cn('rounded-[24px] bg-white p-[16px]', i > 0 && 'mt-[-6px]')}
             style={{
               rowGap: 12,
-              boxShadow: active ? `0 0 0 2px ${colors.accent[700]}` : undefined,
+              boxShadow: active ? ring(2, colors.accent[700]) : undefined,
             }}
           >
             <View className="flex-row items-center" style={{ columnGap: 13 }}>
@@ -70,9 +70,7 @@ export function LanguagesScreen() {
                   {t(`languages.${c.sub}`)}
                 </Text>
               </View>
-              {active ? (
-                <CheckCircle size={24} bg={colors.accent[700]} stroke={2.6} iconSize={13} />
-              ) : null}
+              {active ? <CheckCircle /> : null}
             </View>
             <View style={{ rowGap: 7 }}>
               <View className="flex-row justify-between">
@@ -99,8 +97,6 @@ export function LanguagesScreen() {
         height={56}
         size={16.5}
         label={t('languages.new')}
-        left={<PlusIconSm />}
-        className="[column-gap:-1px]"
         haptic="light"
         onPress={() => router.push('/(app)/profile/learning-language')}
       />

@@ -1,13 +1,14 @@
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { OptionRow } from '@/shared/components/option-row';
+import { useLayout } from '@/shared/hooks/use-layout';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
-import { CheckIcon } from '@/shared/ui/icons';
-import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
+import { RadioMark } from '@/shared/ui/marks';
 import { RecommendedBadge } from '@/shared/ui/recommended-badge';
 import { Text } from '@/shared/ui/text';
 
@@ -29,46 +30,21 @@ type OptionsProps = {
 /** The four "N Min a day" rows with weekly bars and a recommended badge on 15. */
 export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
   const { t } = useTranslation();
+  const [recommendedRow, onRecommendedLayout] = useLayout();
   return (
-    <View className={cn(className)} style={{ rowGap: 10, zIndex: 1 }}>
+    <View className={cn('relative', className)} style={{ rowGap: 10 }}>
       {DAILY_GOAL_OPTIONS.map(({ min, filled }) => {
         const on = min === value;
         return (
-          <Tap
+          <OptionRow
             key={min}
-            haptic="selection"
+            n={min}
+            label={t('common.min')}
+            sub={t('profile.dailySub', { ex: t(`profile.goalScreen.ex.${min}`) })}
+            selected={on}
+            onLayout={min === 15 ? onRecommendedLayout : undefined}
             onPress={() => onChange(min)}
-            className="relative flex-row items-center rounded-[20px] bg-white"
-            style={{
-              paddingVertical: 13,
-              paddingHorizontal: 16,
-              boxShadow: on
-                ? `0 0 0 1.8px ${colors.accent[800]}`
-                : `0 0 0 1px ${colors.neutral[200]}`,
-              columnGap: 13,
-              zIndex: min === 15 ? 2 : 1,
-            }}
           >
-            {min === 15 ? <RecommendedBadge style={{ right: 18, top: -11 }} /> : null}
-            <View
-              className="h-[46px] w-[46px] items-center justify-center rounded-full"
-              style={{ backgroundColor: on ? colors.surface : colors.surface2 }}
-            >
-              <Text
-                className="font-semibold text-accent-900"
-                style={{ fontSize: 19, fontVariant: ['tabular-nums'] }}
-              >
-                {min}
-              </Text>
-            </View>
-            <View className="flex-1">
-              <Text className="font-semibold text-ink" style={{ fontSize: 16.5 }}>
-                {t('common.min')}
-              </Text>
-              <Text className="mt-[3px] text-faint" style={{ fontSize: 13.5 }}>
-                {t('profile.dailySub', { ex: t(`profile.goalScreen.ex.${min}`) })}
-              </Text>
-            </View>
             <View className="flex-row items-end" style={{ columnGap: 4 }}>
               {Array.from({ length: 7 }, (_, i) => (
                 <View
@@ -83,19 +59,21 @@ export function DailyGoalOptions({ value, onChange, className }: OptionsProps) {
                 />
               ))}
             </View>
-            <View
-              className="h-[26px] w-[26px] items-center justify-center rounded-full"
-              style={
-                on
-                  ? { backgroundColor: colors.accent[800] }
-                  : { boxShadow: `inset 0 0 0 1.6px ${colors.ring2}` }
-              }
-            >
-              {on ? <CheckIcon size={13} color="#fff" strokeWidth={2.1} /> : null}
-            </View>
-          </Tap>
+            <RadioMark
+              selected={on}
+              size={26}
+              ringColor={colors.ring2}
+              ringWidth={1.6}
+              bg={colors.accent[800]}
+              checkStroke={2.1}
+              checkSize={13}
+            />
+          </OptionRow>
         );
       })}
+      {recommendedRow ? (
+        <RecommendedBadge style={{ right: 18, top: recommendedRow.y - 11 }} />
+      ) : null}
     </View>
   );
 }

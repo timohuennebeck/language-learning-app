@@ -1,7 +1,7 @@
 /**
  * Icon set. Generic glyphs come from Heroicons (react-native-heroicons), sized and
  * stroked to match the design. Bespoke shapes that Heroicons doesn't carry
- * (drag handle, waveforms, call controls, Google mark) are drawn with react-native-svg
+ * (waveforms, call controls, Google mark) are drawn with react-native-svg
  * using the design's own paths.
  */
 import {
@@ -13,13 +13,15 @@ import {
   ChevronRightIcon,
   ClockIcon,
   Cog6ToothIcon,
+  EnvelopeIcon,
   EyeIcon,
+  ListBulletIcon,
   PlusIcon,
   XMarkIcon,
 } from 'react-native-heroicons/outline';
 import { LockClosedIcon, PlayIcon, StarIcon as HiStar } from 'react-native-heroicons/solid';
 import { View } from 'react-native';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import Svg, { Path, Rect } from 'react-native-svg';
 
 import { colors } from '@/shared/theme/tokens';
 
@@ -59,14 +61,6 @@ export function CheckIcon({ size = 14, color = '#fff', strokeWidth = 3 }: IconPr
   return <HiCheck size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
-export function PlusIconSm({
-  size = 15,
-  color = colors.accent[900],
-  strokeWidth = 2.6,
-}: IconProps) {
-  return <PlusIcon size={size} color={color} strokeWidth={strokeWidth} />;
-}
-
 export function ArrowRight({ size = 18, color = colors.lilac, strokeWidth = 2 }: IconProps) {
   return <ArrowRightIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
@@ -95,43 +89,9 @@ export function Lock({ size = 12, color = colors.dim3 }: IconProps) {
   return <LockClosedIcon size={size} color={color} />;
 }
 
-/** Six-dot drag handle on word chips. */
-export function DragHandle({
-  color = colors.dim4,
-  height = 14,
-}: {
-  color?: string;
-  height?: number;
-}) {
-  const w = (height * 8) / 14;
-  return (
-    <Svg width={w} height={height} viewBox="0 0 8 14" fill={color}>
-      <Circle cx="2" cy="2" r="1.4" />
-      <Circle cx="6" cy="2" r="1.4" />
-      <Circle cx="2" cy="7" r="1.4" />
-      <Circle cx="6" cy="7" r="1.4" />
-      <Circle cx="2" cy="12" r="1.4" />
-      <Circle cx="6" cy="12" r="1.4" />
-    </Svg>
-  );
-}
-
-/** Three-dot overflow glyph inside a nav circle. */
+/** Settings cog inside a nav circle. */
 export function CogIcon({ size = 20, color = colors.glyph, strokeWidth = 1.8 }: IconProps) {
   return <Cog6ToothIcon size={size} color={color} strokeWidth={strokeWidth} />;
-}
-
-export function Ellipsis({ color = colors.glyph }: { color?: string }) {
-  return (
-    <View style={{ flexDirection: 'row', columnGap: 3 }}>
-      {[0, 1, 2].map((i) => (
-        <View
-          key={i}
-          style={{ width: 3.5, height: 3.5, borderRadius: 2, backgroundColor: color }}
-        />
-      ))}
-    </View>
-  );
 }
 
 /** Muted microphone (call controls). */
@@ -164,13 +124,13 @@ export function Subtitles({ size = 26, color = colors.accent[900] }: IconProps) 
   );
 }
 
-/** Info "i" in a circle (call top bar). */
-export function InfoCircle({ size = 18, color = colors.accent[900] }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 256 256" fill={color}>
-      <Path d="M128 24a104 104 0 1 0 104 104A104.1 104.1 0 0 0 128 24Zm0 192a88 88 0 1 1 88-88 88.1 88.1 0 0 1-88 88Zm16-40a8 8 0 0 1-8 8 16 16 0 0 1-16-16v-40a8 8 0 0 1 0-16 16 16 0 0 1 16 16v40a8 8 0 0 1 8 8ZM112 84a12 12 0 1 1 12 12 12 12 0 0 1-12-12Z" />
-    </Svg>
-  );
+/** Bulleted list: the conversation's task list (call top bar). */
+export function ChecklistIcon({
+  size = 20,
+  color = colors.accent[900],
+  strokeWidth = 1.9,
+}: IconProps) {
+  return <ListBulletIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 /** Microphone on the "Konversation starten" onboarding button. */
@@ -188,22 +148,14 @@ export function MicSmall({ size = 20, color = colors.accent[100] }: IconProps) {
   );
 }
 
-/** Smartphone outline on the "Mit Telefonnummer" button. */
-export function PhoneDevice({ size = 20, color = colors.accent[100] }: IconProps) {
-  return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke={color}
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <Path d="M6.5 2.5h7a1.5 1.5 0 011.5 1.5v12a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 015 16V4a1.5 1.5 0 011.5-1.5zM9 15h2" />
-    </Svg>
-  );
+/** Envelope on the "Mit E-Mail" button. */
+export function MailIcon({ size = 20, color = colors.accent[100], strokeWidth = 1.8 }: IconProps) {
+  return <EnvelopeIcon size={size} color={color} strokeWidth={strokeWidth} />;
+}
+
+/** Plus glyph (drawn, not typed, so it sits dead centre in its circle). */
+export function PlusGlyph({ size = 12, color = colors.accent[800], strokeWidth = 2.4 }: IconProps) {
+  return <PlusIcon size={size} color={color} strokeWidth={strokeWidth} />;
 }
 
 export function GoogleLogo({ size = 19 }: { size?: number }) {

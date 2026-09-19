@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   deleteAccount as deleteAccountRequest,
@@ -26,7 +18,7 @@ import { supabase } from '@/shared/lib/supabase';
 /** Offline copy of the last loaded session (used only when Supabase cannot be reached). */
 const SESSION_CACHE_KEY = 'yori.session.v2';
 
-type SessionContextValue = {
+export type SessionContextValue = {
   status: 'loading' | 'ready';
   session: Session;
   /** Message of the last failed write or load; cleared by the next successful one. */
@@ -34,7 +26,6 @@ type SessionContextValue = {
   /** Optimistic update: the UI changes immediately, the row is written in the background. */
   update: (patch: Partial<Session>) => void;
   completeOnboarding: () => void;
-  resetOnboarding: () => void;
   /** Records acceptance of the current terms + privacy policy for this user. */
   acceptLegal: () => Promise<void>;
   /** Converts the anonymous user into an email account (or creates one) and reloads. */
@@ -46,7 +37,8 @@ type SessionContextValue = {
   deleteAccount: () => Promise<void>;
 };
 
-const SessionContext = createContext<SessionContextValue | null>(null);
+/** Read through `useSession()` (features/auth/hooks). */
+export const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<'loading' | 'ready'>('loading');
@@ -147,7 +139,6 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       error,
       update,
       completeOnboarding: () => update({ onboardingComplete: true }),
-      resetOnboarding: () => update({ onboardingComplete: false }),
       acceptLegal,
       signUp: async (email, password) => {
         await queue.current.catch(() => {});
@@ -169,10 +160,4 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
-}
-
-export function useSession(): SessionContextValue {
-  const ctx = useContext(SessionContext);
-  if (!ctx) throw new Error('useSession must be used inside <SessionProvider>');
-  return ctx;
 }

@@ -7,6 +7,7 @@ import { OnboardingFrame } from '@/features/onboarding/components/onboarding-fra
 import { Button, TextButton } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
+import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
 /** 05 · Mitteilungen erlauben (5 von 13). */
@@ -52,12 +53,9 @@ export function NotificationsStep() {
           </View>
           <View className="flex-1">
             <View className="flex-row items-baseline" style={{ columnGap: 8 }}>
-              <Text
-                className="font-semibold text-ink"
-                style={{ fontSize: 13, letterSpacing: 0.52 }}
-              >
+              <Kicker size={13} tracking={0.04} className="font-semibold text-ink">
                 {t('onboarding.notifications.app')}
-              </Text>
+              </Kicker>
               <View className="flex-1" />
               <Text className="text-faint" style={{ fontSize: 12.5 }}>
                 {t('onboarding.notifications.now')}

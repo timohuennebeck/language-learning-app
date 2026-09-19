@@ -6,6 +6,7 @@ import {
   type HomeFeed,
   type Lesson,
 } from '@/features/lessons/data/schemas';
+import { delay } from '@/shared/lib/time';
 
 /**
  * In-memory repository with the design's sample content. Swap the bodies for
@@ -37,8 +38,6 @@ const lessons: Lesson[] = [
     placeholder: 'Illustration: Koffer',
   },
 ].map((l) => LessonSchema.parse(l));
-
-const delay = (ms = 120) => new Promise((r) => setTimeout(r, ms));
 
 export async function getChapter(id: string): Promise<Chapter> {
   await delay();

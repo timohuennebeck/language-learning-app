@@ -43,3 +43,6 @@ yarn-error.*
 # visual verification output (regenerate with npm run screens:app)
 design/app-shots/
 design/compare/
+
+# Claude Code agent worktrees
+.claude/worktrees/

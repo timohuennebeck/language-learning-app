@@ -13,19 +13,18 @@ import { Text } from '@/shared/ui/text';
 
 const LANGS = LearningLanguageSchema.options;
 
-/** Language list shared by 03a (onboarding) and 09c (profile). */
-export function LearningLanguageList({
-  value,
-  onChange,
-  frSub,
-}: {
+type Props = {
   value: LearningLanguage;
   onChange: (l: LearningLanguage) => void;
   frSub?: string;
-}) {
+  className?: string;
+};
+
+/** Language list shared by 03a (onboarding) and 09c (profile). */
+export function LearningLanguageList({ value, onChange, frSub, className }: Props) {
   const { t } = useTranslation();
   return (
-    <View style={{ rowGap: 10 }}>
+    <View className={className} style={{ rowGap: 10 }}>
       {LANGS.map((code) => (
         <SelectRow
           key={code}

@@ -5,4 +5,7 @@ export function formatTime(hour: number, minute: number): string {
   return `${pad(hour)}:${pad(minute)}`;
 }
 
+/** Simulated network latency for the in-memory repositories. */
+export const delay = (ms = 120) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
 export { pad };

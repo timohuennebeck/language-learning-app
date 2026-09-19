@@ -1,3 +1,1 @@
-import { DevIndex } from '@/features/dev/components/dev-index';
-
-export default DevIndex;
+export { DevScreen as default } from '@/features/dev/components/dev-screen';

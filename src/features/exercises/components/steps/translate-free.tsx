@@ -1,13 +1,23 @@
-import { View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AutoWidthInput } from '@/features/exercises/components/auto-width-input';
+import { MarkedRuns } from '@/features/exercises/components/marked-runs';
+import { PROMPT, STEP_TOP } from '@/features/exercises/components/steps/layout';
 import type { StepProps } from '@/features/exercises/components/steps/types';
+import type { Run } from '@/features/exercises/data/schemas';
 import { Hint } from '@/shared/components/hint';
+import { NO_OUTLINE, ring } from '@/shared/lib/styles';
+import { splitMarks } from '@/shared/lib/text';
 import { colors } from '@/shared/theme/tokens';
-import { Caret } from '@/shared/ui/caret';
 import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
+
+/** The typed answer as runs, with every occurrence of `mark` highlighted as an error. */
+function markTyped(typed: string, mark: string): Run[] {
+  return splitMarks(typed, [mark]).map((r) =>
+    r.marked ? { text: r.text, mark: 'err' } : { text: r.text },
+  );
+}
 
 /** 19d1 / 25g / 25h · Übersetzen frei getippt. */
 export function TranslateFree({
@@ -20,71 +30,62 @@ export function TranslateFree({
   const { t } = useTranslation();
   const task = phase === 'task';
   const ok = phase === 'correct';
+  const ringColor = task ? colors.accent[500] : ok ? colors.ok.ring : colors.err.ring;
   return (
     <>
-      <Kicker size={12} style={{ marginTop: 26 }}>
+      <Kicker size={12} style={{ marginTop: STEP_TOP }}>
         {t('exercise.translateFree')}
       </Kicker>
-      <Text
-        className="text-ink"
-        style={{ fontSize: task ? 23 : 21, lineHeight: (task ? 23 : 21) * 1.4, marginTop: 12 }}
+      <Text style={{ ...PROMPT, marginTop: 12 }}>{step.prompt}</Text>
+      <View
+        className="rounded-[22px] bg-white px-[18px] py-[16px]"
+        style={{ marginTop: 18, minHeight: 130, boxShadow: ring(2, ringColor) }}
       >
-        {step.prompt}
-      </Text>
-      {task ? (
-        <View
-          className="rounded-[22px] bg-white p-[18px]"
-          style={{ marginTop: 20, minHeight: 130, boxShadow: `0 0 0 2px ${colors.accent[500]}` }}
+        <Text
+          style={{
+            fontSize: 12,
+            color: task ? colors.faint : ok ? colors.ok.label : colors.err.label2,
+          }}
         >
-          <Text className="text-faint" style={{ fontSize: 12 }}>
-            {t('exercise.inFrench')}
-          </Text>
-          <View className="mt-[10px] flex-row flex-wrap items-center">
-            <AutoWidthInput
-              value={answer}
-              onChangeText={setAnswer}
-              fontSize={21}
-              lineHeight={30.45}
+          {task ? t('exercise.inFrench') : t('exercise.yourAnswer')}
+        </Text>
+        {task ? (
+          <TextInput
+            value={answer}
+            onChangeText={setAnswer}
+            multiline
+            autoFocus
+            autoCorrect={false}
+            autoCapitalize="sentences"
+            returnKeyType="done"
+            submitBehavior="submit"
+            onSubmitEditing={onSubmit}
+            cursorColor={colors.accent[700]}
+            selectionColor={colors.accent[300]}
+            className="font-regular"
+            style={[
+              {
+                marginTop: 8,
+                padding: 0,
+                fontSize: 20,
+                lineHeight: 29,
+                color: colors.ink,
+                textAlignVertical: 'top',
+              },
+              NO_OUTLINE,
+            ]}
+          />
+        ) : (
+          <View className="mt-[8px]">
+            <MarkedRuns
+              runs={ok ? [{ text: answer }] : markTyped(answer, step.wrongTypedMark)}
               color={colors.ink}
-              autoCapitalize="sentences"
-              returnKeyType="done"
-              onSubmitEditing={onSubmit}
+              markColor={colors.ink}
+              size={19}
             />
-            <Caret height={21} style={{ marginLeft: 2 }} />
           </View>
-        </View>
-      ) : (
-        <View
-          className="rounded-[22px] bg-white p-[16px]"
-          style={{ marginTop: 14, boxShadow: `0 0 0 2px ${ok ? colors.ok.ring : colors.err.ring}` }}
-        >
-          <Text style={{ fontSize: 12, color: ok ? colors.ok.label : colors.err.label2 }}>
-            {t('exercise.yourAnswer')}
-          </Text>
-          <Text className="mt-[8px] text-ink" style={{ fontSize: 19, lineHeight: 27.55 }}>
-            {ok
-              ? answer
-              : answer.split(step.wrongTypedMark).map((part, i, arr) => (
-                  <Text key={i} className="text-ink" style={{ fontSize: 19 }}>
-                    {part}
-                    {i < arr.length - 1 ? (
-                      <Text
-                        style={{
-                          fontSize: 19,
-                          backgroundColor: colors.err.chip,
-                          borderRadius: 6,
-                          paddingHorizontal: 3,
-                          color: colors.ink,
-                        }}
-                      >
-                        {step.wrongTypedMark}
-                      </Text>
-                    ) : null}
-                  </Text>
-                ))}
-          </Text>
-        </View>
-      )}
+        )}
+      </View>
       {task ? <Hint text={step.hint} className="mt-[12px]" /> : null}
     </>
   );

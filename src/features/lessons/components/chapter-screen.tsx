@@ -9,9 +9,10 @@ import { useChapter } from '@/features/lessons/hooks/use-lessons';
 import type { StationKind } from '@/features/lessons/data/schemas';
 import { HomeHeader } from '@/shared/components/home-header';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { CheckIcon } from '@/shared/ui/icons';
-import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
 const DEFAULT_STATIONS: StationKind[] = ['read', 'cards', 'grammar', 'practice', 'live'];
@@ -30,7 +31,7 @@ function StepDot({ state, n }: { state: 'done' | 'current' | 'pending'; n: numbe
         'h-[26px] w-[26px] items-center justify-center rounded-full',
         state === 'current' ? 'bg-accent-800' : 'bg-surface2',
       )}
-      style={state === 'current' ? { boxShadow: `0 0 0 3px ${colors.line}` } : undefined}
+      style={state === 'current' ? { boxShadow: ring(3, colors.line) } : undefined}
     >
       <Text
         className={cn('font-semibold', state === 'current' ? 'text-accent-100' : 'text-dim')}
@@ -63,9 +64,8 @@ export function ChapterScreen() {
   };
 
   return (
-    <Screen top={TAB_TOP} bottom={6} scroll>
-      <View className="flex-1 px-[22px]" style={{ minHeight: 0 }}>
-        <HomeHeader />
+    <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
+      <View className="flex-1" style={{ minHeight: 0 }}>
         <ChapterChips className="mt-[14px]" />
         <View className="mt-[16px] flex-row items-end justify-between" style={{ columnGap: 14 }}>
           <View className="flex-1" style={{ minWidth: 0 }}>

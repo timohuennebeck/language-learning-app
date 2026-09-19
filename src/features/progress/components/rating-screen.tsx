@@ -4,6 +4,7 @@ import { TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { GradientHeader } from '@/shared/components/gradient-header';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
@@ -50,7 +51,7 @@ export function RatingScreen() {
       </View>
       <View
         className="mt-[20px] rounded-[24px] bg-paper px-[18px] py-[16px]"
-        style={{ rowGap: 10, boxShadow: `0 0 0 1.5px ${colors.lilac2}` }}
+        style={{ rowGap: 10, boxShadow: ring(1.5, colors.lilac2) }}
       >
         <Kicker size={13} tracking={0.06} className="text-muted">
           {t('rating.label')}

@@ -28,7 +28,7 @@ export function LevelSelfStep() {
   const { update } = useSession();
   const [selected, setSelected] = useState<string>('simple');
   return (
-    <Screen top={0} bottom={6} className="relative px-[22px]">
+    <Screen bottom={6} className="relative px-[22px]">
       <ProgressTopBar
         height={40}
         progress={7 / ONBOARDING_STEPS}

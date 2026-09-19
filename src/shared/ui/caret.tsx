@@ -10,10 +10,10 @@ import Animated, {
 
 import { colors } from '@/shared/theme/tokens';
 
-type Props = { height?: number; color?: string; width?: number; style?: object };
+type Props = { height?: number; color?: string; style?: object };
 
-/** Blinking text caret used in the typed-input mockups. */
-export function Caret({ height = 22, color = colors.accent[700], width = 2, style }: Props) {
+/** Blinking 2px text caret used in the typed-input mockups. */
+export function Caret({ height = 22, color = colors.accent[700], style }: Props) {
   const on = useSharedValue(1);
   useEffect(() => {
     on.value = withRepeat(
@@ -26,7 +26,7 @@ export function Caret({ height = 22, color = colors.accent[700], width = 2, styl
   const anim = useAnimatedStyle(() => ({ opacity: on.value > 0.5 ? 1 : 0 }));
   return (
     <Animated.View
-      style={[{ width, height, backgroundColor: color, borderRadius: 1 }, anim, style]}
+      style={[{ width: 2, height, backgroundColor: color, borderRadius: 1 }, anim, style]}
     />
   );
 }

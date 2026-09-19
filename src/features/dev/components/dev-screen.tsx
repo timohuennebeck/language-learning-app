@@ -13,7 +13,7 @@ type Entry = { name: string; route: string; onboarded?: boolean };
  * Every screen from the Claude Design canvas, in design order, for quick visual checks.
  * The list is the same manifest the screenshot scripts use (`design/screens.json`).
  */
-export function DevIndex() {
+export function DevScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session, update } = useSession();

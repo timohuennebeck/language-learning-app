@@ -6,20 +6,19 @@ import { useSession } from '@/features/auth/hooks/use-session';
 import { demoResult } from '@/features/flashcards/data/content';
 import type { DeckResult } from '@/features/flashcards/data/schemas';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
+import { ResultHero } from '@/shared/components/result-hero';
 import { useBack } from '@/shared/hooks/use-back';
+import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Gradient } from '@/shared/ui/gradient';
-import { Illustration } from '@/shared/ui/illustration';
 import { Kicker } from '@/shared/ui/kicker';
 import { NavCircle } from '@/shared/ui/nav-circle';
-import { Ring } from '@/shared/ui/ring';
 import { Screen } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 
 /** Cards missed this often are drawn as filled chips with their count. */
 const EMPHASIS_AT = 3;
-const RING = { size: 190, stroke: 8, badge: 36 };
 
 type RepeatCard = DeckResult['again'][number];
 
@@ -28,7 +27,10 @@ function Chip({ card }: { card: RepeatCard }) {
   const strong = card.misses >= EMPHASIS_AT;
   return (
     <View
-      className={`flex-row items-center rounded-pill px-[14px] ${strong ? 'bg-accent-800' : 'bg-surface'}`}
+      className={cn(
+        'flex-row items-center rounded-pill px-[14px]',
+        strong ? 'bg-accent-800' : 'bg-surface',
+      )}
       style={{ height: 40, columnGap: 5 }}
     >
       <Text className={strong ? 'text-accent-100' : 'text-ink'} style={{ fontSize: 17 }}>
@@ -93,47 +95,16 @@ export function FlashcardsDoneScreen() {
   const progress = result.total ? result.known / result.total : 0;
 
   return (
-    <Screen top={0} bottom={-10} className="px-[22px]">
+    <Screen bottom={-10} className="px-[22px]">
       <View className="h-[40px] justify-center">
         <NavCircle icon="close" onPress={back} />
       </View>
-      <View className="mt-[24px] items-center">
-        {/* The badge's centre sits on the ring line: half the badge height minus half the stroke. */}
-        <View className="items-center" style={{ paddingBottom: RING.badge / 2 - RING.stroke / 2 }}>
-          <Ring
-            size={RING.size}
-            stroke={RING.stroke}
-            progress={progress}
-            trackColor={colors.track3}
-            color={colors.accent[700]}
-          >
-            <Illustration name="pip-trophy" size={112} />
-          </Ring>
-          <View
-            className="absolute rounded-pill bg-accent-800 px-[16px]"
-            style={{ bottom: 0, height: RING.badge, justifyContent: 'center' }}
-          >
-            <Text
-              className="font-semibold text-accent-100"
-              style={{ fontSize: 15, fontVariant: ['tabular-nums'] }}
-            >
-              {t('flashcards.result.badge', { known: result.known, total: result.total })}
-            </Text>
-          </View>
-        </View>
-        <Text
-          className="mt-[26px] text-center font-semibold text-ink"
-          style={{ fontSize: 30, lineHeight: 34, letterSpacing: -0.9 }}
-        >
-          {t('flashcards.result.title', { name: session.name })}
-        </Text>
-        <Text
-          className="mt-[12px] px-[20px] text-center text-muted"
-          style={{ fontSize: 17, lineHeight: 24 }}
-        >
-          {t('flashcards.result.sub')}
-        </Text>
-      </View>
+      <ResultHero
+        progress={progress}
+        badge={t('flashcards.result.badge', { known: result.known, total: result.total })}
+        title={t('flashcards.result.title', { name: session.name })}
+        sub={t('flashcards.result.sub')}
+      />
       {result.again.length ? (
         <View className="mt-[30px] flex-1 overflow-hidden" style={{ minHeight: 120 }}>
           <ScrollView

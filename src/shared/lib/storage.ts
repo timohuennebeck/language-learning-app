@@ -28,6 +28,6 @@ export async function removeKey(key: string): Promise<void> {
   try {
     await AsyncStorage.removeItem(key);
   } catch {
-    /* ignore */
+    /* storage is best-effort */
   }
 }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
-import { DailyGoalOptions, EtaCard } from '@/shared/components/daily-goal';
+import { DailyGoalOptions } from '@/shared/components/daily-goal';
 import { Button, TextButton } from '@/shared/ui/button';
 
 /** 09h · Tägliche Lernzeit (9 von 13). */
@@ -12,10 +12,10 @@ export function DailyGoalStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session, update } = useSession();
-  const next = () => router.push('/(onboarding)/paywall');
+  const next = () => router.push('/(onboarding)/prognosis');
   return (
     <OnboardingFrame
-      step={9}
+      step={14}
       title={t('onboarding.dailyGoal.title', { name: session.name })}
       sub={t('onboarding.dailyGoal.sub')}
       footer={
@@ -35,7 +35,6 @@ export function DailyGoalStep() {
         value={session.dailyGoalMinutes}
         onChange={(dailyGoalMinutes) => update({ dailyGoalMinutes })}
       />
-      <EtaCard className="mt-[20px]" minutes={session.dailyGoalMinutes} />
       <View style={{ minHeight: 16 }} />
     </OnboardingFrame>
   );

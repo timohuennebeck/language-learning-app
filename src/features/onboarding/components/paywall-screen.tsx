@@ -6,15 +6,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MarkedHeadline } from '@/shared/components/marked-headline';
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { Button } from '@/shared/ui/button';
+import { Button, TextButton } from '@/shared/ui/button';
 import { Gradient, HEADER_GRADIENT } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
 import { CheckCircle, RadioMark } from '@/shared/ui/marks';
 import { NavCircle } from '@/shared/ui/nav-circle';
-import { Screen } from '@/shared/ui/screen';
+import { PAGE_TOP, Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
+import { useLayout } from '@/shared/hooks/use-layout';
 import { RecommendedBadge } from '@/shared/ui/recommended-badge';
 import { Text } from '@/shared/ui/text';
 
@@ -31,6 +33,7 @@ export function PaywallScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [plan, setPlan] = useState<string>('p30');
+  const [recommendedCard, onRecommendedLayout] = useLayout();
   const perks = t('onboarding.paywall.perks', { returnObjects: true }) as string[];
   const selected = PLANS.find((p) => p.id === plan) ?? PLANS[1];
   return (
@@ -55,17 +58,14 @@ export function PaywallScreen() {
             className="mt-[10px] flex-row items-center justify-center"
             style={{ columnGap: 10 }}
           >
-            <Tap haptic="light" onPress={() => router.push('/(onboarding)/redeem-code')}>
-              <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
-                {t('onboarding.paywall.inviteCode')}
-              </Text>
-            </Tap>
+            <TextButton
+              size={15}
+              color="text-accent-800"
+              label={t('onboarding.paywall.inviteCode')}
+              onPress={() => router.push('/(onboarding)/redeem-code')}
+            />
             <View className="h-[4px] w-[4px] rounded-full bg-ring4" />
-            <Tap haptic="light">
-              <Text className="font-semibold text-accent-800" style={{ fontSize: 15 }}>
-                {t('onboarding.paywall.restore')}
-              </Text>
-            </Tap>
+            <TextButton size={15} color="text-accent-800" label={t('onboarding.paywall.restore')} />
           </View>
         </View>
       }
@@ -80,7 +80,7 @@ export function PaywallScreen() {
           color={colors.glyph}
           style={{
             position: 'absolute',
-            top: insets.top,
+            top: insets.top + PAGE_TOP,
             left: 20,
             backgroundColor: 'rgba(255,255,255,.7)',
           }}
@@ -112,7 +112,7 @@ export function PaywallScreen() {
         <Text className="mt-[8px] text-muted" style={{ fontSize: 15.5, lineHeight: 22 }}>
           {t('onboarding.paywall.sub')}
         </Text>
-        <View className="mt-[22px] flex-row" style={{ columnGap: 10, zIndex: 1 }}>
+        <View className="relative mt-[22px] flex-row" style={{ columnGap: 10 }}>
           {PLANS.map((p) => {
             const on = p.id === plan;
             return (
@@ -120,22 +120,15 @@ export function PaywallScreen() {
                 key={p.id}
                 haptic="selection"
                 onPress={() => setPlan(p.id)}
-                className="relative flex-1 rounded-[22px] bg-white"
+                onLayout={'recommended' in p && p.recommended ? onRecommendedLayout : undefined}
+                className="flex-1 rounded-[22px] bg-white"
                 style={{
                   paddingTop: 16,
                   paddingBottom: 15,
                   paddingHorizontal: 14,
-                  boxShadow: on ? `0 0 0 2px ${colors.accent[700]}` : `0 0 0 1.5px ${colors.line2}`,
-                  zIndex: 'recommended' in p && p.recommended ? 2 : 1,
+                  boxShadow: on ? ring(2, colors.accent[700]) : ring(1.5, colors.line2),
                 }}
               >
-                {'recommended' in p && p.recommended ? (
-                  <RecommendedBadge
-                    style={{ left: 14, top: -18 }}
-                    size={12.5}
-                    paddingVertical={5}
-                  />
-                ) : null}
                 <View className="flex-row items-center justify-between">
                   <Text
                     className={cn('font-semibold', on ? 'text-accent-900' : 'text-ink')}
@@ -143,13 +136,7 @@ export function PaywallScreen() {
                   >
                     {p.talks}
                   </Text>
-                  <RadioMark
-                    selected={on}
-                    size={22}
-                    ringColor={colors.ring3}
-                    bg={colors.accent[700]}
-                    checkStroke={2.6}
-                  />
+                  <RadioMark selected={on} size={22} ringColor={colors.ring3} />
                 </View>
                 <Text className="mt-[6px] font-semibold text-ink" style={{ fontSize: 14.5 }}>
                   {t('onboarding.paywall.talks')}
@@ -169,12 +156,19 @@ export function PaywallScreen() {
               </Tap>
             );
           })}
+          {recommendedCard ? (
+            <RecommendedBadge
+              style={{ left: recommendedCard.x + 14, top: -18 }}
+              size={12.5}
+              paddingVertical={5}
+            />
+          ) : null}
         </View>
         <View className="mt-[18px] pb-[15px] pt-[16px]" style={{ rowGap: 9 }}>
           <Kicker tracking={0.1}>{t('onboarding.paywall.alwaysUnlimited')}</Kicker>
           {perks.map((p) => (
             <View key={p} className="flex-row items-center" style={{ columnGap: 11 }}>
-              <CheckCircle size={22} bg={colors.accent[700]} stroke={2.6} iconSize={12} />
+              <CheckCircle size={22} />
               <Text className="text-ink" style={{ fontSize: 15.5, lineHeight: 20 }}>
                 {p}
               </Text>

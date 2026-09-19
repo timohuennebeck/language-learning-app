@@ -19,7 +19,7 @@ export function GrammarScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar left="back" title={t('grammar.title')} titleSize={20} />
       <View
         className="relative mt-[22px] overflow-hidden rounded-[26px] bg-surface px-[24px] py-[22px]"

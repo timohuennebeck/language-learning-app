@@ -1,14 +1,19 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View } from 'react-native';
+import { useMemo } from 'react';
+import { ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { FeedbackCard } from '@/features/exercises/components/feedback-card';
 import { Build } from '@/features/exercises/components/steps/build';
+import { Conjugate } from '@/features/exercises/components/steps/conjugate';
 import { FillFree } from '@/features/exercises/components/steps/fill-free';
 import { FillOptions } from '@/features/exercises/components/steps/fill-options';
 import { TranslateFree } from '@/features/exercises/components/steps/translate-free';
 import { cafeExercise } from '@/features/exercises/data/content';
 import { useExerciseSession } from '@/features/exercises/hooks/use-exercise-session';
+import { conjugateWrongWhy } from '@/features/exercises/lib/answers';
+import { haptic } from '@/shared/lib/haptics';
+import { playSound } from '@/shared/lib/sounds';
 import { colors } from '@/shared/theme/tokens';
 import { Button } from '@/shared/ui/button';
 import { ResetGlyph } from '@/shared/ui/icons';
@@ -16,29 +21,45 @@ import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { ProgressTopBar } from '@/shared/ui/top-bar';
 
-/** Exercise flow. Dev/verification params: `?step=3&state=correct|wrong` (also pre-fill typed drafts). */
+/**
+ * Exercise flow. `?ids=s2,s5` runs only those steps (retry from the result screen).
+ * Dev/verification params: `?step=3&state=correct|wrong` (also pre-fill typed drafts).
+ */
 export function ExerciseScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ step?: string; state?: string }>();
-  const s = useExerciseSession(cafeExercise, {
+  const params = useLocalSearchParams<{ step?: string; state?: string; ids?: string }>();
+  const exercise = useMemo(() => {
+    if (!params.ids) return cafeExercise;
+    const ids = params.ids.split(',');
+    const steps = cafeExercise.steps.filter((step) => ids.includes(step.id));
+    return steps.length ? { ...cafeExercise, steps } : cafeExercise;
+  }, [params.ids]);
+  const s = useExerciseSession(exercise, {
     initialIndex: params.step ? Number(params.step) - 1 : 0,
     initialPhase: params.state === 'correct' || params.state === 'wrong' ? params.state : 'task',
     designDrafts: params.step !== undefined,
   });
   const task = s.phase === 'task';
-  const typed = s.step.kind === 'fill-free' || s.step.kind === 'translate-free';
+  const typed =
+    s.step.kind === 'fill-free' || s.step.kind === 'translate-free' || s.step.kind === 'conjugate';
   const keyboard = task && typed;
-  const px = task && s.step.kind === 'fill-options' ? 26 : 22;
-  const submit = () => {
-    if (s.canCheck) s.check();
+  const check = () => {
+    if (!s.canCheck) return;
+    const ok = s.check();
+    playSound(ok ? 'correct' : 'incorrect');
+    haptic(ok ? 'success' : 'error');
   };
   const onNext = () => {
-    if (!s.next()) router.replace('/(app)/daily-limit');
+    if (s.next()) return;
+    router.replace({
+      pathname: '/(app)/exercise/done',
+      params: { total: String(s.total), wrong: s.wrongIds.join(',') },
+    });
   };
 
   return (
-    <Screen top={0} bottom={keyboard ? -34 : 0} style={{ paddingHorizontal: px }} keyboard={typed}>
+    <Screen bottom={keyboard ? -34 : 0} className="px-[22px]" keyboard={typed}>
       <ProgressTopBar
         height={32}
         progress={(s.index + 1) / s.total}
@@ -46,38 +67,75 @@ export function ExerciseScreen() {
         labelSize={13}
         trackColor={colors.track2}
       />
-      {s.step.kind === 'fill-options' ? (
-        <FillOptions
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string}
-          setAnswer={s.setAnswer}
-        />
-      ) : s.step.kind === 'fill-free' ? (
-        <FillFree
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string}
-          setAnswer={s.setAnswer}
-          onSubmit={submit}
-        />
-      ) : s.step.kind === 'build' ? (
-        <Build
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string[]}
-          setAnswer={s.setAnswer}
-        />
-      ) : (
-        <TranslateFree
-          step={s.step}
-          phase={s.phase}
-          answer={s.answer as string}
-          setAnswer={s.setAnswer}
-          onSubmit={submit}
-        />
+      {/* The step (and, after checking, the feedback card) scrolls; Prüfen / Weiter stay put. */}
+      <ScrollView
+        className="flex-1"
+        style={{ marginHorizontal: -22 }}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 22 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {s.step.kind === 'fill-options' ? (
+          <FillOptions
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string}
+            setAnswer={s.setAnswer}
+          />
+        ) : s.step.kind === 'fill-free' ? (
+          <FillFree
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string}
+            setAnswer={s.setAnswer}
+            onSubmit={check}
+          />
+        ) : s.step.kind === 'build' ? (
+          <Build
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string[]}
+            setAnswer={s.setAnswer}
+          />
+        ) : s.step.kind === 'conjugate' ? (
+          <Conjugate
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string[]}
+            setAnswer={s.setAnswer}
+            onSubmit={check}
+          />
+        ) : (
+          <TranslateFree
+            step={s.step}
+            phase={s.phase}
+            answer={s.answer as string}
+            setAnswer={s.setAnswer}
+            onSubmit={check}
+          />
+        )}
+        {task ? null : (
+          <>
+            <View className="flex-1" style={{ minHeight: 20 }} />
+            <FeedbackCard
+              correct={s.phase === 'correct'}
+              why={s.step.correctWhy}
+              wrongWhy={
+                s.step.kind === 'conjugate'
+                  ? conjugateWrongWhy(s.step, s.answer as string[])
+                  : s.step.wrongWhy
+              }
+              youLine={'youLine' in s.step ? s.step.youLine : undefined}
+              rightLine={'rightLine' in s.step ? s.step.rightLine : undefined}
+            />
+          </>
+        )}
+      </ScrollView>
+      {task ? null : (
+        <View style={{ paddingTop: 14 }}>
+          <Button height={56} label={t('common.next')} onPress={onNext} />
+        </View>
       )}
-      <View className="flex-1" style={{ minHeight: task ? 0 : 20 }} />
       {task ? (
         <View
           className="flex-row items-center"
@@ -88,7 +146,7 @@ export function ExerciseScreen() {
               haptic="light"
               onPress={s.reset}
               accessibilityLabel={t('common.reset')}
-              className="h-[58px] w-[58px] items-center justify-center rounded-full bg-surface2"
+              className="h-[56px] w-[56px] items-center justify-center rounded-full bg-surface2"
             >
               <ResetGlyph />
             </Tap>
@@ -96,25 +154,14 @@ export function ExerciseScreen() {
           <Button
             className="flex-1"
             variant="strong"
-            height={s.step.kind === 'fill-options' || s.step.kind === 'build' ? 58 : 56}
+            height={56}
             label={t('common.check')}
             disabled={!s.canCheck}
-            onPress={s.check}
+            haptic="none"
+            onPress={check}
           />
         </View>
-      ) : (
-        <>
-          <FeedbackCard
-            correct={s.phase === 'correct'}
-            why={s.step.correctWhy}
-            wrongWhy={s.step.wrongWhy}
-            youLine={s.step.youLine}
-            rightLine={s.step.rightLine}
-          />
-          <View style={{ height: 14 }} />
-          <Button height={56} label={t('common.next')} onPress={onNext} />
-        </>
-      )}
+      ) : null}
     </Screen>
   );
 }

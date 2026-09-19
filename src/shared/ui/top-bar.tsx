@@ -14,20 +14,12 @@ type TopBarProps = {
   onLeftPress?: () => void;
   /** Title font size: 20 (large, "Lesen") or 16 (compact, "Profil"). */
   titleSize?: 16 | 20;
-  className?: string;
 };
 
 /** 40px tall bar: 40px left slot, centered title, 40px right slot. */
-export function TopBar({
-  title,
-  left = 'back',
-  right,
-  onLeftPress,
-  titleSize = 16,
-  className,
-}: TopBarProps) {
+export function TopBar({ title, left = 'back', right, onLeftPress, titleSize = 16 }: TopBarProps) {
   return (
-    <View className={cn('h-[40px] flex-row items-center', className)}>
+    <View className="h-[40px] flex-row items-center">
       <View className="w-[44px] items-start">
         {left === 'back' || left === 'close' ? (
           <NavCircle icon={left} onPress={onLeftPress} />
@@ -57,9 +49,11 @@ type ProgressTopBarProps = {
   label: string;
   onBack?: () => void;
   height?: number;
-  className?: string;
   labelSize?: number;
   trackColor?: string;
+  /** Background of the back circle (white on gradient headers). */
+  backBg?: string;
+  className?: string;
 };
 
 /** Back circle + 6px progress bar + trailing counter ("3 von 13", "3 / 8"). */
@@ -68,13 +62,18 @@ export function ProgressTopBar({
   label,
   onBack,
   height = 34,
-  className,
   labelSize = 14.5,
   trackColor = colors.track,
+  backBg,
+  className,
 }: ProgressTopBarProps) {
   return (
     <View className={cn('flex-row items-center', className)} style={{ height, columnGap: 12 }}>
-      <NavCircle icon="back" onPress={onBack} />
+      <NavCircle
+        icon="back"
+        onPress={onBack}
+        style={backBg ? { backgroundColor: backBg } : undefined}
+      />
       <ProgressBar progress={progress} className="flex-1" trackColor={trackColor} />
       <Text className="text-muted" style={{ fontSize: labelSize, fontVariant: ['tabular-nums'] }}>
         {label}

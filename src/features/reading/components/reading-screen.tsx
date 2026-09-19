@@ -11,21 +11,25 @@ import {
   swapPairs,
   swapSection,
 } from '@/features/reading/data/content';
-import { useGoToCourse } from '@/shared/hooks/use-back';
 import { InlineFlow } from '@/shared/components/inline-flow';
+import { InlineMark } from '@/shared/components/inline-mark';
+import { useGoToCourse } from '@/shared/hooks/use-back';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
-import { ArrowLeft, ArrowRight } from '@/shared/ui/icons';
-import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Button } from '@/shared/ui/button';
+import { ArrowLeft, ArrowRight } from '@/shared/ui/icons';
+import { Kicker } from '@/shared/ui/kicker';
+import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
-import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 import { TopBar } from '@/shared/ui/top-bar';
 
 const BODY = { fontSize: 20.5, lineHeight: 35.3, color: colors.accent[900] } as const;
 /** The German-to-French variant sets its lines a little looser. */
 const BODY_SWAP = { ...BODY, lineHeight: 36.9 } as const;
+/** Ring of a swap box that still shows the German. */
+const SWAP_RING = insetRing(1.5, colors.ring5);
 /** Reading sessions have three sections in the design; only the first two are built. */
 const SECTIONS = 3;
 
@@ -42,8 +46,8 @@ export function ReadingScreen() {
   const revealedCount = Object.values(revealed).filter(Boolean).length;
 
   return (
-    <Screen top={0} bottom={0} className="relative px-[22px]">
-      <TopBar left="close" title={t('reading.title')} titleSize={20} />
+    <Screen bottom={0} className="relative px-[22px]">
+      <TopBar left="back" title={t('reading.title')} titleSize={20} />
       {section === 1 ? (
         <View className="mt-[20px]">
           <Kicker tracking={0.1} className="text-accent-700">
@@ -82,25 +86,21 @@ export function ReadingScreen() {
               : {
                   key: `${p.seg}-${i}`,
                   node: (
-                    <Tap
-                      haptic="selection"
+                    <InlineMark
+                      size={BODY.fontSize}
+                      color={BODY.color}
+                      bg={TIER_BG[segments[p.seg].tier]}
+                      ring={selected === p.seg ? insetRing(2, colors.accent[700]) : undefined}
+                      sound="none"
+                      px={3}
+                      py={1}
                       onPress={() => {
                         setSelected(p.seg);
                         router.push({ pathname: '/(app)/reading/word', params: { seg: p.seg } });
                       }}
-                      style={{
-                        borderRadius: 6,
-                        paddingHorizontal: 3,
-                        paddingVertical: 1,
-                        backgroundColor: TIER_BG[segments[p.seg].tier],
-                        boxShadow:
-                          selected === p.seg ? `inset 0 0 0 2px ${colors.accent[700]}` : undefined,
-                      }}
                     >
-                      <Text style={{ ...BODY, lineHeight: BODY.fontSize * 1.3 }}>
-                        {segments[p.seg].word}
-                      </Text>
-                    </Tap>
+                      {segments[p.seg].word}
+                    </InlineMark>
                   ),
                 },
           )}
@@ -115,28 +115,18 @@ export function ReadingScreen() {
             return {
               key: `${p.swap}-${i}`,
               node: (
-                <Tap
-                  haptic="selection"
+                <InlineMark
+                  size={BODY.fontSize}
+                  color={open ? colors.accent[900] : colors.accent[700]}
+                  bg={open ? colors.accent[300] : 'transparent'}
+                  ring={open ? undefined : SWAP_RING}
+                  px={6}
+                  py={2}
                   onPress={() => setRevealed((r) => ({ ...r, [p.swap]: !r[p.swap] }))}
                   accessibilityState={{ expanded: open }}
-                  style={{
-                    borderRadius: 6,
-                    paddingHorizontal: 6,
-                    paddingVertical: 2,
-                    backgroundColor: open ? colors.accent[300] : 'transparent',
-                    boxShadow: open ? undefined : `inset 0 0 0 1.5px ${colors.ring5}`,
-                  }}
                 >
-                  <Text
-                    style={{
-                      ...BODY,
-                      lineHeight: BODY.fontSize * 1.3,
-                      color: open ? colors.accent[900] : colors.accent[700],
-                    }}
-                  >
-                    {open ? swapPairs[p.swap][1] : swapPairs[p.swap][0]}
-                  </Text>
-                </Tap>
+                  {open ? swapPairs[p.swap][1] : swapPairs[p.swap][0]}
+                </InlineMark>
               ),
             };
           })}
@@ -151,16 +141,15 @@ export function ReadingScreen() {
               : {
                   key: `${p.text}-${i}`,
                   node: (
-                    <View
-                      style={{
-                        borderRadius: 6,
-                        paddingHorizontal: 3,
-                        paddingVertical: 1,
-                        backgroundColor: TIER_BG[p.tier],
-                      }}
+                    <InlineMark
+                      size={BODY.fontSize}
+                      color={BODY.color}
+                      bg={TIER_BG[p.tier]}
+                      px={3}
+                      py={1}
                     >
-                      <Text style={{ ...BODY, lineHeight: BODY.fontSize * 1.3 }}>{p.text}</Text>
-                    </View>
+                      {p.text}
+                    </InlineMark>
                   ),
                 },
           )}
@@ -168,10 +157,7 @@ export function ReadingScreen() {
       )}
       {swap ? (
         <View className="mt-[16px] flex-row items-center" style={{ columnGap: 9 }}>
-          <View
-            className="rounded-[6px] px-[8px] py-[2px]"
-            style={{ boxShadow: `inset 0 0 0 1.5px ${colors.ring5}` }}
-          >
+          <View className="rounded-[6px] px-[8px] py-[2px]" style={{ boxShadow: SWAP_RING }}>
             <Text className="text-accent-700" style={{ fontSize: 13.5 }}>
               {t('reading.german')}
             </Text>

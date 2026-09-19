@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -26,12 +25,11 @@ export function LearningLanguageStep() {
         />
       }
     >
-      <View className="mt-[22px]">
-        <LearningLanguageList
-          value={session.learningLanguage}
-          onChange={(learningLanguage) => update({ learningLanguage })}
-        />
-      </View>
+      <LearningLanguageList
+        className="mt-[22px]"
+        value={session.learningLanguage}
+        onChange={(learningLanguage) => update({ learningLanguage })}
+      />
     </OnboardingFrame>
   );
 }

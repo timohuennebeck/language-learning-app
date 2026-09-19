@@ -20,10 +20,16 @@ export function TargetLevelStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session, update } = useSession();
-  const next = () => router.push('/(onboarding)/daily-goal');
+  const targets = targetsFor(session.level);
+  // A target picked for an earlier level choice can fall below the new level; offer the first reachable one.
+  const target = targets.includes(session.targetLevel) ? session.targetLevel : targets[0];
+  const next = () => {
+    if (target !== session.targetLevel) update({ targetLevel: target });
+    router.push('/(onboarding)/daily-goal');
+  };
   return (
     <OnboardingFrame
-      step={8}
+      step={13}
       title={t('onboarding.targetLevel.title')}
       sub={t('onboarding.targetLevel.sub')}
       footer={
@@ -31,7 +37,7 @@ export function TargetLevelStep() {
           <Button
             height={60}
             size={17.5}
-            label={t('onboarding.targetLevel.cta', { level: session.targetLevel })}
+            label={t('onboarding.targetLevel.cta', { level: target })}
             onPress={next}
           />
           <TextButton className="mt-[16px]" label={t('common.decideLater')} onPress={next} />
@@ -52,7 +58,7 @@ export function TargetLevelStep() {
         </Text>
       </View>
       <View className="mt-[16px]" style={{ rowGap: 10 }}>
-        {targetsFor(session.level).map((lvl) => (
+        {targets.map((lvl) => (
           <OptionCard
             key={lvl}
             badge={lvl}
@@ -61,7 +67,7 @@ export function TargetLevelStep() {
             tags={lvl === 'B2' ? [t('onboarding.targetLevel.options.B2.tag')] : undefined}
             nameSize={20}
             subSize={14.5}
-            selected={session.targetLevel === lvl}
+            selected={target === lvl}
             onPress={() => update({ targetLevel: lvl })}
           />
         ))}

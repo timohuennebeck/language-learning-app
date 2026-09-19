@@ -1,34 +1,33 @@
-import { View } from 'react-native';
-
+import { InlineMark } from '@/shared/components/inline-mark';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
-import { Text } from '@/shared/ui/text';
 
 /**
  * Inline answer chip inside a sentence (green when correct, red + strikethrough when wrong).
- * Rendered as a View inside the sentence Text: native Text cannot draw a rounded background.
+ * A real View so the rounded background renders on native; place it as an `InlineFlow` piece.
  */
-export function AnswerChip({ text, ok, size }: { text: string; ok: boolean; size: number }) {
+type Props = {
+  text: string;
+  ok: boolean;
+  size: number;
+  /** Total chip height; matches the task-phase gap box. */ height: number;
+};
+
+export function AnswerChip({ text, ok, size, height }: Props) {
+  // Natural line height: extra leading would sit above the glyphs on iOS and sink the word.
+  const lineHeight = size * 1.2;
   return (
-    <View
-      style={{
-        borderRadius: 14,
-        paddingHorizontal: 12,
-        paddingVertical: 2,
-        backgroundColor: ok ? colors.ok.chip : colors.err.chip,
-        transform: [{ translateY: size * 0.16 }],
-      }}
+    <InlineMark
+      size={size}
+      lineHeight={lineHeight}
+      color={ok ? colors.ok.text : colors.err.text}
+      bg={ok ? colors.ok.chip : colors.err.chip}
+      radius={14}
+      px={12}
+      py={(height - lineHeight) / 2}
+      textClassName={cn(!ok && 'line-through')}
     >
-      <Text
-        className={cn(!ok && 'line-through')}
-        style={{
-          fontSize: size,
-          lineHeight: size * 1.4,
-          color: ok ? colors.ok.text : colors.err.text,
-        }}
-      >
-        {text}
-      </Text>
-    </View>
+      {text}
+    </InlineMark>
   );
 }

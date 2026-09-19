@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PAGE_TOP } from '@/shared/ui/screen';
 
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
@@ -43,7 +44,7 @@ export function GradientHeader({
     <Gradient
       {...HEADER_GRADIENT}
       className={cn('items-center overflow-hidden px-[22px]', className)}
-      style={[{ paddingTop: insets.top - 4, paddingBottom }, style]}
+      style={[{ paddingTop: insets.top + PAGE_TOP, paddingBottom }, style]}
     >
       {title ? (
         <View className="h-[40px] w-full flex-row items-center" style={{ columnGap: 12 }}>

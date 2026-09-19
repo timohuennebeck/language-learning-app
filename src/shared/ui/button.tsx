@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Tap, type TapProps } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
@@ -81,11 +82,7 @@ export function Button({
         containerByVariant[v],
         className,
       )}
-      style={[
-        { height },
-        v === 'white' ? { boxShadow: `0 0 0 1.5px ${colors.line2}` } : null,
-        style,
-      ]}
+      style={[{ height }, v === 'white' ? { boxShadow: ring(1.5, colors.line2) } : null, style]}
       {...props}
     >
       {left ? <View className="mr-[10px]">{left}</View> : null}

@@ -1,13 +1,9 @@
 import { z } from 'zod';
 
+/** Server-side profile (mocked); the rest of the user state lives in the session for now. */
 export const ProfileSchema = z.object({
-  name: z.string(),
   email: z.string(),
-  plusActive: z.boolean(),
-  learningLanguage: z.string(),
-  appLanguage: z.string(),
   dailyGoalMinutes: z.number().int(),
-  reminderTime: z.string(),
 });
 export type Profile = z.infer<typeof ProfileSchema>;
 
@@ -20,6 +16,5 @@ export const ProgressSchema = z.object({
   wordsSaved: z.number().int(),
   wordsGoal: z.number().int(),
   talks: z.number().int(),
-  talksLast30: z.number().int(),
 });
 export type Progress = z.infer<typeof ProgressSchema>;

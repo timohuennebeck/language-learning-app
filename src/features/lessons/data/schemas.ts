@@ -9,7 +9,7 @@ export const LessonSchema = z.object({
 });
 export type Lesson = z.infer<typeof LessonSchema>;
 
-export const StationKindSchema = z.enum(['read', 'cards', 'grammar', 'practice', 'live']);
+const StationKindSchema = z.enum(['read', 'cards', 'grammar', 'practice', 'live']);
 export type StationKind = z.infer<typeof StationKindSchema>;
 
 export const ChapterSchema = z.object({

@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
 import { GradientHeader } from '@/shared/components/gradient-header';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
 import { CheckIcon } from '@/shared/ui/icons';
 import { useGoHome } from '@/shared/hooks/use-back';
 import { Screen } from '@/shared/ui/screen';
+import { Kicker } from '@/shared/ui/kicker';
 import { Text } from '@/shared/ui/text';
 
 /** 08b · Serie gestartet (nach der ersten Übung). */
@@ -55,13 +57,9 @@ export function StreakScreen() {
       <View className="mt-[26px] rounded-[26px] bg-surface px-[18px] pb-[22px] pt-[20px]">
         <View className="flex-row justify-between" style={{ columnGap: 6 }}>
           {DAYS.map((d, i) => (
-            <Text
-              key={i}
-              className="w-[40px] text-center text-muted"
-              style={{ fontSize: 12.5, letterSpacing: 0.75 }}
-            >
+            <Kicker key={i} size={12.5} tracking={0.06} className="w-[40px] text-center text-muted">
               {d}
-            </Text>
+            </Kicker>
           ))}
         </View>
         <View className="mt-[10px] flex-row justify-between" style={{ columnGap: 6 }}>
@@ -72,7 +70,7 @@ export function StreakScreen() {
               style={
                 i === 0
                   ? { backgroundColor: colors.accent[800] }
-                  : { boxShadow: `inset 0 0 0 1.5px ${colors.accent[300]}` }
+                  : { boxShadow: insetRing(1.5, colors.accent[300]) }
               }
             >
               {i === 0 ? (
@@ -87,8 +85,8 @@ export function StreakScreen() {
         </View>
       </View>
       <Text
-        className="mt-[18px] text-center"
-        style={{ fontSize: 15.5, lineHeight: 22.5, color: '#3f4250' }}
+        className="mt-[18px] text-center text-ink2"
+        style={{ fontSize: 15.5, lineHeight: 22.5 }}
       >
         {t('streak.note')}
       </Text>

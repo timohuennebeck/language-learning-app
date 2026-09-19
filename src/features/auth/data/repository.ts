@@ -89,6 +89,7 @@ function toSession(user: User, profile: ProfileRow, learner: LearnerRow | null):
       : DEFAULT_SESSION.learningLanguage,
     level: learner ? LevelSchema.parse(learner.level) : DEFAULT_SESSION.level,
     targetLevel: learner ? LevelSchema.parse(learner.target_level) : DEFAULT_SESSION.targetLevel,
+    readingLevel: null,
     dailyGoalMinutes: profile.goal_minutes,
     reminder: toReminder(profile),
     goal: learner ? LearningGoalSchema.nullable().parse(learner.goal) : DEFAULT_SESSION.goal,

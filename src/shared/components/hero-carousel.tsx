@@ -7,7 +7,6 @@ import {
   type NativeSyntheticEvent,
 } from 'react-native';
 
-import { cn } from '@/shared/lib/cn';
 import { Dots } from '@/shared/ui/marks';
 import { Tap } from '@/shared/ui/tap';
 import { Kicker } from '@/shared/ui/kicker';
@@ -42,7 +41,7 @@ export function HeroCarousel({ cards, className, dotsClassName = 'mt-[12px]' }: 
     if (i !== index) setIndex(Math.max(0, Math.min(cards.length - 1, i)));
   };
   return (
-    <View className={cn(className)} style={{ marginHorizontal: -SIDE }}>
+    <View className={className} style={{ marginHorizontal: -SIDE }}>
       <ScrollView
         ref={ref}
         horizontal

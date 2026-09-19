@@ -7,7 +7,7 @@ module.exports = defineConfig([
   expoConfig,
   ...pluginQuery.configs['flat/recommended'],
   {
-    ignores: ['dist/*', '.expo/*', 'scripts/**/*.js', 'design/**', 'supabase/**'],
+    ignores: ['dist/*', '.expo/*', '.claude/**', 'scripts/**/*.js', 'design/**', 'supabase/**'],
   },
   {
     rules: {

@@ -6,6 +6,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { SwipeCard } from '@/features/flashcards/components/swipe-card';
 import { useDeck } from '@/features/flashcards/hooks/use-deck';
 import { useSwipeDeck } from '@/features/flashcards/hooks/use-swipe-deck';
+import { ring } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Illustration } from '@/shared/ui/illustration';
 import { CheckIcon, CloseIcon } from '@/shared/ui/icons';
@@ -48,7 +49,7 @@ export function FlashcardsScreen() {
   }));
 
   return (
-    <Screen top={0} bottom={6} className="px-[22px]">
+    <Screen bottom={6} className="px-[22px]">
       <TopBar
         left="close"
         title={t('flashcards.title')}
@@ -83,7 +84,13 @@ export function FlashcardsScreen() {
         {d.index + 1 < cards.length ? (
           <View
             className="absolute rounded-[26px] bg-surface2"
-            style={{ top: 16, left: 40, right: 40, bottom: 140, boxShadow: '0 0 0 1px #e4e7f5' }}
+            style={{
+              top: 16,
+              left: 40,
+              right: 40,
+              bottom: 140,
+              boxShadow: ring(1, colors.neutral[200]),
+            }}
           />
         ) : null}
         {d.card ? (

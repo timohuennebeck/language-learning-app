@@ -1,14 +1,12 @@
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import type { Level } from '@/features/auth/data/schemas';
+import { LEVELS, type Level } from '@/features/auth/data/schemas';
 import { cn } from '@/shared/lib/cn';
 import { colors } from '@/shared/theme/tokens';
 import { Kicker } from '@/shared/ui/kicker';
 import { ProgressBar } from '@/shared/ui/progress-bar';
 import { Text } from '@/shared/ui/text';
-
-const LEVELS: Level[] = ['A1', 'A2', 'B1', 'B2'];
 
 type Props = {
   level: Level;

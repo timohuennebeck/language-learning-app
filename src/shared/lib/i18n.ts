@@ -35,13 +35,11 @@ if (!i18n.isInitialized) {
   });
 }
 
+/** Switches the UI language; a no-op when it is already active (changeLanguage would re-render every consumer). */
 export function setAppLanguage(lang: AppLanguage) {
-  return i18n.changeLanguage(lang);
+  return i18n.language === lang
+    ? Promise.resolve()
+    : i18n.changeLanguage(lang).then(() => undefined);
 }
 
 export default i18n;
-
-declare global {
-  var __i18n: typeof i18n | undefined;
-}
-if (__DEV__) globalThis.__i18n = i18n;

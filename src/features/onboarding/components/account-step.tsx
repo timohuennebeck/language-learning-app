@@ -6,8 +6,9 @@ import { OnboardingFrame } from '@/features/onboarding/components/onboarding-fra
 import { Button } from '@/shared/ui/button';
 import { CardGradient } from '@/shared/ui/gradient';
 import { Illustration } from '@/shared/ui/illustration';
-import { GoogleLogo, PhoneDevice } from '@/shared/ui/icons';
+import { GoogleLogo, MailIcon } from '@/shared/ui/icons';
 import { Text } from '@/shared/ui/text';
+import { TextLink } from '@/shared/ui/text-link';
 
 /**
  * 12 · Konto (10 von 13). Both buttons lead to the email screen for now: phone sign-in needs an
@@ -17,17 +18,16 @@ export function AccountStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const link = (label: string, doc?: 'privacy') => (
-    <Text
-      className="font-semibold text-accent-800"
+    <TextLink
       style={{ fontSize: 13.5 }}
       onPress={() => router.push({ pathname: '/(onboarding)/terms', params: doc ? { doc } : {} })}
     >
       {label}
-    </Text>
+    </TextLink>
   );
   return (
     <OnboardingFrame
-      step={10}
+      step={16}
       title={t('onboarding.account.title')}
       sub={t('onboarding.account.sub')}
       footer={
@@ -47,8 +47,8 @@ export function AccountStep() {
         <Button
           height={60}
           size={17}
-          label={t('onboarding.account.phone')}
-          left={<PhoneDevice />}
+          label={t('onboarding.account.email')}
+          left={<MailIcon />}
           className="[column-gap:2px]"
           onPress={() => router.push('/(onboarding)/account-email')}
         />

@@ -1,6 +1,7 @@
 import { View, type ViewProps } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { CheckIcon } from '@/shared/ui/icons';
 import { Tap } from '@/shared/ui/tap';
@@ -46,7 +47,8 @@ type RadioProps = {
   bg?: string;
   checkColor?: string;
   checkStroke?: number;
-  className?: string;
+  /** Check glyph size; defaults to 54% of the circle. */
+  checkSize?: number;
 };
 
 /** Radio indicator: empty inset ring, or filled circle with a check. */
@@ -58,50 +60,33 @@ export function RadioMark({
   bg = colors.accent[700],
   checkColor = '#fff',
   checkStroke = 2.6,
-  className,
+  checkSize,
 }: RadioProps) {
   if (!selected) {
     return (
       <View
-        className={cn('rounded-full', className)}
-        style={{ width: size, height: size, boxShadow: `inset 0 0 0 ${ringWidth}px ${ringColor}` }}
+        className="rounded-full"
+        style={{ width: size, height: size, boxShadow: insetRing(ringWidth, ringColor) }}
       />
     );
   }
   return (
-    <CheckCircle
-      size={size}
-      bg={bg}
-      color={checkColor}
-      stroke={checkStroke}
-      className={className}
-    />
+    <CheckCircle size={size} bg={bg} color={checkColor} stroke={checkStroke} iconSize={checkSize} />
   );
 }
 
 type CheckboxProps = {
   checked: boolean;
-  size?: number;
-  radius?: number;
   bg?: string;
   className?: string;
 };
 
-/** 26px rounded-square checkbox from the recap / wizard lists. */
-export function Checkbox({
-  checked,
-  size = 26,
-  radius = 7,
-  bg = colors.accent[800],
-  className,
-}: CheckboxProps) {
+/** 26px rounded-square (7px) checkbox from the recap / wizard lists. */
+export function Checkbox({ checked, bg = colors.accent[800], className }: CheckboxProps) {
   return (
     <View
-      className={cn('items-center justify-center', className)}
+      className={cn('h-[26px] w-[26px] items-center justify-center rounded-[7px]', className)}
       style={{
-        width: size,
-        height: size,
-        borderRadius: radius,
         borderWidth: 1.5,
         borderColor: checked ? bg : colors.faint,
         backgroundColor: checked ? bg : 'transparent',
@@ -133,6 +118,7 @@ export function Dots({
         <Tap
           key={i}
           haptic="selection"
+          sound="none"
           onPress={() => onPress?.(i)}
           hitSlop={6}
           accessibilityLabel={`${i + 1} / ${count}`}

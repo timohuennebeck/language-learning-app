@@ -17,7 +17,7 @@ import { HomeHeader } from '@/shared/components/home-header';
 import { TalkPreview } from '@/shared/components/previews';
 import { cn } from '@/shared/lib/cn';
 import { Kicker } from '@/shared/ui/kicker';
-import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Screen } from '@/shared/ui/screen';
 import { Spinner } from '@/shared/ui/spinner';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
@@ -51,9 +51,8 @@ export function SpeakScreen() {
   const visible = chip === 'forYou' && filtered.length === 0 ? all : filtered;
 
   return (
-    <Screen top={TAB_TOP} bottom={6} scroll>
-      <View className="flex-1 px-[22px]">
-        <HomeHeader />
+    <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
+      <View className="flex-1">
         <Text
           className="mt-[20px] font-medium text-accent-900"
           style={{ fontSize: 32, lineHeight: 32, letterSpacing: -0.96 }}

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CodeBoxes } from '@/shared/components/code-boxes';
 import { GradientHeader } from '@/shared/components/gradient-header';
+import { insetRing } from '@/shared/lib/styles';
 import { colors } from '@/shared/theme/tokens';
 import { Button, TextButton } from '@/shared/ui/button';
 import { Illustration } from '@/shared/ui/illustration';
@@ -48,7 +49,7 @@ export function ShareCodeScreen() {
             variant="ghost"
             label={t('common.copy')}
             labelClassName="text-accent-900"
-            style={{ boxShadow: `inset 0 0 0 1.5px ${colors.line2}` }}
+            style={{ boxShadow: insetRing(1.5, colors.line2) }}
             haptic="success"
             onPress={() => Clipboard.setStringAsync(`https://yori.app/${CODE}`).catch(() => {})}
           />

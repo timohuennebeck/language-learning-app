@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { useHomeFeed } from '@/features/lessons/hooks/use-lessons';
+import { DESIGN_PROGRESS } from '@/features/profile/data/repository';
 import { useProgress } from '@/features/profile/hooks/use-profile';
 import { HeroCarousel } from '@/shared/components/hero-carousel';
 import { HomeHeader } from '@/shared/components/home-header';
@@ -16,31 +17,27 @@ import {
 import { ProfileRow } from '@/shared/components/profile-row';
 import { StreakCard } from '@/shared/components/streak-card';
 import { Kicker } from '@/shared/ui/kicker';
-import { Screen, TAB_TOP } from '@/shared/ui/screen';
+import { Screen } from '@/shared/ui/screen';
 import { Tap } from '@/shared/ui/tap';
 import { Text } from '@/shared/ui/text';
 
-/** Design values shown while the progress query is loading. */
-const FALLBACK = { streakDays: 12, week: [1, 1, 1, 1, 1, 0, 0] };
-
 /**
  * 01 · Lernen (home): today's numbers, the carousel, the streak and what was last opened.
- * Scenario tiles live on the Sprechen tab (docs/lernen-plan.md §0).
+ * Scenario tiles live on the Sprechen tab (docs/sprechen-plan.md).
  */
 export function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useSession();
   const feed = useHomeFeed();
-  const progress = useProgress().data ?? FALLBACK;
+  const progress = useProgress().data ?? DESIGN_PROGRESS;
   const minutes = feed.data?.minutesToday ?? 6;
   const goal = feed.data?.goalMinutes ?? session.dailyGoalMinutes;
   const due = feed.data?.dueCards ?? 12;
 
   return (
-    <Screen top={TAB_TOP} bottom={6} scroll>
-      <View className="flex-1 px-[22px]">
-        <HomeHeader />
+    <Screen tabRoot bottom={6} className="px-[22px]" header={<HomeHeader />}>
+      <View className="flex-1">
         <Text
           className="mb-[4px] mt-[20px] font-medium text-accent-900"
           style={{ fontSize: 32, lineHeight: 32, letterSpacing: -0.96 }}

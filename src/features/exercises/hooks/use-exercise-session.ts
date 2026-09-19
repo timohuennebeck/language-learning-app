@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import type { ExerciseSession, ExerciseStep } from '@/features/exercises/data/schemas';
+import { isSameAnswer, wrongRows } from '@/features/exercises/lib/answers';
 
 export type Phase = 'task' | 'correct' | 'wrong';
 
@@ -11,16 +12,15 @@ type Options = {
   designDrafts?: boolean;
 };
 
-/** Loose comparison for typed answers: case, surrounding whitespace and punctuation are ignored. */
-function normalize(s: string) {
-  return s
-    .toLowerCase()
-    .replace(/[.,!?;:…]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function draftFor(s: ExerciseStep, p: Phase, designDrafts: boolean): string | string[] {
+  if (s.kind === 'conjugate')
+    return p === 'wrong'
+      ? s.wrongTyped
+      : p === 'correct'
+        ? s.answer
+        : designDrafts
+          ? s.typedPartial
+          : s.pronouns.map(() => '');
   if (s.kind === 'build')
     return p === 'wrong' ? s.wrongOrder : p === 'correct' ? s.answer : s.initial;
   if (s.kind === 'fill-options')
@@ -49,15 +49,23 @@ export function useExerciseSession(
   const [answer, setAnswer] = useState<string | string[]>(() =>
     draftFor(step, initialPhase, designDrafts),
   );
+  /** Ids of the steps answered wrongly so far. */
+  const [wrongIds, setWrongIds] = useState<string[]>([]);
 
   const canCheck =
-    step.kind === 'build' ? (answer as string[]).length >= 1 : String(answer).trim().length > 0;
+    step.kind === 'build'
+      ? (answer as string[]).length >= 1
+      : step.kind === 'conjugate'
+        ? (answer as string[]).every((a) => a.trim().length > 0)
+        : String(answer).trim().length > 0;
 
   const check = useCallback(() => {
     let ok = false;
     if (step.kind === 'build') ok = JSON.stringify(answer) === JSON.stringify(step.answer);
-    else ok = typeof answer === 'string' && normalize(answer) === normalize(step.answer);
+    else if (step.kind === 'conjugate') ok = wrongRows(step, answer as string[]).length === 0;
+    else ok = typeof answer === 'string' && isSameAnswer(answer, step.answer);
     setPhase(ok ? 'correct' : 'wrong');
+    if (!ok) setWrongIds((ids) => (ids.includes(step.id) ? ids : [...ids, step.id]));
     return ok;
   }, [answer, step]);
 
@@ -76,7 +84,19 @@ export function useExerciseSession(
   );
 
   return useMemo(
-    () => ({ index, phase, step, total, answer, canCheck, setAnswer, check, next, reset }),
-    [index, phase, step, total, answer, canCheck, check, next, reset],
+    () => ({
+      index,
+      phase,
+      step,
+      total,
+      answer,
+      wrongIds,
+      canCheck,
+      setAnswer,
+      check,
+      next,
+      reset,
+    }),
+    [index, phase, step, total, answer, wrongIds, canCheck, check, next, reset],
   );
 }

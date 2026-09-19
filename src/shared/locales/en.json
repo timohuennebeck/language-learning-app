@@ -15,8 +15,6 @@
     "alreadyMember": "Already a member?",
     "recommended": "Recommended",
     "min": "min",
-    "minutes": "minutes",
-    "of": "of",
     "stepOf": "{{step}} of {{total}}",
     "soon": "Soon",
     "understood": "Got it",
@@ -41,7 +39,7 @@
     "levelName": {
       "A1": "Beginner",
       "A2": "Basics",
-      "B1": "Independent",
+      "B1": "Intermediate",
       "B2": "Advanced"
     },
     "back": "Back",
@@ -49,8 +47,8 @@
     "weekdayLetters": ["M", "T", "W", "T", "F", "S", "S"],
     "languagePill": "French · A2",
     "reset": "Reset",
-    "noAccountYet": "New here?",
-    "createAccount": "Create account"
+    "yes": "Yes",
+    "no": "No"
   },
   "splash": {
     "brand": "Yori"
@@ -68,7 +66,6 @@
     "headlinePost": "become your exercises."
   },
   "terms": {
-    "title": "Terms of Service",
     "meta": "Lorem ipsum · Updated 15 September 2026",
     "sections": [
       {
@@ -138,18 +135,6 @@
       "pm": "pm",
       "cta": "Use {{time}}"
     },
-    "assessmentIntro": {
-      "kicker": "Placement conversation",
-      "title": "Five questions, then Pip knows your level.",
-      "sub": "One stage after the other. Answer in French, German or a mix.",
-      "question": "Qu’est-ce que tu fais le week-end ?",
-      "stage": "Stage 1 · Present",
-      "stagesLabel": "The five stages",
-      "stages": ["Today", "Yesterday", "Tomorrow", "Maybe", "Dreams"],
-      "cta": "Start conversation · 2 min",
-      "stageOf": "Stage {{n}} · {{name}}",
-      "ctaMinutes": "Start conversation · {{minutes}} min"
-    },
     "levelSelf": {
       "title": "How good is your French?",
       "sub": "Roughly is fine. Yori adjusts after your first conversation.",
@@ -179,21 +164,6 @@
       "precise": "Prefer precision? ",
       "preciseCta": "Talk for 2 minutes."
     },
-    "assessmentCall": {
-      "title": "Placement · French",
-      "question": "Question 1 of 5",
-      "sub": "Mistakes are welcome here.",
-      "partner": "Pip · your partner",
-      "live": "Live",
-      "prompt": "Qu’est-ce que tu fais le week-end ?",
-      "captions": "Live captions",
-      "you": "You",
-      "answer": "Je vois des amis… je prendre un café",
-      "liveLabel": "Live conversation",
-      "mute": "Mute",
-      "end": "End",
-      "subtitles": "Captions"
-    },
     "evaluating": {
       "title": "Pip is listening again.",
       "steps": [
@@ -204,45 +174,15 @@
       ],
       "secondsLeft": "{{n}} seconds left"
     },
-    "levelResult": {
-      "title": "Your level",
-      "kicker": "Placement",
-      "kickerSub": "2 minute conversation",
-      "blurb": {
-        "A1": "Single words and set phrases. Yori starts with pronunciation and first sentences.",
-        "A2": "You build simple sentences about daily life and weekends. Tenses and politeness are still shaky.",
-        "B1": "You tell coherent stories and correct yourself. Next up: connectors and nuance.",
-        "B2": "You discuss fluently. Next up: register, idioms and written style."
-      },
-      "fromTalk": "From your conversation",
-      "spots": "3 spots",
-      "items": [
-        {
-          "text": "Le week-end je vois des amis",
-          "sub": "Structure and articles are solid",
-          "status": "solid",
-          "pct": 88
-        },
-        {
-          "text": "je prends un café → j’ai pris",
-          "sub": "Base form instead of past tense",
-          "status": "practice",
-          "pct": 41
-        },
-        {
-          "text": "hier je regarde → j’ai regardé",
-          "sub": "Time marker and tense",
-          "status": "practice",
-          "pct": 33
-        }
-      ],
-      "cta": "Save result"
-    },
     "targetLevel": {
       "title": "Which level do you want to reach?",
       "sub": "Pip tunes your exercises to this goal. Change it any time.",
       "today": "Your level today",
       "options": {
+        "A2": {
+          "name": "Handle everyday life",
+          "sub": "Ordering, asking for directions, small talk"
+        },
         "B1": {
           "name": "Conversations without stalling",
           "sub": "Telling, asking, making appointments"
@@ -295,7 +235,7 @@
     "account": {
       "title": "Secure your account.",
       "sub": "Your subscription, level and conversations stay with you on every device.",
-      "phone": "With phone number",
+      "email": "With email",
       "google": "Continue with Google",
       "legal1": "By creating an account you accept the\n",
       "legal2": " and the ",
@@ -309,10 +249,11 @@
       "hidePassword": "Hide password",
       "emailPlaceholder": "name@mail.com",
       "passwordPlaceholder": "Password",
-      "rules": {
-        "length": "At least 8 characters",
-        "number": "A number",
-        "special": "A special character"
+      "strength": {
+        "weak": "Weak password",
+        "okay": "Okay",
+        "good": "Good password",
+        "strong": "Strong password"
       }
     },
     "plusActive": {
@@ -328,7 +269,129 @@
       "opt1": "j’ai pris",
       "opt2": "prendre",
       "cta": "Add widget"
-    }
+    },
+    "placement": {
+      "kicker": "Placement",
+      "title": "Let’s find\nyour level.",
+      "sub": "A short test, then the exercises fit you. Under 5 minutes.",
+      "cta": "Let’s go",
+      "self": "Choose level myself",
+      "read": {
+        "title": "Reading",
+        "sub": "Read two short texts. Tap what you don’t know."
+      },
+      "speak": {
+        "title": "Speaking",
+        "sub": "A two-minute role-play with Pip."
+      },
+      "screenTitle": "Placement",
+      "roundOf": "{{n}} of 2",
+      "readKicker": "Reading · Text {{n}}",
+      "tapHint": "Tap every word you don’t know.",
+      "questionKicker": "True or false?",
+      "textOf": "Text {{n}} of 2",
+      "known": "were already familiar",
+      "cardsMade": "Flashcards created",
+      "questionsRight": "Questions right",
+      "call": {
+        "kicker": "Speaking · 2 minutes",
+        "title": "At the café",
+        "sub": "You are in a café in Paris. You wanted a cappuccino, but the machine is broken today.",
+        "tasksLabel": "Your tasks",
+        "tasks": [
+          "Address the waiter and order a drink.",
+          "Ask what they have instead.",
+          "Pick an alternative and say it clearly."
+        ],
+        "cta": "Start role-play · 2 min"
+      }
+    },
+    "levelSkill": {
+      "skillOf": "Skill {{n}} of 2",
+      "canLabel": "What you can do already",
+      "workLabel": "What we will work on",
+      "reading": {
+        "headline": "You read at {{level}}.",
+        "pill": "Reading",
+        "pillSub": "2 short texts",
+        "cta": "On to speaking",
+        "A1": {
+          "can": [
+            "You recognise single words and signs.",
+            "Short simple sentences work with context."
+          ],
+          "work": ["Whole paragraphs still lose you.", "You do not spot tenses in a text yet."]
+        },
+        "A2": {
+          "can": ["You get the gist of short everyday texts.", "Known words come back quickly."],
+          "work": ["Longer sentences still break down.", "Past tenses are still shaky."]
+        },
+        "B1": {
+          "can": ["Menus and descriptions need no help.", "You spot the passé composé in a text."],
+          "work": [
+            "Long sentences with clauses still lose you.",
+            "Irony and slang often pass you by."
+          ]
+        },
+        "B2": {
+          "can": ["Longer texts read fluently.", "Clauses and tenses are solid."],
+          "work": [
+            "Nuance and register are rarely distinguished yet.",
+            "Idioms still need a lookup."
+          ]
+        }
+      },
+      "speaking": {
+        "headline": "You speak at {{level}}.",
+        "pill": "Speaking",
+        "pillSub": "2-minute role-play",
+        "cta": "Next",
+        "A1": {
+          "can": ["You introduced yourself and greeted.", "Single words came out confidently."],
+          "work": ["Full sentences still take time.", "Questions are not always understood."]
+        },
+        "A2": {
+          "can": [
+            "You ordered and asked for an alternative.",
+            "Your sentences were short but clear."
+          ],
+          "work": [
+            "Polite forms were forgotten twice.",
+            "Follow-up questions still stall the talk."
+          ]
+        },
+        "B1": {
+          "can": [
+            "You led the conversation yourself.",
+            "Follow-ups were answered without pausing."
+          ],
+          "work": [
+            "Past tenses still get mixed up.",
+            "Connectors are missing; sentences stand alone."
+          ]
+        },
+        "B2": {
+          "can": ["You speak fluently and self-correct.", "Politeness and register fit."],
+          "work": ["Idioms still sound translated.", "Quick answers lack nuance."]
+        }
+      }
+    },
+    "prognosis": {
+      "kicker": "In {{n}} months",
+      "title": "{{min}} minutes a day and this is where you stand.",
+      "speaking": "Speaking",
+      "reading": "Reading",
+      "inMonths": "in about {{n}} months",
+      "today": "today",
+      "note": "Estimate based on your placement and daily practice with Pip.",
+      "change": "Change study time"
+    },
+    "login": {
+      "title": "Pip has been waiting for you.",
+      "sub": "Log in and pick up right where you left off.",
+      "cta": "Log in"
+    },
+    "assessmentIntro": {}
   },
   "home": {
     "greeting": "Salut, {{name}}.\nUp for a conversation?",
@@ -336,13 +399,11 @@
     "due": "flashcards due",
     "hero": {
       "talk": {
-        "preview": "Ça te dit ?",
         "kicker": "SPEAK · 5–15 MIN",
         "title": "Start live conversation",
         "cta": "Speak"
       },
       "read": {
-        "preview": "marché",
         "kicker": "1 TOPIC · 4 MIN",
         "title": "Create reading text",
         "cta": "Create text"
@@ -355,8 +416,6 @@
         "cta": "Start exercise"
       },
       "cards": {
-        "front": "le café",
-        "back": "the café",
         "kicker": "12 CARDS DUE",
         "title": "Review flashcards",
         "cta": "Practice"
@@ -384,7 +443,7 @@
     "toB2": "38 % to B2",
     "toA2": "15 % to A2",
     "words": "{{level}} · {{n}} words",
-    "new": "New language"
+    "new": "Add a language"
   },
   "lesson": {
     "kicker": "French · Easy · 12 words",
@@ -479,20 +538,41 @@
     "prompt": "Sur place ou à emporter ?",
     "mute": "Mute",
     "end": "End",
-    "subtitles": "Captions"
+    "subtitles": "Captions",
+    "tasks": {
+      "timer": "02:14",
+      "cta": "Keep talking"
+    },
+    "done": {
+      "title": "Conversation done.",
+      "meta": "Im Café · 8 min · A2",
+      "tasks": "Your tasks",
+      "cta": "See the recap",
+      "later": "Later"
+    }
   },
   "exercise": {
     "fill": "Fill the gap",
     "fillFree": "Fill the gap · free",
     "translate": "Translate",
     "translateFree": "Translate · free",
+    "conjugate": "Fill the table",
     "correct": "Exactly",
     "wrong": "Almost",
     "you": "You",
     "right": "Correct",
     "inFrench": "In French",
     "yourAnswer": "Your answer",
-    "hintDrop": "Dropped wrongly? Just drag it back out"
+    "hintPieces": "Placed wrongly? Just tap it to take it out",
+    "result": {
+      "title": "Well done, {{name}}.",
+      "badge": "{{right}} of {{total}}",
+      "sub": "Worth a second look: these answers.",
+      "subPerfect": "All correct. Pip is impressed.",
+      "again": "Look at again",
+      "retry": "Repeat {{n}} tasks",
+      "finish": "Done"
+    }
   },
   "reading": {
     "title": "Reading",
@@ -627,7 +707,8 @@
     "learningLanguage": "Learning language",
     "appLanguage": "App language",
     "reminder": "Reminder",
-    "reminderSub": "Daily at {{time}}",
+    "reminderSubs": ["Daily at {{time}}", "Mon–Fri at {{time}}", "Weekends at {{time}}"],
+    "reminderOff": "Off",
     "account": "Account",
     "plus": "Yori Plus",
     "active": "Active",
@@ -660,13 +741,6 @@
         "15": "2–3 exercises",
         "30": "5 exercises"
       },
-      "week": {
-        "5": "35 min",
-        "10": "1 h 10",
-        "15": "1 h 45",
-        "30": "3 h 30"
-      },
-      "perWeek": "{{t}} per week",
       "a2today": "A2 today",
       "b1": "B1",
       "save": "{{min}} minutes a day"
@@ -715,11 +789,6 @@
     "speak": "Speak"
   },
   "auth": {
-    "login": {
-      "title": "Welcome back.",
-      "sub": "Sign in with your email and password.",
-      "cta": "Log in"
-    },
     "providerSoon": "Google and Apple sign-in are coming. Please use email and password for now.",
     "errors": {
       "generic": "That did not work. Please try again.",

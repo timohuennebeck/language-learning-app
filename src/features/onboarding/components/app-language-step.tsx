@@ -1,14 +1,10 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/features/auth/hooks/use-session';
 import { OnboardingFrame } from '@/features/onboarding/components/onboarding-frame';
-import { isAppLanguage } from '@/shared/lib/i18n';
-import { SelectRow } from '@/shared/components/select-row';
+import { AppLanguageList } from '@/shared/components/app-language-list';
 import { Button } from '@/shared/ui/button';
-
-const LANGS = ['de', 'en', 'es', 'fr', 'it', 'pt'] as const;
 
 /** 03 · App-Sprache (1 von 13). */
 export function AppLanguageStep() {
@@ -29,20 +25,11 @@ export function AppLanguageStep() {
         />
       }
     >
-      <View className="mt-[22px]" style={{ rowGap: 10 }}>
-        {LANGS.map((code) => (
-          <SelectRow
-            key={code}
-            flag={code}
-            label={t(`common.languageNative.${code}`)}
-            selected={session.appLanguage === code}
-            disabled={!isAppLanguage(code)}
-            onPress={() => {
-              if (isAppLanguage(code)) update({ appLanguage: code });
-            }}
-          />
-        ))}
-      </View>
+      <AppLanguageList
+        className="mt-[22px]"
+        value={session.appLanguage}
+        onChange={(appLanguage) => update({ appLanguage })}
+      />
     </OnboardingFrame>
   );
 }

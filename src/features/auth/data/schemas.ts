@@ -46,6 +46,8 @@ export const SessionSchema = z.object({
   learningLanguage: LearningLanguageSchema.default('fr'),
   level: LevelSchema.default('A2'),
   targetLevel: LevelSchema.default('B2'),
+  /** Result of the reading placement (kept in memory until the call's level combines with it). */
+  readingLevel: LevelSchema.nullable().default(null),
   dailyGoalMinutes: z.number().int().default(15),
   reminder: ReminderSchema.nullable().default({ hour: 20, minute: 30, repeat: 0 }),
   goal: LearningGoalSchema.nullable().default('media'),
