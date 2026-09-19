@@ -738,6 +738,7 @@
       "sub": "Tell Pip whatever you like. Pip listens and asks back.",
       "cta": "Speak"
     },
-    "scenarios": "Scenarios"
+    "scenarios": "Scenarios",
+    "tileMeta": "{{level}} · {{minutes}} min"
   }
 }

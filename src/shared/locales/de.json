@@ -747,6 +747,7 @@
       "sub": "Erzähl Pip, was du willst. Pip hört zu und fragt nach.",
       "cta": "Sprechen"
     },
-    "scenarios": "Szenarien"
+    "scenarios": "Szenarien",
+    "tileMeta": "{{level}} · {{minutes}} Min"
   }
 }
