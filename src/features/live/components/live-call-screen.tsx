@@ -174,6 +174,12 @@ export function LiveCallScreen({
         >
           {statusLine()}
         </Text>
+        {__DEV__ && call.status === 'error' && call.errorCode ? (
+          // Development builds show the edge function's error code under the copy.
+          <Text className="text-center text-faint" style={{ fontSize: 12 }}>
+            {call.errorCode}
+          </Text>
+        ) : null}
       </View>
       {call.status === 'error' ? (
         <View className="mt-[22px] px-[8px]" style={{ rowGap: 6 }}>
